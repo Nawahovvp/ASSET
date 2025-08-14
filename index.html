@@ -116,7 +116,7 @@
       box-shadow: 0 4px 6px rgba(0,0,0,0.1);
       border-radius: 12px;
       overflow: hidden;
-      min-width: 900px;
+      min-width: 1000px;
     }
     th, td {
       padding: 8px 12px;
@@ -318,6 +318,10 @@
     th:nth-child(5), td:nth-child(5) {
       min-width: 150px;
     }
+    th:nth-child(9), td:nth-child(9) {
+      min-width: 100px;
+      text-align: center;
+    }
     @media (max-width: 768px) {
       th:nth-child(3), td:nth-child(3) {
         min-width: 150px;
@@ -508,7 +512,7 @@
   </style>
 </head>
 <body>
-  <h1 class="report-title">รายการ ทรัพย์สิน คลังสินค้าทัวประเทศ</h1>
+  <h1 class="report-title">รายงาน ทรัพย์สิน คลังสินค้าทั่วประเทศ</h1>
   <div id="searchContainer">
     <div class="filter-row">
       <label id="employeeFilterLabel" for="employeeFilter" class="modern-label">ผู้รับผิดชอบ</label>
@@ -535,7 +539,7 @@
       </select>
     </div>
     <div class="search-row">
-      <input type="text" id="searchInput" placeholder="ค้นหา รหัสทรัพย์สิน, Sno., ชื่อทรัพย์สิน, UL, Physical Location, วันที่ซื้อทรัพย์สิน, ผู้รับผิดชอบ, สถานะทรัพย์สิน..." />
+      <input type="text" id="searchInput" placeholder="ค้นหา รหัสทรัพย์สิน, Sno., ชื่อทรัพย์สิน, UL, Physical Location, วันที่ซื้อทรัพย์สิน, ผู้รับผิดชอบ, สถานะทรัพย์สิน, อายุ..." />
       <button id="searchButton" class="action-button"><i class="fas fa-search"></i> ค้นหา</button>
       <button id="printTableButton" class="action-button"><i class="fas fa-print"></i> พิมพ์</button>
       <button id="graphButton" class="action-button"><i class="fas fa-chart-line"></i> กราฟ</button>
@@ -555,6 +559,7 @@
           <th class="sortable" data-column="วันที่ซื้อทรัพย์สิน">วันที่ซื้อทรัพย์สิน <span class="arrow"></span></th>
           <th class="sortable" data-column="ผู้รับผิดชอบ">ผู้รับผิดชอบ <span class="arrow"></span></th>
           <th class="sortable" data-column="สถานะทรัพย์สิน">สถานะทรัพย์สิน <span class="arrow"></span></th>
+          <th class="sortable" data-column="อายุ">อายุ <span class="arrow"></span></th>
           <th>ดูรายละเอียด</th>
         </tr>
       </thead>
@@ -649,6 +654,47 @@
     let teamChart = null;
     let currentAssetId = null;
 
+    function calculateAge(purchaseDate) {
+      if (!purchaseDate || purchaseDate === "-") return "-";
+      try {
+        const [day, month, year] = purchaseDate.split('/');
+        const date = new Date(`${year}-${month}-${day}`);
+        if (isNaN(date.getTime())) return "-";
+        const today = new Date();
+        let years = today.getFullYear() - date.getFullYear();
+        let months = today.getMonth() - date.getMonth();
+        if (months < 0 || (months === 0 && today.getDate() < date.getDate())) {
+          years--;
+          months += 12;
+        }
+        if (today.getDate() < date.getDate()) {
+          months--;
+          if (months < 0) {
+            years--;
+            months += 12;
+          }
+        }
+        if (years < 0) return "-";
+        return years === 0 && months === 0 ? "0 เดือน" : `${years} ปี ${months} เดือน`;
+      } catch (e) {
+        return "-";
+      }
+    }
+
+    function parseAgeForSorting(ageString) {
+      if (ageString === "-") return { years: -Infinity, months: -Infinity };
+      const match = ageString.match(/(\d+)\s*ปี\s*(\d+)\s*เดือน/);
+      if (!match) {
+        const monthMatch = ageString.match(/(\d+)\s*เดือน/);
+        if (monthMatch) return { years: 0, months: parseInt(monthMatch[1]) };
+        return { years: -Infinity, months: -Infinity };
+      }
+      return {
+        years: parseInt(match[1]),
+        months: parseInt(match[2])
+      };
+    }
+
     function escapeCSVValue(value) {
       if (value == null) return '""';
       const stringValue = value.toString();
@@ -671,6 +717,7 @@
 
       let filteredData = allData.filter(row => {
         if (!row) return false;
+        const age = calculateAge(row["วันที่ซื้อทรัพย์สิน"]);
         return (
           (!selectedEmployee || (row["ผู้รับผิดชอบ"] || "") === selectedEmployee) &&
           (!selectedLocation || (row["Physical Location"] || "") === selectedLocation) &&
@@ -683,7 +730,8 @@
             (row["Physical Location"] || "").toLowerCase().includes(keyword) ||
             (row["วันที่ซื้อทรัพย์สิน"] || "").toLowerCase().includes(keyword) ||
             (row["ผู้รับผิดชอบ"] || "").toLowerCase().includes(keyword) ||
-            (row["สถานะทรัพย์สิน"] || "").toLowerCase().includes(keyword)
+            (row["สถานะทรัพย์สิน"] || "").toLowerCase().includes(keyword) ||
+            age.toLowerCase().includes(keyword)
           )
         );
       });
@@ -699,7 +747,7 @@
         return idA.localeCompare(idB);
       });
 
-      const columns = ["รหัสทรัพย์สิน", "Sno.", "ชื่อทรัพย์สิน", "UL", "Physical Location", "วันที่ซื้อทรัพย์สิน", "ผู้รับผิดชอบ", "สถานะทรัพย์สิน"];
+      const columns = ["รหัสทรัพย์สิน", "Sno.", "ชื่อทรัพย์สิน", "UL", "Physical Location", "วันที่ซื้อทรัพย์สิน", "ผู้รับผิดชอบ", "สถานะทรัพย์สิน", "อายุ"];
       const displayColumns = {
         "รหัสทรัพย์สิน": "รหัสทรัพย์สิน",
         "Sno.": "Sno.",
@@ -708,7 +756,8 @@
         "Physical Location": "Physical Location",
         "วันที่ซื้อทรัพย์สิน": "วันที่ซื้อทรัพย์สิน",
         "ผู้รับผิดชอบ": "ผู้รับผิดชอบ",
-        "สถานะทรัพย์สิน": "สถานะทรัพย์สิน"
+        "สถานะทรัพย์สิน": "สถานะทรัพย์สิน",
+        "อายุ": "อายุ"
       };
 
       const csvRows = [];
@@ -716,7 +765,7 @@
 
       filteredData.forEach(row => {
         const rowData = columns.map(col => {
-          let value = row[col] || "-";
+          let value = col === "อายุ" ? calculateAge(row["วันที่ซื้อทรัพย์สิน"]) : (row[col] || "-");
           return escapeCSVValue(value);
         });
         csvRows.push(rowData.join(','));
@@ -751,7 +800,8 @@
         <div><span class="label">Physical Location:</span> <span class="value">${modalData["Physical Location"] || "-"}</span></div>
         <div><span class="label">วันที่ซื้อทรัพย์สิน:</span> <span class="value">${modalData["วันที่ซื้อทรัพย์สิน"] || "-"}</span></div>
         <div><span class="label">ผู้รับผิดชอบ:</span> <span class="value">${modalData["ผู้รับผิดชอบ"] || "-"}</span></div>
-        <div class="description"><span class="label">สถานะทรัพย์สิน:</span> <span class="value">${modalData["สถานะทรัพย์สิน"] || "-"}</span></div>
+        <div><span class="label">สถานะทรัพย์สิน:</span> <span class="value">${modalData["สถานะทรัพย์สิน"] || "-"}</span></div>
+        <div><span class="label">อายุ:</span> <span class="value">${calculateAge(modalData["วันที่ซื้อทรัพย์สิน"])}</span></div>
       `;
 
       const printWindow = window.open('', '_blank');
@@ -833,6 +883,7 @@
 
       let filteredData = allData.filter(row => {
         if (!row) return false;
+        const age = calculateAge(row["วันที่ซื้อทรัพย์สิน"]);
         return (
           (!selectedEmployee || (row["ผู้รับผิดชอบ"] || "") === selectedEmployee) &&
           (!selectedLocation || (row["Physical Location"] || "") === selectedLocation) &&
@@ -845,7 +896,8 @@
             (row["Physical Location"] || "").toLowerCase().includes(keyword) ||
             (row["วันที่ซื้อทรัพย์สิน"] || "").toLowerCase().includes(keyword) ||
             (row["ผู้รับผิดชอบ"] || "").toLowerCase().includes(keyword) ||
-            (row["สถานะทรัพย์สิน"] || "").toLowerCase().includes(keyword)
+            (row["สถานะทรัพย์สิน"] || "").toLowerCase().includes(keyword) ||
+            age.toLowerCase().includes(keyword)
           )
         );
       });
@@ -875,7 +927,8 @@
             <div><span class="label">Physical Location:</span> <span class="value">${row["Physical Location"] || "-"}</span></div>
             <div><span class="label">วันที่ซื้อทรัพย์สิน:</span> <span class="value">${row["วันที่ซื้อทรัพย์สิน"] || "-"}</span></div>
             <div><span class="label">ผู้รับผิดชอบ:</span> <span class="value">${row["ผู้รับผิดชอบ"] || "-"}</span></div>
-            <div class="description"><span class="label">สถานะทรัพย์สิน:</span> <span class="value">${row["สถานะทรัพย์สิน"] || "-"}</span></div>
+            <div><span class="label">สถานะทรัพย์สิน:</span> <span class="value">${row["สถานะทรัพย์สิน"] || "-"}</span></div>
+            <div><span class="label">อายุ:</span> <span class="value">${calculateAge(row["วันที่ซื้อทรัพย์สิน"])}</span></div>
           </div>
         `;
       }).join('');
@@ -950,6 +1003,7 @@
       const keyword = searchInput.value.toLowerCase().trim();
       let filteredData = allData.filter(row => {
         if (!row) return false;
+        const age = calculateAge(row["วันที่ซื้อทรัพย์สิน"]);
         return (
           (!selectedEmployee || (row["ผู้รับผิดชอบ"] || "") === selectedEmployee) &&
           (!selectedLocation || (row["Physical Location"] || "") === selectedLocation) &&
@@ -962,7 +1016,8 @@
             (row["Physical Location"] || "").toLowerCase().includes(keyword) ||
             (row["วันที่ซื้อทรัพย์สิน"] || "").toLowerCase().includes(keyword) ||
             (row["ผู้รับผิดชอบ"] || "").toLowerCase().includes(keyword) ||
-            (row["สถานะทรัพย์สิน"] || "").toLowerCase().includes(keyword)
+            (row["สถานะทรัพย์สิน"] || "").toLowerCase().includes(keyword) ||
+            age.toLowerCase().includes(keyword)
           )
         );
       });
@@ -1052,125 +1107,120 @@
     }
 
     function showSummary() {
-  const selectedEmployee = employeeFilter.value;
-  const selectedLocation = pendingFilter.value;
-  const selectedStatus = stockFilter.value;
-  const keyword = searchInput.value.toLowerCase().trim();
+      const selectedEmployee = employeeFilter.value;
+      const selectedLocation = pendingFilter.value;
+      const selectedStatus = stockFilter.value;
+      const keyword = searchInput.value.toLowerCase().trim();
 
-  // กรองข้อมูลตามตัวเลือก
-  let filteredData = allData.filter(row => {
-    if (!row) return false;
-    return (
-      (!selectedEmployee || (row["ผู้รับผิดชอบ"] || "") === selectedEmployee) &&
-      (!selectedLocation || (row["Physical Location"] || "") === selectedLocation) &&
-      (!selectedStatus || (row["สถานะทรัพย์สิน"] || "") === selectedStatus) &&
-      (!keyword ||
-        (row["รหัสทรัพย์สิน"] || "").toLowerCase().includes(keyword) ||
-        (row["Sno."] || "").toLowerCase().includes(keyword) ||
-        (row["ชื่อทรัพย์สิน"] || "").toLowerCase().includes(keyword) ||
-        (row["UL"] || "").toLowerCase().includes(keyword) ||
-        (row["Physical Location"] || "").toLowerCase().includes(keyword) ||
-        (row["วันที่ซื้อทรัพย์สิน"] || "").toLowerCase().includes(keyword) ||
-        (row["ผู้รับผิดชอบ"] || "").toLowerCase().includes(keyword) ||
-        (row["สถานะทรัพย์สิน"] || "").toLowerCase().includes(keyword)
-      )
-    );
-  });
+      let filteredData = allData.filter(row => {
+        if (!row) return false;
+        const age = calculateAge(row["วันที่ซื้อทรัพย์สิน"]);
+        return (
+          (!selectedEmployee || (row["ผู้รับผิดชอบ"] || "") === selectedEmployee) &&
+          (!selectedLocation || (row["Physical Location"] || "") === selectedLocation) &&
+          (!selectedStatus || (row["สถานะทรัพย์สิน"] || "") === selectedStatus) &&
+          (!keyword ||
+            (row["รหัสทรัพย์สิน"] || "").toLowerCase().includes(keyword) ||
+            (row["Sno."] || "").toLowerCase().includes(keyword) ||
+            (row["ชื่อทรัพย์สิน"] || "").toLowerCase().includes(keyword) ||
+            (row["UL"] || "").toLowerCase().includes(keyword) ||
+            (row["Physical Location"] || "").toLowerCase().includes(keyword) ||
+            (row["วันที่ซื้อทรัพย์สิน"] || "").toLowerCase().includes(keyword) ||
+            (row["ผู้รับผิดชอบ"] || "").toLowerCase().includes(keyword) ||
+            (row["สถานะทรัพย์สิน"] || "").toLowerCase().includes(keyword) ||
+            age.toLowerCase().includes(keyword)
+          )
+        );
+      });
 
-  // คำนวณจำนวนทรัพย์สินทั้งหมด
-  const uniqueAssets = [...new Set(filteredData.map(row => row["รหัสทรัพย์สิน"]).filter(asset => asset))].length;
-  const totalAssets = uniqueAssets;
+      const uniqueAssets = [...new Set(filteredData.map(row => row["รหัสทรัพย์สิน"]).filter(asset => asset))].length;
+      const totalAssets = uniqueAssets;
 
-  // สร้าง Pivot Data สำหรับผู้รับผิดชอบและสถานะทรัพย์สิน
-  const pivotData = {};
-  const employees = [...new Set(filteredData.map(row => row["ผู้รับผิดชอบ"] || "ไม่ระบุ"))].sort();
+      const pivotData = {};
+      const employees = [...new Set(filteredData.map(row => row["ผู้รับผิดชอบ"] || "ไม่ระบุ"))].sort();
 
-  employees.forEach(employee => {
-    pivotData[employee] = { "ใช้งาน": 0, "ไม่ใช้งาน": 0, "โอนย้ายทรัพย์สิน": 0 };
-  });
+      employees.forEach(employee => {
+        pivotData[employee] = { "ใช้งาน": 0, "ไม่ใช้งาน": 0, "โอนย้ายทรัพย์สิน": 0 };
+      });
 
-  // นับจำนวนทรัพย์สินตามสถานะและผู้รับผิดชอบ
-  const assetCounts = {};
-  filteredData.forEach(row => {
-    const asset = row["รหัสทรัพย์สิน"];
-    if (!assetCounts[asset]) {
-      const employee = row["ผู้รับผิดชอบ"] || "ไม่ระบุ";
-      const status = (row["สถานะทรัพย์สิน"] || "").trim().toLowerCase();
-      if (status === "stock" || status === "ใช้งาน") {
-        pivotData[employee]["ใช้งาน"]++;
-      } else if (status === "โอนย้ายทรัพย์สิน") {
-        pivotData[employee]["โอนย้ายทรัพย์สิน"]++;
-      } else {
-        pivotData[employee]["ไม่ใช้งาน"]++;
-      }
-      assetCounts[asset] = true;
+      const assetCounts = {};
+      filteredData.forEach(row => {
+        const asset = row["รหัสทรัพย์สิน"];
+        if (!assetCounts[asset]) {
+          const employee = row["ผู้รับผิดชอบ"] || "ไม่ระบุ";
+          const status = (row["สถานะทรัพย์สิน"] || "").trim().toLowerCase();
+          if (status === "stock" || status === "ใช้งาน") {
+            pivotData[employee]["ใช้งาน"]++;
+          } else if (status === "โอนย้ายทรัพย์สิน") {
+            pivotData[employee]["โอนย้ายทรัพย์สิน"]++;
+          } else {
+            pivotData[employee]["ไม่ใช้งาน"]++;
+          }
+          assetCounts[asset] = true;
+        }
+      });
+
+      const employeeTotals = employees.map(employee => {
+        const total = pivotData[employee]["ใช้งาน"] + pivotData[employee]["ไม่ใช้งาน"] + pivotData[employee]["โอนย้ายทรัพย์สิน"];
+        const answeredCount = pivotData[employee]["ใช้งาน"] || 0;
+        const waitAnsCount = pivotData[employee]["ไม่ใช้งาน"] || 0;
+        const transferCount = pivotData[employee]["โอนย้ายทรัพย์สิน"] || 0;
+        return { employee, total, answeredCount, waitAnsCount, transferCount };
+      }).sort((a, b) => b.total - a.total);
+
+      let pivotTableHtml = `
+        <table class='detail-table'>
+          <thead>
+            <tr>
+              <th>ผู้รับผิดชอบ</th>
+              <th class='fixed-width'>รวม</th>
+              <th class='fixed-width'>ใช้งาน</th>
+              <th class='fixed-width'>ไม่ใช้งาน</th>
+              <th class='fixed-width'>โอนย้ายทรัพย์สิน</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${employeeTotals.map(({ employee, total, answeredCount, waitAnsCount, transferCount }) => `
+              <tr>
+                <td>${employee}</td>
+                <td class='fixed-width'>${total === 0 ? '-' : total}</td>
+                <td class='fixed-width'>${answeredCount === 0 ? '-' : answeredCount}</td>
+                <td class='fixed-width'>${waitAnsCount === 0 ? '-' : waitAnsCount}</td>
+                <td class='fixed-width'>${transferCount === 0 ? '-' : transferCount}</td>
+              </tr>
+            `).join('')}
+            <tr>
+              <td><strong>รวม</strong></td>
+              <td class='fixed-width'><strong>${totalAssets === 0 ? '-' : totalAssets}</strong></td>
+              <td class='fixed-width'><strong>${
+                employees.reduce((sum, employee) => sum + pivotData[employee]["ใช้งาน"], 0) === 0 
+                  ? '-' 
+                  : employees.reduce((sum, employee) => sum + pivotData[employee]["ใช้งาน"], 0)
+              }</strong></td>
+              <td class='fixed-width'><strong>${
+                employees.reduce((sum, employee) => sum + pivotData[employee]["ไม่ใช้งาน"], 0) === 0 
+                  ? '-' 
+                  : employees.reduce((sum, employee) => sum + pivotData[employee]["ไม่ใช้งาน"], 0)
+              }</strong></td>
+              <td class='fixed-width'><strong>${
+                employees.reduce((sum, employee) => sum + pivotData[employee]["โอนย้ายทรัพย์สิน"], 0) === 0 
+                  ? '-' 
+                  : employees.reduce((sum, employee) => sum + pivotData[employee]["โอนย้ายทรัพย์สิน"], 0)
+              }</strong></td>
+            </tr>
+          </tbody>
+        </table>
+      `;
+
+      let summaryHtml = `
+        <div><span class='label'>จำนวนทรัพย์สินทั้งหมด:</span> <span class='value'>${totalAssets} รายการ</span></div>
+        <h3>จำนวนทรัพย์สินตามผู้รับผิดชอบและสถานะ</h3>
+        ${pivotTableHtml}
+      `;
+
+      summaryContent.innerHTML = summaryHtml;
+      summaryModal.style.display = "block";
     }
-  });
-
-  // คำนวณผลรวมต่อผู้รับผิดชอบ
-  const employeeTotals = employees.map(employee => {
-    const total = pivotData[employee]["ใช้งาน"] + pivotData[employee]["ไม่ใช้งาน"] + pivotData[employee]["โอนย้ายทรัพย์สิน"];
-    const answeredCount = pivotData[employee]["ใช้งาน"] || 0;
-    const waitAnsCount = pivotData[employee]["ไม่ใช้งาน"] || 0;
-    const transferCount = pivotData[employee]["โอนย้ายทรัพย์สิน"] || 0;
-    return { employee, total, answeredCount, waitAnsCount, transferCount };
-  }).sort((a, b) => b.total - a.total);
-
-  // สร้างตาราง Pivot
-  let pivotTableHtml = `
-    <table class='detail-table'>
-      <thead>
-        <tr>
-          <th>ผู้รับผิดชอบ</th>
-          <th class='fixed-width'>รวม</th>
-          <th class='fixed-width'>ใช้งาน</th>
-          <th class='fixed-width'>ไม่ใช้งาน</th>
-          <th class='fixed-width'>โอนย้ายทรัพย์สิน</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${employeeTotals.map(({ employee, total, answeredCount, waitAnsCount, transferCount }) => `
-          <tr>
-            <td>${employee}</td>
-            <td class='fixed-width'>${total === 0 ? '-' : total}</td>
-            <td class='fixed-width'>${answeredCount === 0 ? '-' : answeredCount}</td>
-            <td class='fixed-width'>${waitAnsCount === 0 ? '-' : waitAnsCount}</td>
-            <td class='fixed-width'>${transferCount === 0 ? '-' : transferCount}</td>
-          </tr>
-        `).join('')}
-        <tr>
-          <td><strong>รวม</strong></td>
-          <td class='fixed-width'><strong>${totalAssets === 0 ? '-' : totalAssets}</strong></td>
-          <td class='fixed-width'><strong>${
-            employees.reduce((sum, employee) => sum + pivotData[employee]["ใช้งาน"], 0) === 0 
-              ? '-' 
-              : employees.reduce((sum, employee) => sum + pivotData[employee]["ใช้งาน"], 0)
-          }</strong></td>
-          <td class='fixed-width'><strong>${
-            employees.reduce((sum, employee) => sum + pivotData[employee]["ไม่ใช้งาน"], 0) === 0 
-              ? '-' 
-              : employees.reduce((sum, employee) => sum + pivotData[employee]["ไม่ใช้งาน"], 0)
-          }</strong></td>
-          <td class='fixed-width'><strong>${
-            employees.reduce((sum, employee) => sum + pivotData[employee]["โอนย้ายทรัพย์สิน"], 0) === 0 
-              ? '-' 
-              : employees.reduce((sum, employee) => sum + pivotData[employee]["โอนย้ายทรัพย์สิน"], 0)
-          }</strong></td>
-        </tr>
-      </tbody>
-    </table>
-  `;
-
-  // สร้าง HTML สำหรับสรุปข้อมูล
-  let summaryHtml = `
-    <div><span class='label'>จำนวนทรัพย์สินทั้งหมด:</span> <span class='value'>${totalAssets} รายการ</span></div>
-    <h3>จำนวนทรัพย์สินตามผู้รับผิดชอบและสถานะ</h3>
-    ${pivotTableHtml}
-  `;
-
-  summaryContent.innerHTML = summaryHtml;
-  summaryModal.style.display = "block";
-}
 
     function printSummaryContent() {
       const printWindow = window.open('', '_blank');
@@ -1385,6 +1435,7 @@
       const keyword = searchInput.value.toLowerCase().trim();
       let filteredData = allData.filter(row => {
         if (!row) return false;
+        const age = calculateAge(row["วันที่ซื้อทรัพย์สิน"]);
         return (
           (!selectedEmployee || (row["ผู้รับผิดชอบ"] || "") === selectedEmployee) &&
           (!selectedLocation || (row["Physical Location"] || "") === selectedLocation) &&
@@ -1397,7 +1448,8 @@
             (row["Physical Location"] || "").toLowerCase().includes(keyword) ||
             (row["วันที่ซื้อทรัพย์สิน"] || "").toLowerCase().includes(keyword) ||
             (row["ผู้รับผิดชอบ"] || "").toLowerCase().includes(keyword) ||
-            (row["สถานะทรัพย์สิน"] || "").toLowerCase().includes(keyword)
+            (row["สถานะทรัพย์สิน"] || "").toLowerCase().includes(keyword) ||
+            age.toLowerCase().includes(keyword)
           )
         );
       });
@@ -1411,6 +1463,18 @@
 
       if (sortConfig.column) {
         filteredData.sort((a, b) => {
+          if (sortConfig.column === "อายุ") {
+            const ageA = parseAgeForSorting(calculateAge(a["วันที่ซื้อทรัพย์สิน"]));
+            const ageB = parseAgeForSorting(calculateAge(b["วันที่ซื้อทรัพย์สิน"]));
+            if (ageA.years === ageB.years) {
+              return sortConfig.direction === 'asc'
+                ? ageA.months - ageB.months
+                : ageB.months - ageA.months;
+            }
+            return sortConfig.direction === 'asc'
+              ? ageA.years - ageB.years
+              : ageB.years - ageA.years;
+          }
           let valueA = a[sortConfig.column] || "";
           let valueB = b[sortConfig.column] || "";
           valueA = valueA.toString().toLowerCase();
@@ -1450,7 +1514,7 @@
     function renderTable(data) {
       tableBody.innerHTML = '';
       if (!data || data.length === 0) {
-        tableBody.innerHTML = '<tr><td colspan="9">ไม่มีข้อมูลที่ตรงกับเงื่อนไข</td></tr>';
+        tableBody.innerHTML = '<tr><td colspan="10">ไม่มีข้อมูลที่ตรงกับเงื่อนไข</td></tr>';
         return;
       }
 
@@ -1479,10 +1543,10 @@
         const asset = row["รหัสทรัพย์สิน"];
         tr.className = colorMap[asset] || "yellow-light";
 
-        const columns = ["รหัสทรัพย์สิน", "Sno.", "ชื่อทรัพย์สิน", "UL", "Physical Location", "วันที่ซื้อทรัพย์สิน", "ผู้รับผิดชอบ", "สถานะทรัพย์สิน"];
+        const columns = ["รหัสทรัพย์สิน", "Sno.", "ชื่อทรัพย์สิน", "UL", "Physical Location", "วันที่ซื้อทรัพย์สิน", "ผู้รับผิดชอบ", "สถานะทรัพย์สิน", "อายุ"];
         columns.forEach(col => {
           const td = document.createElement("td");
-          let cellValue = row[col] || "-";
+          let cellValue = col === "อายุ" ? calculateAge(row["วันที่ซื้อทรัพย์สิน"]) : (row[col] || "-");
           let displayValue = cellValue;
           if (col === "สถานะทรัพย์สิน") {
             const normalizedValue = cellValue.toString().trim().toLowerCase();
@@ -1496,6 +1560,8 @@
               displayValue = "ไม่ใช้งาน";
               td.classList.add("red-text");
             }
+          } else if (col === "อายุ") {
+            td.classList.add("text-center");
           }
           td.textContent = displayValue;
           td.classList.add("text-left");
@@ -1517,6 +1583,7 @@
             <div><span class="label">วันที่ซื้อทรัพย์สิน:</span> <span class="value">${row["วันที่ซื้อทรัพย์สิน"] || "-"}</span></div>
             <div><span class="label">ผู้รับผิดชอบ:</span> <span class="value">${row["ผู้รับผิดชอบ"] || "-"}</span></div>
             <div><span class="label">สถานะทรัพย์สิน:</span> <span class="value">${row["สถานะทรัพย์สิน"] || "-"}</span></div>
+            <div><span class="label">อายุ:</span> <span class="value">${calculateAge(row["วันที่ซื้อทรัพย์สิน"])}</span></div>
           `;
           modalContent.innerHTML = detailHtml;
           modal.style.display = "block";
@@ -1583,6 +1650,7 @@
           const selectedLocation = pendingFilter.value;
           const selectedStatus = stockFilter.value;
           const keyword = searchInput.value.toLowerCase().trim();
+          const age = calculateAge(row["วันที่ซื้อทรัพย์สิน"]);
           return (
             (!selectedEmployee || (row["ผู้รับผิดชอบ"] || "") === selectedEmployee) &&
             (!selectedLocation || (row["Physical Location"] || "") === selectedLocation) &&
@@ -1595,7 +1663,8 @@
               (row["Physical Location"] || "").toLowerCase().includes(keyword) ||
               (row["วันที่ซื้อทรัพย์สิน"] || "").toLowerCase().includes(keyword) ||
               (row["ผู้รับผิดชอบ"] || "").toLowerCase().includes(keyword) ||
-              (row["สถานะทรัพย์สิน"] || "").toLowerCase().includes(keyword)
+              (row["สถานะทรัพย์สิน"] || "").toLowerCase().includes(keyword) ||
+              age.toLowerCase().includes(keyword)
             )
           );
         }).length / itemsPerPage
@@ -1614,6 +1683,7 @@
           const selectedLocation = pendingFilter.value;
           const selectedStatus = stockFilter.value;
           const keyword = searchInput.value.toLowerCase().trim();
+          const age = calculateAge(row["วันที่ซื้อทรัพย์สิน"]);
           return (
             (!selectedEmployee || (row["ผู้รับผิดชอบ"] || "") === selectedEmployee) &&
             (!selectedLocation || (row["Physical Location"] || "") === selectedLocation) &&
@@ -1626,7 +1696,8 @@
               (row["Physical Location"] || "").toLowerCase().includes(keyword) ||
               (row["วันที่ซื้อทรัพย์สิน"] || "").toLowerCase().includes(keyword) ||
               (row["ผู้รับผิดชอบ"] || "").toLowerCase().includes(keyword) ||
-              (row["สถานะทรัพย์สิน"] || "").toLowerCase().includes(keyword)
+              (row["สถานะทรัพย์สิน"] || "").toLowerCase().includes(keyword) ||
+              age.toLowerCase().includes(keyword)
             )
           );
         }).length / itemsPerPage
@@ -1644,7 +1715,7 @@
       .then(data => {
         if (!data || data.length === 0) {
           console.error("No data received from Google Sheets");
-          tableBody.innerHTML = '<tr><td colspan="9">ไม่มีข้อมูลจาก Google Sheets</td></tr>';
+          tableBody.innerHTML = '<tr><td colspan="10">ไม่มีข้อมูลจาก Google Sheets</td></tr>';
           return;
         }
         allData = data;
@@ -1661,7 +1732,7 @@
       })
       .catch(error => {
         console.error("ไม่สามารถโหลดข้อมูลได้:", error);
-        tableBody.innerHTML = '<tr><td colspan="9">เกิดข้อผิดพลาดในการโหลดข้อมูล: ' + error.message + '</td></tr>';
+        tableBody.innerHTML = '<tr><td colspan="10">เกิดข้อผิดพลาดในการโหลดข้อมูล: ' + error.message + '</td></tr>';
       });
   </script>
 </body>
