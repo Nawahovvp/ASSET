@@ -1052,136 +1052,125 @@
     }
 
     function showSummary() {
-      const selectedEmployee = employeeFilter.value;
-      const selectedLocation = pendingFilter.value;
-      const selectedStatus = stockFilter.value;
-      const keyword = searchInput.value.toLowerCase().trim();
+  const selectedEmployee = employeeFilter.value;
+  const selectedLocation = pendingFilter.value;
+  const selectedStatus = stockFilter.value;
+  const keyword = searchInput.value.toLowerCase().trim();
 
-      let filteredData = allData.filter(row => {
-        if (!row) return false;
-        return (
-          (!selectedEmployee || (row["ผู้รับผิดชอบ"] || "") === selectedEmployee) &&
-          (!selectedLocation || (row["Physical Location"] || "") === selectedLocation) &&
-          (!selectedStatus || (row["สถานะทรัพย์สิน"] || "") === selectedStatus) &&
-          (!keyword ||
-            (row["รหัสทรัพย์สิน"] || "").toLowerCase().includes(keyword) ||
-            (row["Sno."] || "").toLowerCase().includes(keyword) ||
-            (row["ชื่อทรัพย์สิน"] || "").toLowerCase().includes(keyword) ||
-            (row["UL"] || "").toLowerCase().includes(keyword) ||
-            (row["Physical Location"] || "").toLowerCase().includes(keyword) ||
-            (row["วันที่ซื้อทรัพย์สิน"] || "").toLowerCase().includes(keyword) ||
-            (row["ผู้รับผิดชอบ"] || "").toLowerCase().includes(keyword) ||
-            (row["สถานะทรัพย์สิน"] || "").toLowerCase().includes(keyword)
-          )
-        );
-      });
+  // กรองข้อมูลตามตัวเลือก
+  let filteredData = allData.filter(row => {
+    if (!row) return false;
+    return (
+      (!selectedEmployee || (row["ผู้รับผิดชอบ"] || "") === selectedEmployee) &&
+      (!selectedLocation || (row["Physical Location"] || "") === selectedLocation) &&
+      (!selectedStatus || (row["สถานะทรัพย์สิน"] || "") === selectedStatus) &&
+      (!keyword ||
+        (row["รหัสทรัพย์สิน"] || "").toLowerCase().includes(keyword) ||
+        (row["Sno."] || "").toLowerCase().includes(keyword) ||
+        (row["ชื่อทรัพย์สิน"] || "").toLowerCase().includes(keyword) ||
+        (row["UL"] || "").toLowerCase().includes(keyword) ||
+        (row["Physical Location"] || "").toLowerCase().includes(keyword) ||
+        (row["วันที่ซื้อทรัพย์สิน"] || "").toLowerCase().includes(keyword) ||
+        (row["ผู้รับผิดชอบ"] || "").toLowerCase().includes(keyword) ||
+        (row["สถานะทรัพย์สิน"] || "").toLowerCase().includes(keyword)
+      )
+    );
+  });
 
-      const uniqueAssets = [...new Set(filteredData.map(row => row["รหัสทรัพย์สิน"]).filter(asset => asset))].length;
-      const totalAssets = uniqueAssets;
+  // คำนวณจำนวนทรัพย์สินทั้งหมด
+  const uniqueAssets = [...new Set(filteredData.map(row => row["รหัสทรัพย์สิน"]).filter(asset => asset))].length;
+  const totalAssets = uniqueAssets;
 
-      const pivotData = {};
-      const employees = [...new Set(filteredData.map(row => row["ผู้รับผิดชอบ"] || "ไม่ระบุ"))].sort();
-      const locations = [...new Set(filteredData.map(row => row["Physical Location"] || "ไม่ระบุ"))].sort();
-      const orderedLocations = locations;
+  // สร้าง Pivot Data สำหรับผู้รับผิดชอบและสถานะทรัพย์สิน
+  const pivotData = {};
+  const employees = [...new Set(filteredData.map(row => row["ผู้รับผิดชอบ"] || "ไม่ระบุ"))].sort();
 
-      employees.forEach(employee => {
-        pivotData[employee] = { "ใช้งาน": 0, "ไม่ใช้งาน": 0, "โอนย้ายทรัพย์สิน": 0 };
-        locations.forEach(location => {
-          pivotData[employee][location] = 0;
-        });
-      });
+  employees.forEach(employee => {
+    pivotData[employee] = { "ใช้งาน": 0, "ไม่ใช้งาน": 0, "โอนย้ายทรัพย์สิน": 0 };
+  });
 
-      const assetCounts = {};
-      filteredData.forEach(row => {
-        const asset = row["รหัสทรัพย์สิน"];
-        if (!assetCounts[asset]) {
-          const employee = row["ผู้รับผิดชอบ"] || "ไม่ระบุ";
-          const location = row["Physical Location"] || "ไม่ระบุ";
-          const status = (row["สถานะทรัพย์สิน"] || "").trim().toLowerCase();
-          pivotData[employee][location]++;
-          if (status === "stock" || status === "ใช้งาน") {
-            pivotData[employee]["ใช้งาน"]++;
-          } else if (status === "โอนย้ายทรัพย์สิน") {
-            pivotData[employee]["โอนย้ายทรัพย์สิน"]++;
-          } else {
-            pivotData[employee]["ไม่ใช้งาน"]++;
-          }
-          assetCounts[asset] = true;
-        }
-      });
-
-      const employeeTotals = employees.map(employee => {
-        const total = Object.values(pivotData[employee]).reduce((sum, count) => sum + count, 0) - 
-                      pivotData[employee]["ไม่ใช้งาน"] - 
-                      pivotData[employee]["ใช้งาน"] - 
-                      pivotData[employee]["โอนย้ายทรัพย์สิน"];
-        const answeredCount = pivotData[employee]["ใช้งาน"] || 0;
-        const waitAnsCount = pivotData[employee]["ไม่ใช้งาน"] || 0;
-        const transferCount = pivotData[employee]["โอนย้ายทรัพย์สิน"] || 0;
-        return { employee, total, answeredCount, waitAnsCount, transferCount };
-      }).sort((a, b) => b.total - a.total);
-
-      let pivotTableHtml = `
-        <table class='detail-table'>
-          <thead>
-            <tr>
-              <th>ผู้รับผิดชอบ</th>
-              <th class='fixed-width'>รวม</th>
-              <th class='fixed-width'>ใช้งาน</th>
-              <th class='fixed-width'>ไม่ใช้งาน</th>
-              <th class='fixed-width'>โอนย้ายทรัพย์สิน</th>
-              ${orderedLocations.map(location => `<th class='fixed-width'>${location}</th>`).join('')}
-            </tr>
-          </thead>
-          <tbody>
-            ${employeeTotals.map(({ employee, total, answeredCount, waitAnsCount, transferCount }) => `
-              <tr>
-                <td>${employee}</td>
-                <td class='fixed-width'>${total === 0 ? '-' : total}</td>
-                <td class='fixed-width'>${answeredCount === 0 ? '-' : answeredCount}</td>
-                <td class='fixed-width'>${waitAnsCount === 0 ? '-' : waitAnsCount}</td>
-                <td class='fixed-width'>${transferCount === 0 ? '-' : transferCount}</td>
-                ${orderedLocations.map(location => `
-                  <td class='fixed-width'>${pivotData[employee][location] === 0 ? '-' : pivotData[employee][location]}</td>
-                `).join('')}
-              </tr>
-            `).join('')}
-            <tr>
-              <td><strong>รวม</strong></td>
-              <td class='fixed-width'><strong>${totalAssets === 0 ? '-' : totalAssets}</strong></td>
-              <td class='fixed-width'><strong>${
-                employees.reduce((sum, employee) => sum + pivotData[employee]["ใช้งาน"], 0) === 0 
-                  ? '-' 
-                  : employees.reduce((sum, employee) => sum + pivotData[employee]["ใช้งาน"], 0)
-              }</strong></td>
-              <td class='fixed-width'><strong>${
-                employees.reduce((sum, employee) => sum + pivotData[employee]["ไม่ใช้งาน"], 0) === 0 
-                  ? '-' 
-                  : employees.reduce((sum, employee) => sum + pivotData[employee]["ไม่ใช้งาน"], 0)
-              }</strong></td>
-              <td class='fixed-width'><strong>${
-                employees.reduce((sum, employee) => sum + pivotData[employee]["โอนย้ายทรัพย์สิน"], 0) === 0 
-                  ? '-' 
-                  : employees.reduce((sum, employee) => sum + pivotData[employee]["โอนย้ายทรัพย์สิน"], 0)
-              }</strong></td>
-              ${orderedLocations.map(location => {
-                const totalLocation = employees.reduce((sum, employee) => sum + pivotData[employee][location], 0);
-                return `<td class='fixed-width'><strong>${totalLocation === 0 ? '-' : totalLocation}</strong></td>`;
-              }).join('')}
-            </tr>
-          </tbody>
-        </table>
-      `;
-
-      let summaryHtml = `
-        <div><span class='label'>จำนวนทรัพย์สินทั้งหมด:</span> <span class='value'>${totalAssets} รายการ</span></div>
-        <h3>จำนวนทรัพย์สินตามผู้รับผิดชอบและ Physical Location</h3>
-        ${pivotTableHtml}
-      `;
-
-      summaryContent.innerHTML = summaryHtml;
-      summaryModal.style.display = "block";
+  // นับจำนวนทรัพย์สินตามสถานะและผู้รับผิดชอบ
+  const assetCounts = {};
+  filteredData.forEach(row => {
+    const asset = row["รหัสทรัพย์สิน"];
+    if (!assetCounts[asset]) {
+      const employee = row["ผู้รับผิดชอบ"] || "ไม่ระบุ";
+      const status = (row["สถานะทรัพย์สิน"] || "").trim().toLowerCase();
+      if (status === "stock" || status === "ใช้งาน") {
+        pivotData[employee]["ใช้งาน"]++;
+      } else if (status === "โอนย้ายทรัพย์สิน") {
+        pivotData[employee]["โอนย้ายทรัพย์สิน"]++;
+      } else {
+        pivotData[employee]["ไม่ใช้งาน"]++;
+      }
+      assetCounts[asset] = true;
     }
+  });
+
+  // คำนวณผลรวมต่อผู้รับผิดชอบ
+  const employeeTotals = employees.map(employee => {
+    const total = pivotData[employee]["ใช้งาน"] + pivotData[employee]["ไม่ใช้งาน"] + pivotData[employee]["โอนย้ายทรัพย์สิน"];
+    const answeredCount = pivotData[employee]["ใช้งาน"] || 0;
+    const waitAnsCount = pivotData[employee]["ไม่ใช้งาน"] || 0;
+    const transferCount = pivotData[employee]["โอนย้ายทรัพย์สิน"] || 0;
+    return { employee, total, answeredCount, waitAnsCount, transferCount };
+  }).sort((a, b) => b.total - a.total);
+
+  // สร้างตาราง Pivot
+  let pivotTableHtml = `
+    <table class='detail-table'>
+      <thead>
+        <tr>
+          <th>ผู้รับผิดชอบ</th>
+          <th class='fixed-width'>รวม</th>
+          <th class='fixed-width'>ใช้งาน</th>
+          <th class='fixed-width'>ไม่ใช้งาน</th>
+          <th class='fixed-width'>โอนย้ายทรัพย์สิน</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${employeeTotals.map(({ employee, total, answeredCount, waitAnsCount, transferCount }) => `
+          <tr>
+            <td>${employee}</td>
+            <td class='fixed-width'>${total === 0 ? '-' : total}</td>
+            <td class='fixed-width'>${answeredCount === 0 ? '-' : answeredCount}</td>
+            <td class='fixed-width'>${waitAnsCount === 0 ? '-' : waitAnsCount}</td>
+            <td class='fixed-width'>${transferCount === 0 ? '-' : transferCount}</td>
+          </tr>
+        `).join('')}
+        <tr>
+          <td><strong>รวม</strong></td>
+          <td class='fixed-width'><strong>${totalAssets === 0 ? '-' : totalAssets}</strong></td>
+          <td class='fixed-width'><strong>${
+            employees.reduce((sum, employee) => sum + pivotData[employee]["ใช้งาน"], 0) === 0 
+              ? '-' 
+              : employees.reduce((sum, employee) => sum + pivotData[employee]["ใช้งาน"], 0)
+          }</strong></td>
+          <td class='fixed-width'><strong>${
+            employees.reduce((sum, employee) => sum + pivotData[employee]["ไม่ใช้งาน"], 0) === 0 
+              ? '-' 
+              : employees.reduce((sum, employee) => sum + pivotData[employee]["ไม่ใช้งาน"], 0)
+          }</strong></td>
+          <td class='fixed-width'><strong>${
+            employees.reduce((sum, employee) => sum + pivotData[employee]["โอนย้ายทรัพย์สิน"], 0) === 0 
+              ? '-' 
+              : employees.reduce((sum, employee) => sum + pivotData[employee]["โอนย้ายทรัพย์สิน"], 0)
+          }</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  `;
+
+  // สร้าง HTML สำหรับสรุปข้อมูล
+  let summaryHtml = `
+    <div><span class='label'>จำนวนทรัพย์สินทั้งหมด:</span> <span class='value'>${totalAssets} รายการ</span></div>
+    <h3>จำนวนทรัพย์สินตามผู้รับผิดชอบและสถานะ</h3>
+    ${pivotTableHtml}
+  `;
+
+  summaryContent.innerHTML = summaryHtml;
+  summaryModal.style.display = "block";
+}
 
     function printSummaryContent() {
       const printWindow = window.open('', '_blank');
