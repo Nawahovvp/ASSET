@@ -22,25 +22,25 @@
       --border-radius: 12px;
       --transition: all 0.3s ease;
     }
-    body { 
-      font-family: 'Prompt', sans-serif; 
-      background: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%); 
-      margin: 0; 
-      padding: 20px; 
-      color: #333; 
+    body {
+      font-family: 'Prompt', sans-serif;
+      background: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%);
+      margin: 0;
+      padding: 20px;
+      color: #333;
       line-height: 1.6;
     }
-    .report-title { 
-      font-size: 28px; 
-      font-weight: 700; 
-      color: #fff; 
-      text-align: center; 
-      background: linear-gradient(135deg, var(--primary-color), #0056b3); 
-      padding: 20px; 
-      border-radius: var(--border-radius); 
-      box-shadow: var(--shadow-lg); 
-      margin-bottom: 30px; 
-      position: relative; 
+    .report-title {
+      font-size: 28px;
+      font-weight: 700;
+      color: #fff;
+      text-align: center;
+      background: linear-gradient(135deg, var(--primary-color), #0056b3);
+      padding: 20px;
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow-lg);
+      margin-bottom: 30px;
+      position: relative;
       overflow: hidden;
     }
     .report-title::before {
@@ -54,186 +54,186 @@
       font-size: 32px;
       opacity: 0.8;
     }
-    @media (max-width: 768px) { 
+    @media (max-width: 768px) {
       body { padding: 10px; }
       .report-title { font-size: 22px; padding: 15px; }
       .report-title::before { font-size: 24px; left: 15px; }
     }
-    #searchContainer { 
-      background: var(--white); 
-      padding: 20px; 
-      border-radius: var(--border-radius); 
-      box-shadow: var(--shadow-md); 
+    #searchContainer {
+      background: var(--white);
+      padding: 20px;
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow-md);
       margin-bottom: 30px;
     }
-    .filter-row { 
-      display: grid; 
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
-      gap: 15px; 
-      margin-bottom: 15px; 
+    .filter-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 15px;
       align-items: center;
     }
-    .search-row { 
-      display: flex; 
-      align-items: center; 
-      gap: 10px; 
-      flex-wrap: wrap; 
-      margin-top: 10px; 
+    .search-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 10px;
       justify-content: center;
     }
-    #employeeFilterLabel, #pendingFilterLabel, #stockFilterLabel { 
-      font-size: 16px; 
-      color: #333; 
+    #employeeFilterLabel, #pendingFilterLabel, #stockFilterLabel {
+      font-size: 16px;
+      color: #333;
       font-weight: 500;
       display: flex;
       align-items: center;
       gap: 5px;
     }
-    #employeeFilter, #pendingFilter, #stockFilter { 
-      margin-left: 5px; 
-      padding: 12px; 
-      border-radius: 8px; 
-      border: 1px solid #ddd; 
-      font-size: 16px; 
-      background-color: var(--white); 
-      cursor: pointer; 
+    #employeeFilter, #pendingFilter, #stockFilter {
+      margin-left: 5px;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      font-size: 16px;
+      background-color: var(--white);
+      cursor: pointer;
       transition: var(--transition);
       min-width: 150px;
     }
-    #employeeFilter:hover, #pendingFilter:hover, #stockFilter:hover { 
-      border-color: var(--primary-color); 
+    #employeeFilter:hover, #pendingFilter:hover, #stockFilter:hover {
+      border-color: var(--primary-color);
       box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
     }
-    #searchInput { 
-      flex: 1; 
-      min-width: 250px; 
-      padding: 12px 16px; 
-      border-radius: var(--border-radius); 
-      border: 1px solid #ddd; 
-      font-size: 16px; 
-      transition: var(--transition); 
+    #searchInput {
+      flex: 1;
+      min-width: 250px;
+      padding: 12px 16px;
+      border-radius: var(--border-radius);
+      border: 1px solid #ddd;
+      font-size: 16px;
+      transition: var(--transition);
     }
-    #searchInput:focus { 
-      border-color: var(--primary-color); 
-      box-shadow: 0 0 0 3px rgba(0,123,255,0.1); 
-      outline: none; 
+    #searchInput:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
+      outline: none;
     }
-    .action-button { 
-      display: flex; 
-      align-items: center; 
-      gap: 8px; 
-      padding: 12px 20px; 
-      background: linear-gradient(135deg, var(--primary-color), #0056b3); 
-      color: var(--white); 
-      border: none; 
-      border-radius: var(--border-radius); 
-      cursor: pointer; 
-      font-size: 14px; 
-      font-weight: 500; 
-      transition: var(--transition); 
+    .action-button {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 20px;
+      background: linear-gradient(135deg, var(--primary-color), #0056b3);
+      color: var(--white);
+      border: none;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: var(--transition);
       box-shadow: var(--shadow-sm);
     }
-    .action-button:hover { 
-      background: linear-gradient(135deg, #0056b3, #004494); 
-      transform: translateY(-2px); 
+    .action-button:hover {
+      background: linear-gradient(135deg, #0056b3, #004494);
+      transform: translateY(-2px);
       box-shadow: var(--shadow-md);
     }
-    .action-button:active { 
-      transform: translateY(0); 
+    .action-button:active {
+      transform: translateY(0);
     }
     .action-button i { font-size: 16px; }
-    .call-count-box { 
-      margin-left: auto; 
-      padding: 12px 16px; 
-      background: linear-gradient(135deg, #e3f2fd, #bbdefb); 
-      color: var(--primary-color); 
-      border-radius: var(--border-radius); 
-      font-size: 16px; 
-      font-weight: 500; 
-      display: inline-flex; 
-      align-items: center; 
+    .call-count-box {
+      margin-left: auto;
+      padding: 12px 16px;
+      background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+      color: var(--primary-color);
+      border-radius: var(--border-radius);
+      font-size: 16px;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
       box-shadow: var(--shadow-sm);
       border: 1px solid rgba(0,123,255,0.2);
     }
-    .call-count-box span { 
-      color: var(--danger-color); 
-      margin: 0 4px; 
-      font-size: 20px; 
+    .call-count-box span {
+      color: var(--danger-color);
+      margin: 0 4px;
+      font-size: 20px;
       font-weight: 700;
     }
-    .modern-label { 
-      display: inline-flex; 
-      align-items: center; 
+    .modern-label {
+      display: inline-flex;
+      align-items: center;
       gap: 5px;
-      padding: 10px 16px; 
-      background: var(--white); 
-      color: var(--primary-color); 
-      border-radius: var(--border-radius); 
-      font-size: 16px; 
-      font-weight: 500; 
-      box-shadow: var(--shadow-sm); 
-      border: 1px solid rgba(0,123,255,0.2); 
-      margin-right: 8px; 
+      padding: 10px 16px;
+      background: var(--white);
+      color: var(--primary-color);
+      border-radius: var(--border-radius);
+      font-size: 16px;
+      font-weight: 500;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid rgba(0,123,255,0.2);
+      margin-right: 8px;
     }
-    .table-container { 
-      overflow-x: auto; 
-      width: 100%; 
-      background: var(--white); 
-      border-radius: var(--border-radius); 
-      box-shadow: var(--shadow-md); 
+    .table-container {
+      overflow-x: auto;
+      width: 100%;
+      background: var(--white);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow-md);
       margin-bottom: 20px;
     }
-    table { 
-      width: 100%; 
-      border-collapse: collapse; 
+    table {
+      width: 100%;
+      border-collapse: collapse;
       min-width: 1200px;
     }
-    th, td { 
-      padding: 12px 16px; 
-      text-align: left; 
-      border-bottom: 1px solid #eee; 
-      white-space: nowrap; 
+    th, td {
+      padding: 12px 16px;
+      text-align: left;
+      border-bottom: 1px solid #eee;
+      white-space: nowrap;
     }
-    th { 
-      background: linear-gradient(135deg, var(--primary-color), #0056b3); 
-      color: var(--white); 
-      font-weight: 600; 
-      position: sticky; 
+    th {
+      background: linear-gradient(135deg, var(--primary-color), #0056b3);
+      color: var(--white);
+      font-weight: 600;
+      position: sticky;
       top: 0;
     }
     th.sortable { cursor: pointer; transition: var(--transition); }
     th.sortable:hover { background: linear-gradient(135deg, #0056b3, #004494); }
     .arrow { font-size: 12px; margin-left: 5px; }
-    tr { 
-      transition: var(--transition); 
-      opacity: 0; 
-      transform: translateY(10px); 
-      animation: fadeInUp 0.6s ease forwards; 
+    tr {
+      transition: var(--transition);
+      opacity: 0;
+      transform: translateY(10px);
+      animation: fadeInUp 0.6s ease forwards;
     }
-    tr:hover { 
-      background-color: #f8f9fa; 
-      transform: scale(1.01); 
+    tr:hover {
+      background-color: #f8f9fa;
+      transform: scale(1.01);
     }
     tr:nth-child(even) { animation-delay: 0.1s; }
     tr:nth-child(odd) { animation-delay: 0.2s; }
-    @keyframes fadeInUp { 
-      to { opacity: 1; transform: translateY(0); } 
+    @keyframes fadeInUp {
+      to { opacity: 1; transform: translateY(0); }
     }
-    .transfer-button { 
-      padding: 8px 12px; 
-      background: linear-gradient(135deg, #6f42c1, #5a2d91); 
-      color: var(--white); 
-      border: none; 
-      width: 100%; 
-      border-radius: 8px; 
-      cursor: pointer; 
-      font-size: 14px; 
-      transition: var(--transition); 
+    .transfer-button {
+      padding: 8px 12px;
+      background: linear-gradient(135deg, #6f42c1, #5a2d91);
+      color: var(--white);
+      border: none;
+      width: 100%;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: var(--transition);
       box-shadow: var(--shadow-sm);
     }
-    .transfer-button:hover { 
-      background: linear-gradient(135deg, #5a2d91, #4a1d6e); 
-      transform: translateY(-2px); 
+    .transfer-button:hover {
+      background: linear-gradient(135deg, #5a2d91, #4a1d6e);
+      transform: translateY(-2px);
       box-shadow: var(--shadow-md);
     }
     .green-text { color: var(--success-color); font-weight: 500; }
@@ -241,211 +241,211 @@
     .orange-text { color: #fd7e14; font-weight: 500; }
     .yellow-light { background-color: #fff3cd; }
     .pink-pastel { background-color: #f8d7da; }
-    .modal { 
-      display: none; 
-      position: fixed; 
-      z-index: 1000; 
-      left: 0; 
-      top: 0; 
-      width: 100%; 
-      height: 100%; 
-      overflow: auto; 
-      background-color: rgba(0,0,0,0.6); 
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.6);
       backdrop-filter: blur(5px);
     }
-    .modal-content { 
-      background: var(--white); 
-      margin: 2% auto; 
-      padding: 24px; 
-      border-radius: var(--border-radius); 
-      width: 95%; 
-      max-width: 1000px; 
-      animation: zoomIn 0.4s ease; 
-      position: relative; 
+    .modal-content {
+      background: var(--white);
+      margin: 2% auto;
+      padding: 24px;
+      border-radius: var(--border-radius);
+      width: 95%;
+      max-width: 1000px;
+      animation: zoomIn 0.4s ease;
+      position: relative;
       box-shadow: var(--shadow-lg);
     }
-    .modal-content h2 { 
-      color: #333; 
-      border-bottom: 2px solid var(--primary-color); 
-      padding-bottom: 8px; 
-      margin-bottom: 20px; 
-      font-size: 20px; 
+    .modal-content h2 {
+      color: #333;
+      border-bottom: 2px solid var(--primary-color);
+      padding-bottom: 8px;
+      margin-bottom: 20px;
+      font-size: 20px;
       display: flex;
       align-items: center;
       gap: 10px;
     }
-    .close { 
-      color: #aaa; 
-      float: right; 
-      font-size: 28px; 
-      font-weight: bold; 
-      cursor: pointer; 
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
       position: absolute;
       right: 20px;
       top: 15px;
       transition: var(--transition);
     }
     .close:hover { color: var(--danger-color); transform: scale(1.2); }
-    .form-section { 
-      margin-bottom: 24px; 
-      padding: 16px; 
-      background: var(--light-bg); 
-      border-radius: var(--border-radius); 
+    .form-section {
+      margin-bottom: 24px;
+      padding: 16px;
+      background: var(--light-bg);
+      border-radius: var(--border-radius);
       border-left: 4px solid var(--primary-color);
     }
-    .form-section h3 { 
-      margin: 0 0 16px 0; 
-      color: var(--primary-color); 
-      font-size: 16px; 
-      display: flex; 
-      align-items: center; 
+    .form-section h3 {
+      margin: 0 0 16px 0;
+      color: var(--primary-color);
+      font-size: 16px;
+      display: flex;
+      align-items: center;
       gap: 8px;
     }
-    .form-grid { 
+    .form-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
-      gap: 16px; 
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
       margin-bottom: 20px;
     }
-    .form-group { 
-      display: flex; 
-      flex-direction: column; 
+    .form-group {
+      display: flex;
+      flex-direction: column;
     }
-    .form-group label { 
-      font-weight: 600; 
-      color: #555; 
-      margin-bottom: 4px; 
-      font-size: 14px; 
+    .form-group label {
+      font-weight: 600;
+      color: #555;
+      margin-bottom: 4px;
+      font-size: 14px;
       display: flex;
       align-items: center;
       gap: 5px;
     }
-    .form-input { 
-      padding: 12px; 
-      border: 1px solid #ddd; 
-      border-radius: 8px; 
-      font-size: 14px; 
-      transition: var(--transition); 
+    .form-input {
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: var(--transition);
     }
-    .form-input:focus { 
-      border-color: var(--primary-color); 
-      box-shadow: 0 0 0 3px rgba(0,123,255,0.1); 
-      outline: none; 
+    .form-input:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
+      outline: none;
     }
-    .form-input[readonly] { 
-      background-color: #f8f9fa; 
-      color: #666; 
+    .form-input[readonly] {
+      background-color: #f8f9fa;
+      color: #666;
     }
-    .search-row-modal { 
-      display: flex; 
-      gap: 8px; 
-      align-items: center; 
-      margin-top: 4px; 
+    .search-row-modal {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-top: 4px;
     }
-    #tf_note { 
-      resize: vertical; 
-      min-height: 80px; 
+    #tf_note {
+      resize: vertical;
+      min-height: 80px;
     }
-    .modal-buttons { 
-      display: flex; 
-      gap: 12px; 
-      margin-top: 20px; 
-      flex-wrap: wrap; 
-      justify-content: flex-end; 
+    .modal-buttons {
+      display: flex;
+      gap: 12px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
     }
-    #historyBox { 
-      display: none; 
-      margin-top: 24px; 
+    #historyBox {
+      display: none;
+      margin-top: 24px;
     }
-    #historyBox h3 { 
-      color: var(--primary-color); 
-      border-bottom: 1px solid #ddd; 
-      padding-bottom: 8px; 
-      margin-bottom: 12px; 
+    #historyBox h3 {
+      color: var(--primary-color);
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 8px;
+      margin-bottom: 12px;
       display: flex;
       align-items: center;
       gap: 10px;
     }
-    .timeline-table { 
-      width: 100%; 
-      border-collapse: collapse; 
-      margin-top: 12px; 
+    .timeline-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
     }
-    .timeline-table th, .timeline-table td { 
-      padding: 12px; 
-      border: 1px solid #ddd; 
-      text-align: left; 
-      white-space: pre-wrap; 
-      word-wrap: break-word; 
+    .timeline-table th, .timeline-table td {
+      padding: 12px;
+      border: 1px solid #ddd;
+      text-align: left;
+      white-space: pre-wrap;
+      word-wrap: break-word;
     }
-    .timeline-table th { 
-      background: linear-gradient(135deg, var(--primary-color), #0056b3); 
-      color: var(--white); 
+    .timeline-table th {
+      background: linear-gradient(135deg, var(--primary-color), #0056b3);
+      color: var(--white);
     }
     .picker-modal .modal-content { max-width: 600px; }
-    #pickerList { 
-      max-height: 360px; 
-      overflow: auto; 
-      margin-top: 10px; 
-      border: 1px solid #eee; 
-      border-radius: 8px; 
+    #pickerList {
+      max-height: 360px;
+      overflow: auto;
+      margin-top: 10px;
+      border: 1px solid #eee;
+      border-radius: 8px;
       background: var(--white);
     }
-    .picker-item { 
-      padding: 12px; 
-      cursor: pointer; 
-      border-bottom: 1px solid #f1f1f1; 
+    .picker-item {
+      padding: 12px;
+      cursor: pointer;
+      border-bottom: 1px solid #f1f1f1;
       transition: var(--transition);
     }
-    .picker-item:hover { 
-      background: #f8f9fa; 
+    .picker-item:hover {
+      background: #f8f9fa;
       color: var(--primary-color);
     }
-    .pagination { 
-      display: flex; 
-      align-items: center; 
-      justify-content: space-between; 
-      margin-top: 20px; 
-      flex-wrap: wrap; 
+    .pagination {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 20px;
+      flex-wrap: wrap;
       gap: 10px;
     }
-    .pagination button { 
-      padding: 8px 12px; 
-      background: var(--white); 
-      border: 1px solid #ddd; 
-      border-radius: 6px; 
-      cursor: pointer; 
+    .pagination button {
+      padding: 8px 12px;
+      background: var(--white);
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      cursor: pointer;
       transition: var(--transition);
     }
-    .pagination button:hover:not(:disabled) { 
-      background: var(--primary-color); 
+    .pagination button:hover:not(:disabled) {
+      background: var(--primary-color);
       color: var(--white);
     }
     .pagination button:disabled { opacity: 0.5; cursor: not-allowed; }
-    .page-number.active { 
-      background: var(--primary-color); 
-      color: var(--white); 
+    .page-number.active {
+      background: var(--primary-color);
+      color: var(--white);
     }
-    .items-per-page { 
-      display: flex; 
-      align-items: center; 
-      gap: 5px; 
+    .items-per-page {
+      display: flex;
+      align-items: center;
+      gap: 5px;
       font-size: 14px;
     }
-    .loading { 
-      text-align: center; 
-      padding: 40px; 
+    .loading {
+      text-align: center;
+      padding: 40px;
       color: var(--secondary-color);
     }
-    .loading i { 
-      font-size: 48px; 
-      animation: spin 1s linear infinite; 
+    .loading i {
+      font-size: 48px;
+      animation: spin 1s linear infinite;
       margin-bottom: 10px;
     }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-    @keyframes zoomIn { 
-      from { opacity: 0; transform: scale(0.8); } 
-      to { opacity: 1; transform: scale(1); } 
+    @keyframes zoomIn {
+      from { opacity: 0; transform: scale(0.8); }
+      to { opacity: 1; transform: scale(1); }
     }
     th:nth-child(3), td:nth-child(3) { width: auto; min-width: 200px; max-width: 350px; white-space: normal; }
     th:nth-child(5), td:nth-child(5) { min-width: 150px; }
@@ -526,7 +526,6 @@
       </select>
     </div>
   </div>
-
   <!-- Transfer Modal -->
   <div id="transferModal" class="modal">
     <div class="modal-content">
@@ -555,7 +554,6 @@
             </div>
           </div>
         </div>
-
         <!-- กลุ่มผู้โอน -->
         <div class="form-section">
           <h3><i class="fas fa-user-times"></i> ผู้โอน (ข้อมูลปัจจุบัน)</h3>
@@ -568,9 +566,12 @@
               <label><i class="fas fa-user"></i> ผู้รับผิดชอบ (ผู้โอน)</label>
               <input type="text" id="tf_fromOwnerName" class="form-input" readonly placeholder="ชื่อผู้รับผิดชอบปัจจุบัน (ตัดรหัสพนักงานออก)">
             </div>
+            <div class="form-group">
+              <label><i class="fas fa-building"></i> UL (ผู้โอน)</label>
+              <input type="text" id="tf_fromUL" class="form-input" readonly>
+            </div>
           </div>
         </div>
-
         <!-- กลุ่มผู้รับและสถานที่ใหม่ -->
         <div class="form-section">
           <h3><i class="fas fa-user-plus"></i> ผู้รับและสถานที่ใหม่</h3>
@@ -587,6 +588,10 @@
               <input type="text" id="tf_toEmpId" class="form-input" placeholder="อัปเดตอัตโนมัติเมื่อเลือกชื่อ" readonly>
             </div>
             <div class="form-group">
+              <label><i class="fas fa-building"></i> UL (ผู้รับ)</label>
+              <input type="text" id="tf_toUL" class="form-input" readonly>
+            </div>
+            <div class="form-group">
               <label><i class="fas fa-map-marker-alt"></i> ย้ายไปสถานที่</label>
               <div class="search-row-modal">
                 <input type="text" id="tf_toLocation" list="locationsList" placeholder="เลือก/ค้นหา สถานที่ใหม่" required class="form-input">
@@ -595,7 +600,6 @@
             </div>
           </div>
         </div>
-
         <!-- กลุ่มข้อมูลเพิ่มเติม -->
         <div class="form-section">
           <h3><i class="fas fa-info-circle"></i> ข้อมูลเพิ่มเติม</h3>
@@ -610,7 +614,6 @@
             </div>
           </div>
         </div>
-
         <div class="form-group">
           <label><i class="fas fa-sticky-note"></i> หมายเหตุ</label>
           <textarea id="tf_note" placeholder="รายละเอียดเพิ่มเติม (ถ้ามี)" class="form-input"></textarea>
@@ -641,11 +644,10 @@
         </table>
       </div>
       <div style="margin-top:16px;font-size:12px;color:var(--secondary-color);padding:12px;background:var(--light-bg);border-radius:8px;border-left:4px solid var(--primary-color);">
-        <i class="fas fa-info-circle"></i> ระบบบันทึกข้อมูลใน localStorage ของเบราว์เซอร์ หากต้องการเชื่อม Google Sheets ให้กำหนด <code>transferEndpoint</code> ในสคริปต์
+        <i class="fas fa-info-circle"></i> ระบบบันทึกข้อมูลใน localStorage ของเบราว์เซอร์ และส่งไป Google Sheet "ASSET_TRANFER" อัตโนมัติ
       </div>
     </div>
   </div>
-
   <!-- Picker Modal -->
   <div id="pickerModal" class="modal picker-modal">
     <div class="modal-content">
@@ -655,15 +657,14 @@
       <div id="pickerList"></div>
     </div>
   </div>
-
   <script>
     // DOMContentLoaded
     document.addEventListener('DOMContentLoaded', function() {
       const sheetID = '1caJemfomWLXEeqAlKFNMzGrT6divjSt5QZYeIjuTg58';
       const sheetName = 'ASSET';
       const url = `https://opensheet.elk.sh/${sheetID}/${sheetName}`;
-      const transferEndpoint = ''; // Optional: URL สำหรับ Apps Script
-
+      // เชื่อมต่อกับ Google Apps Script Web App สำหรับบันทึกประวัติลง Sheet "ASSET_TRANFER"
+      const transferEndpoint = 'https://script.google.com/macros/s/AKfycbzcc2H_RTB2DD0CkLjKUc_aiVoZ2mJgMwvdtw-TtjEfLCpMBRxXrtGA5Vwno8ko97hm/exec';
       // DOM refs
       const transferModal = document.getElementById('transferModal');
       const closeTransferModal = document.getElementById('closeTransferModal');
@@ -699,14 +700,12 @@
       let itemsPerPage = 20;
       let sortConfig = { column: 'รหัสทรัพย์สิน', direction: 'asc' };
       let currentAssetRow = null;
-
       function todayISO() {
         const d = new Date();
         const m = (d.getMonth() + 1).toString().padStart(2, '0');
         const day = d.getDate().toString().padStart(2, '0');
         return `${d.getFullYear()}-${m}-${day}`;
       }
-
       function calculateAge(purchaseDate) {
         if (!purchaseDate || purchaseDate === '-') return '-';
         try {
@@ -722,7 +721,6 @@
           return years === 0 && months === 0 ? '0 เดือน' : `${years} ปี ${months} เดือน`;
         } catch (e) { return '-'; }
       }
-
       function parseAgeForSorting(ageString) {
         if (ageString === '-') return { years: -Infinity, months: -Infinity };
         const match = ageString.match(/(\d+)\s*ปี\s*(\d+)\s*เดือน/);
@@ -733,26 +731,28 @@
         }
         return { years: parseInt(match[1]), months: parseInt(match[2]) };
       }
-
       function extractEmpId(text) {
         if (!text) return '';
         const m = String(text).trim().match(/^(\d{4,})\b/);
         return m ? m[1] : '';
       }
-
       // ฟังก์ชันใหม่: แยกชื่อผู้รับผิดชอบ (ตัดรหัสพนักงานออก)
       function extractOwnerName(text) {
         if (!text) return '';
         return String(text).trim().replace(/^(\d{4,})\s*/, '').trim();
       }
-
+      // ฟังก์ชันใหม่: หา UL ที่ตรงกับชื่อผู้รับผิดชอบ
+      function findULByOwner(ownerName) {
+        if (!ownerName) return '-';
+        const match = allData.find(r => (r['ผู้รับผิดชอบ'] || '') === ownerName);
+        return match ? (match['UL'] || '-') : '-';
+      }
       function escapeCSVValue(value) {
         if (value == null) return '""';
         const s = value.toString();
         if (s.includes(',') || s.includes('"') || s.includes('\n')) return '"' + s.replace(/"/g, '""') + '"';
         return s;
       }
-
       function exportToCSV() {
         if (!allData || allData.length === 0) { alert('ไม่มีข้อมูลในระบบสำหรับการส่งออก CSV'); return; }
         const selectedEmployee = employeeFilter.value;
@@ -797,7 +797,6 @@
         link.click();
         URL.revokeObjectURL(link.href);
       }
-
       function populateEmployeeFilter(data) {
         if (!data || data.length === 0) return;
         const employees = [...new Set(data.map(r => r['ผู้รับผิดชอบ']).filter(Boolean))].sort();
@@ -809,7 +808,6 @@
           employeeFilter.appendChild(o);
         });
       }
-
       function updateLocationFilter(data, selectedEmployee) {
         if (!data || data.length === 0) return;
         const current = pendingFilter.value;
@@ -825,7 +823,6 @@
         pendingFilter.value = (current && locations.includes(current)) ? current : '';
         updateStatusFilter(data, selectedEmployee, pendingFilter.value);
       }
-
       function updateStatusFilter(data, selectedEmployee, selectedLocation) {
         if (!data || data.length === 0) return;
         const current = stockFilter.value;
@@ -842,7 +839,6 @@
         });
         stockFilter.value = (current && statuses.includes(current)) ? current : '';
       }
-
       function addSortListeners() {
         document.querySelectorAll('th.sortable').forEach(h => {
           h.addEventListener('click', () => {
@@ -858,7 +854,6 @@
           });
         });
       }
-
       function updateSortArrows() {
         document.querySelectorAll('th.sortable').forEach(h => {
           const arrow = h.querySelector('.arrow');
@@ -866,7 +861,6 @@
           arrow.textContent = (col === sortConfig.column) ? (sortConfig.direction === 'asc' ? '↑' : '↓') : '';
         });
       }
-
       function filterAndRenderTable() {
         const selectedEmployee = employeeFilter.value;
         const selectedLocation = pendingFilter.value;
@@ -915,12 +909,10 @@
         renderTable(filtered);
         updateAssetCount(filtered);
       }
-
       function updateAssetCount(data) {
         const count = [...new Set(data.map(r => r['รหัสทรัพย์สิน']).filter(Boolean))].length;
         document.getElementById('callCountValue').textContent = count;
       }
-
       function renderTable(data) {
         tableBody.innerHTML = '';
         if (!data || data.length === 0) {
@@ -978,7 +970,6 @@
         });
         updatePagination(data.length);
       }
-
       function updatePagination(totalItems) {
         const totalPages = Math.ceil(totalItems / itemsPerPage);
         pageNumbersContainer.innerHTML = '';
@@ -1003,7 +994,6 @@
         nextPageButton.disabled = currentPage === totalPages;
         lastPageButton.disabled = currentPage === totalPages;
       }
-
       function getCurrentFilteredLength() {
         // คำนวณ filtered length เหมือน filterAndRenderTable
         const selectedEmployee = employeeFilter.value;
@@ -1031,7 +1021,6 @@
           );
         }).length;
       }
-
       // Event listeners
       employeeFilter.addEventListener('change', filterAndRenderTable);
       pendingFilter.addEventListener('change', filterAndRenderTable);
@@ -1054,7 +1043,6 @@
         currentPage = Math.ceil(getCurrentFilteredLength() / itemsPerPage);
         filterAndRenderTable();
       };
-
       // Transfer Modal Functions
       function openTransferModal(row) {
         currentAssetRow = row;
@@ -1065,11 +1053,14 @@
         const fromOwnerFull = row['ผู้รับผิดชอบ'] || '-';
         const fromEmpId = extractEmpId(fromOwnerFull);
         const fromOwnerName = extractOwnerName(fromOwnerFull); // ตัดรหัสออก
+        const fromUL = findULByOwner(fromOwnerFull);
         document.getElementById('tf_fromEmpId').value = fromEmpId;
         document.getElementById('tf_fromOwnerName').value = fromOwnerName;
+        document.getElementById('tf_fromUL').value = fromUL;
         document.getElementById('tf_toLocation').value = '';
         document.getElementById('tf_toOwner').value = '';
         document.getElementById('tf_toEmpId').value = '';
+        document.getElementById('tf_toUL').value = '';
         document.getElementById('tf_date').value = todayISO();
         document.getElementById('tf_operator').value = '';
         document.getElementById('tf_note').value = '';
@@ -1078,34 +1069,30 @@
         historyBox.style.display = 'none';
         transferModal.style.display = 'block';
       }
-
       closeTransferModal.onclick = () => { transferModal.style.display = 'none'; currentAssetRow = null; };
       window.addEventListener('click', (e) => {
         if (e.target === transferModal) { transferModal.style.display = 'none'; currentAssetRow = null; }
         if (e.target === pickerModal) { pickerModal.style.display = 'none'; }
       });
-
-      // อัปเดตรหัสพนักงานผู้รับเมื่อกรอกชื่อผู้รับผิดชอบใหม่
+      // อัปเดตรหัสพนักงานผู้รับและ UL ผู้รับเมื่อกรอกชื่อผู้รับผิดชอบใหม่
       document.getElementById('tf_toOwner').addEventListener('input', () => {
         const toOwnerFull = document.getElementById('tf_toOwner').value;
         const toEmpId = extractEmpId(toOwnerFull);
+        const toUL = findULByOwner(toOwnerFull);
         document.getElementById('tf_toEmpId').value = toEmpId;
+        document.getElementById('tf_toUL').value = toUL;
       });
-
       viewHistoryBtn.addEventListener('click', () => {
         if (!currentAssetRow) return;
         renderHistory(currentAssetRow['รหัสทรัพย์สิน']);
         historyBox.style.display = (historyBox.style.display === 'none' || !historyBox.style.display) ? 'block' : 'none';
       });
-
       function getTransfers() {
         try { return JSON.parse(localStorage.getItem('assetTransfers') || '[]'); } catch { return []; }
       }
-
       function setTransfers(arr) {
         localStorage.setItem('assetTransfers', JSON.stringify(arr));
       }
-
       function renderHistory(assetId) {
         const transfers = getTransfers().filter(t => t.assetId === assetId);
         historyTableBody.innerHTML = '';
@@ -1120,7 +1107,6 @@
           historyTableBody.appendChild(tr);
         });
       }
-
       async function submitTransfer(e) {
         e.preventDefault();
         if (!currentAssetRow) { alert('ไม่พบข้อมูลทรัพย์สิน'); return; }
@@ -1149,10 +1135,12 @@
           fromOwnerFull: fromOwnerFull,
           fromOwnerName: extractOwnerName(fromOwnerFull),
           fromEmpId: document.getElementById('tf_fromEmpId').value,
+          fromUL: document.getElementById('tf_fromUL').value,
           toLocation: document.getElementById('tf_toLocation').value.trim(),
           toOwnerFull: toOwnerFull,
           toOwnerName: extractOwnerName(toOwnerFull),
           toEmpId: document.getElementById('tf_toEmpId').value.trim(),
+          toUL: document.getElementById('tf_toUL').value,
           date: document.getElementById('tf_date').value,
           operator: document.getElementById('tf_operator').value.trim(),
           note: document.getElementById('tf_note').value.trim(),
@@ -1166,7 +1154,7 @@
         const assetId = payload.assetId;
         allData = allData.map(r => {
           if (r['รหัสทรัพย์สิน'] === assetId) {
-            return { ...r, 'Physical Location': payload.toLocation, 'ผู้รับผิดชอบ': payload.toOwnerFull, 'สถานะทรัพย์สิน': 'โอนย้ายทรัพย์สิน' };
+            return { ...r, 'Physical Location': payload.toLocation, 'ผู้รับผิดชอบ': payload.toOwnerFull, 'สถานะทรัพย์สิน': 'โอนย้ายทรัพย์สิน', 'UL': payload.toUL };
           }
           return r;
         });
@@ -1174,7 +1162,7 @@
         renderHistory(assetId);
         historyBox.style.display = 'block';
         addValueToDatalists(payload.toOwnerFull, payload.toLocation);
-        // Send to endpoint if set
+        // Send to Google Sheet via Apps Script (ถ้ากำหนด URL)
         if (transferEndpoint) {
           try {
             const res = await fetch(transferEndpoint, {
@@ -1182,30 +1170,33 @@
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify(payload)
             });
-            if (!res.ok) throw new Error('ส่งข้อมูลไปยังเซิร์ฟเวอร์ไม่สำเร็จ');
+            if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+            const resData = await res.json();
+            if (resData.status === 'error') {
+              console.error('Server error:', resData.message);
+              alert('บันทึกในเครื่องเรียบร้อย แต่เกิดข้อผิดพลาดในการส่งข้อมูลไป Google Sheet: ' + resData.message);
+            } else {
+              console.log('Server response:', resData.message);
+            }
           } catch (err) {
             console.error(err);
-            alert('บันทึกในเครื่องเรียบร้อย แต่ส่งข้อมูลไปยังเซิร์ฟเวอร์ไม่สำเร็จ');
+            alert('บันทึกในเครื่องเรียบร้อย แต่ส่งข้อมูลไปยัง Google Sheet ไม่สำเร็จ: ' + err.message);
           }
         }
         alert('บันทึกการโอนย้ายเรียบร้อย');
         transferModal.style.display = 'none';
       }
-
       transferForm.addEventListener('submit', submitTransfer);
-
       // Datalist & Picker
       function uniqueSorted(arr) {
         return [...new Set(arr.filter(Boolean))].sort((a, b) => a.localeCompare(b, 'th'));
       }
-
       function fillTransferDatalists() {
         const owners = uniqueSorted(allData.map(r => r['ผู้รับผิดชอบ']));
         const locations = uniqueSorted(allData.map(r => r['Physical Location']));
         ownersListEl.innerHTML = owners.map(v => `<option value="${v}"></option>`).join('');
         locationsListEl.innerHTML = locations.map(v => `<option value="${v}"></option>`).join('');
       }
-
       function openPicker(type) {
         pickerTarget = type;
         const items = type === 'owner' ? [...ownersListEl.options].map(o => o.value) : [...locationsListEl.options].map(o => o.value);
@@ -1215,7 +1206,6 @@
         pickerModal.style.display = 'block';
         setTimeout(() => pickerSearch.focus(), 0);
       }
-
       function renderPickerList(items) {
         if (!items || items.length === 0) {
           pickerList.innerHTML = '<div style="padding:20px;text-align:center;color:var(--secondary-color);">ไม่พบข้อมูล</div>';
@@ -1228,6 +1218,7 @@
             if (pickerTarget === 'owner') {
               document.getElementById('tf_toOwner').value = val;
               document.getElementById('tf_toEmpId').value = extractEmpId(val);
+              document.getElementById('tf_toUL').value = findULByOwner(val);
             } else {
               document.getElementById('tf_toLocation').value = val;
             }
@@ -1235,17 +1226,14 @@
           });
         });
       }
-
       pickerSearch.addEventListener('input', () => {
         const base = pickerTarget === 'owner' ? [...ownersListEl.options].map(o => o.value) : [...locationsListEl.options].map(o => o.value);
         const q = pickerSearch.value.toLowerCase();
         renderPickerList(base.filter(v => v.toLowerCase().includes(q)));
       });
-
       btnFindOwner.addEventListener('click', () => { fillTransferDatalists(); openPicker('owner'); });
       btnFindLocation.addEventListener('click', () => { fillTransferDatalists(); openPicker('location'); });
       closePickerModal.onclick = () => { pickerModal.style.display = 'none'; };
-
       function addValueToDatalists(owner, location) {
         if (owner) {
           const v = owner.trim();
@@ -1260,7 +1248,6 @@
           }
         }
       }
-
       // Print Form
       document.getElementById('printFormBtn').addEventListener('click', () => {
         if (!currentAssetRow) { alert('กรุณาเลือกทรัพย์สินและกรอกฟอร์มก่อนพิมพ์'); return; }
@@ -1273,23 +1260,23 @@
           fromLocation: document.getElementById('tf_fromLocation').value,
           fromOwnerName: extractOwnerName(fromOwnerFull), // ชื่อตัดรหัส
           fromEmpId: document.getElementById('tf_fromEmpId').value,
+          fromUL: document.getElementById('tf_fromUL').value,
           toLocation: document.getElementById('tf_toLocation').value,
           toOwnerName: extractOwnerName(toOwnerFull), // ชื่อตัดรหัส
           toEmpId: document.getElementById('tf_toEmpId').value,
+          toUL: document.getElementById('tf_toUL').value,
           date: document.getElementById('tf_date').value,
           operator: document.getElementById('tf_operator').value,
           note: document.getElementById('tf_note').value
         };
         printTransferForm(payload);
       });
-
       function thaiDateStr(iso) {
         if (!iso) return '';
         const d = new Date(iso);
         const months = ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'];
         return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear() + 543}`;
       }
-
       function printTransferForm(payload) {
         const w = window.open('', '_blank');
         const dateStr = thaiDateStr(payload.date) || '';
@@ -1308,19 +1295,21 @@
           .sign .box { border: 1px solid #000; padding: 6mm; min-height: 38mm; }
           .line { display: flex; gap: 6px; align-items: center; margin-top: 6px; }
           .line .lbl { min-width: 120px; }
-          .line .fill { border-bottom: 1px solid #000; flex: 1; height: 16px; }
+          .line .fill { border-bottom: 1px solid #000; flex: 1; height: 16px; padding-bottom: 2px; }
+          .line .info { flex: 1; text-align: center; font-weight: bold; border-bottom: none; padding-top: 2px; }
         </style>`;
         const header = `<h1>บริษัท ซีพี รีเทลลิงค์ จำกัด</h1><h2>ใบโอนย้ายทรัพย์สิน</h2><div class="meta"><div><span class="label">รายละเอียดครั้งนี้ :</span> ${payload.note || ''}</div><div><span class="label">วันที่ :</span> ${dateStr}</div></div>`;
-        const firstRow = `<tr><td class="center">1</td><td class="center">${payload.assetId || ''}</td><td>${payload.name || ''}</td><td></td><td class="center">${payload.fromEmpId || ''}</td><td>${payload.fromOwnerName || ''}</td><td></td><td class="center">${payload.toEmpId || ''}</td><td>${payload.toOwnerName || ''}</td><td>${payload.fromLocation ? `จาก ${payload.fromLocation}` : ''}${payload.toLocation ? `${payload.fromLocation ? ' → ' : ''}ไป ${payload.toLocation}` : ''}</td></tr>`;
+        const firstRow = `<tr><td class="center">1</td><td class="center">${payload.assetId || ''}</td><td>${payload.name || ''}</td><td class="center">${payload.ul || ''}</td><td class="center">${payload.fromEmpId || ''}</td><td>${payload.fromOwnerName || ''}</td><td class="center">${payload.ul || ''}</td><td class="center">${payload.toEmpId || ''}</td><td>${payload.toOwnerName || ''}</td><td>${payload.note || ''}</td></tr>`;
         const emptyRows = Array.from({ length: 7 }, (_, i) => `<tr><td class="center">${i + 2}</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>`).join('');
-        const table = `<table><thead><tr><th rowspan="2" style="width:40px">ลำดับ</th><th rowspan="2" style="width:120px">รหัสทรัพย์สิน</th><th rowspan="2">รายการ</th><th colspan="3">ผู้โอน</th><th colspan="3">ผู้รับ</th><th rowspan="2" style="width:160px">หมายเหตุ</th></tr><tr><th style="width:90px">Cost Center</th><th style="width:120px">รหัสพนักงาน</th><th style="width:160px">ชื่อผู้รับผิดชอบเดิม</th><th style="width:90px">Cost Center</th><th style="width:120px">รหัสพนักงาน</th><th style="width:160px">ชื่อผู้รับผิดชอบใหม่</th></tr></thead><tbody>${firstRow}${emptyRows}</tbody></table>`;
-        const sign = `<div class="sign"><div class="box"><div class="center" style="font-weight:bold;margin-bottom:6px;">ผู้โอน</div><div class="line"><div class="lbl">ลายเซ็นต์</div><div class="fill"></div></div><div class="line"><div class="lbl">ชื่อตัวบรรจง</div><div class="fill"></div></div><div class="line"><div class="lbl">รหัสพนักงาน</div><div class="fill"></div></div><div class="line"><div class="lbl">หน่วยงานผู้โอน</div><div class="fill"></div></div></div><div class="box"><div class="center" style="font-weight:bold;margin-bottom:6px;">ผู้รับ</div><div class="line"><div class="lbl">ลายเซ็นต์</div><div class="fill"></div></div><div class="line"><div class="lbl">ชื่อตัวบรรจง</div><div class="fill"></div></div><div class="line"><div class="lbl">รหัสพนักงาน</div><div class="fill"></div></div><div class="line"><div class="lbl">หน่วยงานผู้รับ</div><div class="fill"></div></div></div></div>`;
+        const table = `<table><thead><tr><th rowspan="2" style="width:40px">ลำดับ</th><th rowspan="2" style="width:120px">รหัสทรัพย์สิน</th><th rowspan="2">รายการ</th><th colspan="3">ผู้โอน</th><th colspan="3">ผู้รับ</th><th rowspan="2" style="width:160px">หมายเหตุ</th></tr><tr><th style="width:90px">UL</th><th style="width:120px">รหัสพนักงาน</th><th style="width:160px">ชื่อผู้รับผิดชอบเดิม</th><th style="width:90px">UL</th><th style="width:120px">รหัสพนักงาน</th><th style="width:160px">ชื่อผู้รับผิดชอบใหม่</th></tr></thead><tbody>${firstRow}${emptyRows}</tbody></table>`;
+        const signFrom = `<div class="box"><div class="center" style="font-weight:bold;margin-bottom:6px;">ผู้โอน</div><div class="line"><div class="lbl">ลายเซ็นต์</div><div class="fill"></div></div><div class="line"><div class="lbl">ชื่อตัวบรรจง</div><div class="info">${payload.fromOwnerName || ''}</div></div><div class="line"><div class="lbl">รหัสพนักงาน</div><div class="info">${payload.fromEmpId || ''}</div></div><div class="line"><div class="lbl">หน่วยงาน</div><div class="fill"></div></div></div>`;
+        const signTo = `<div class="box"><div class="center" style="font-weight:bold;margin-bottom:6px;">ผู้รับ</div><div class="line"><div class="lbl">ลายเซ็นต์</div><div class="fill"></div></div><div class="line"><div class="lbl">ชื่อตัวบรรจง</div><div class="info">${payload.toOwnerName || ''}</div></div><div class="line"><div class="lbl">รหัสพนักงาน</div><div class="info">${payload.toEmpId || ''}</div></div><div class="line"><div class="lbl">หน่วยงาน</div><div class="fill"></div></div></div>`;
+        const sign = `<div class="sign">${signFrom}${signTo}</div>`;
         w.document.write(`<html><head><title>พิมพ์ใบโอนย้ายทรัพย์สิน</title>${styles}</head><body>${header}${table}${sign}</body></html>`);
         w.document.close();
         w.focus();
         w.print();
       }
-
       // Load Data
       fetch(url)
         .then(r => {
@@ -1346,7 +1335,6 @@
           console.error('ไม่สามารถโหลดข้อมูลได้:', err);
           tableBody.innerHTML = `<tr><td colspan="10" style="text-align:center; padding:40px; color:var(--danger-color);">เกิดข้อผิดพลาดในการโหลดข้อมูล: ${err.message}</td></tr>`;
         });
-
       // Self-tests
       function runSelfTests() {
         try {
