@@ -5,509 +5,465 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>รายงานทรัพย์สิน คลังสินค้า Sparepart</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;700&display=swap" rel="stylesheet">
   <style>
-    body {
-      font-family: 'Prompt', sans-serif;
-      background-color: #f0f4f8;
-      margin: 0;
-      padding: 20px;
+    :root {
+      --primary-color: #007bff;
+      --secondary-color: #6c757d;
+      --success-color: #28a745;
+      --danger-color: #dc3545;
+      --warning-color: #ffc107;
+      --info-color: #17a2b8;
+      --light-bg: #f8f9fa;
+      --white: #fff;
+      --shadow-sm: 0 2px 4px rgba(0,0,0,0.1);
+      --shadow-md: 0 4px 8px rgba(0,0,0,0.1);
+      --shadow-lg: 0 8px 32px rgba(0,0,0,0.15);
+      --border-radius: 12px;
+      --transition: all 0.3s ease;
     }
-    .report-title {
-      font-size: 24px;
-      font-weight: 700;
-      color: #333;
-      text-align: center;
-      background-color: #fff;
-      padding: 15px;
-      border-radius: 12px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      margin-bottom: 20px;
-      transition: all 0.3s ease;
+    body { 
+      font-family: 'Prompt', sans-serif; 
+      background: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%); 
+      margin: 0; 
+      padding: 20px; 
+      color: #333; 
+      line-height: 1.6;
     }
-    @media (max-width: 768px) {
-      .report-title {
-        font-size: 20px;
-        padding: 10px;
-      }
+    .report-title { 
+      font-size: 28px; 
+      font-weight: 700; 
+      color: #fff; 
+      text-align: center; 
+      background: linear-gradient(135deg, var(--primary-color), #0056b3); 
+      padding: 20px; 
+      border-radius: var(--border-radius); 
+      box-shadow: var(--shadow-lg); 
+      margin-bottom: 30px; 
+      position: relative; 
+      overflow: hidden;
     }
-    #searchContainer {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      margin-bottom: 20px;
+    .report-title::before {
+      content: '\f1b2'; /* icon warehouse */
+      font-family: 'Font Awesome 6 Free';
+      font-weight: 900;
+      position: absolute;
+      left: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 32px;
+      opacity: 0.8;
     }
-    .filter-row {
+    @media (max-width: 768px) { 
+      body { padding: 10px; }
+      .report-title { font-size: 22px; padding: 15px; }
+      .report-title::before { font-size: 24px; left: 15px; }
+    }
+    #searchContainer { 
+      background: var(--white); 
+      padding: 20px; 
+      border-radius: var(--border-radius); 
+      box-shadow: var(--shadow-md); 
+      margin-bottom: 30px;
+    }
+    .filter-row { 
+      display: grid; 
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+      gap: 15px; 
+      margin-bottom: 15px; 
+      align-items: center;
+    }
+    .search-row { 
+      display: flex; 
+      align-items: center; 
+      gap: 10px; 
+      flex-wrap: wrap; 
+      margin-top: 10px; 
+      justify-content: center;
+    }
+    #employeeFilterLabel, #pendingFilterLabel, #stockFilterLabel { 
+      font-size: 16px; 
+      color: #333; 
+      font-weight: 500;
       display: flex;
       align-items: center;
-      margin-bottom: 10px;
+      gap: 5px;
     }
-    .search-row {
+    #employeeFilter, #pendingFilter, #stockFilter { 
+      margin-left: 5px; 
+      padding: 12px; 
+      border-radius: 8px; 
+      border: 1px solid #ddd; 
+      font-size: 16px; 
+      background-color: var(--white); 
+      cursor: pointer; 
+      transition: var(--transition);
+      min-width: 150px;
+    }
+    #employeeFilter:hover, #pendingFilter:hover, #stockFilter:hover { 
+      border-color: var(--primary-color); 
+      box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
+    }
+    #searchInput { 
+      flex: 1; 
+      min-width: 250px; 
+      padding: 12px 16px; 
+      border-radius: var(--border-radius); 
+      border: 1px solid #ddd; 
+      font-size: 16px; 
+      transition: var(--transition); 
+    }
+    #searchInput:focus { 
+      border-color: var(--primary-color); 
+      box-shadow: 0 0 0 3px rgba(0,123,255,0.1); 
+      outline: none; 
+    }
+    .action-button { 
+      display: flex; 
+      align-items: center; 
+      gap: 8px; 
+      padding: 12px 20px; 
+      background: linear-gradient(135deg, var(--primary-color), #0056b3); 
+      color: var(--white); 
+      border: none; 
+      border-radius: var(--border-radius); 
+      cursor: pointer; 
+      font-size: 14px; 
+      font-weight: 500; 
+      transition: var(--transition); 
+      box-shadow: var(--shadow-sm);
+    }
+    .action-button:hover { 
+      background: linear-gradient(135deg, #0056b3, #004494); 
+      transform: translateY(-2px); 
+      box-shadow: var(--shadow-md);
+    }
+    .action-button:active { 
+      transform: translateY(0); 
+    }
+    .action-button i { font-size: 16px; }
+    .call-count-box { 
+      margin-left: auto; 
+      padding: 12px 16px; 
+      background: linear-gradient(135deg, #e3f2fd, #bbdefb); 
+      color: var(--primary-color); 
+      border-radius: var(--border-radius); 
+      font-size: 16px; 
+      font-weight: 500; 
+      display: inline-flex; 
+      align-items: center; 
+      box-shadow: var(--shadow-sm);
+      border: 1px solid rgba(0,123,255,0.2);
+    }
+    .call-count-box span { 
+      color: var(--danger-color); 
+      margin: 0 4px; 
+      font-size: 20px; 
+      font-weight: 700;
+    }
+    .modern-label { 
+      display: inline-flex; 
+      align-items: center; 
+      gap: 5px;
+      padding: 10px 16px; 
+      background: var(--white); 
+      color: var(--primary-color); 
+      border-radius: var(--border-radius); 
+      font-size: 16px; 
+      font-weight: 500; 
+      box-shadow: var(--shadow-sm); 
+      border: 1px solid rgba(0,123,255,0.2); 
+      margin-right: 8px; 
+    }
+    .table-container { 
+      overflow-x: auto; 
+      width: 100%; 
+      background: var(--white); 
+      border-radius: var(--border-radius); 
+      box-shadow: var(--shadow-md); 
+      margin-bottom: 20px;
+    }
+    table { 
+      width: 100%; 
+      border-collapse: collapse; 
+      min-width: 1200px;
+    }
+    th, td { 
+      padding: 12px 16px; 
+      text-align: left; 
+      border-bottom: 1px solid #eee; 
+      white-space: nowrap; 
+    }
+    th { 
+      background: linear-gradient(135deg, var(--primary-color), #0056b3); 
+      color: var(--white); 
+      font-weight: 600; 
+      position: sticky; 
+      top: 0;
+    }
+    th.sortable { cursor: pointer; transition: var(--transition); }
+    th.sortable:hover { background: linear-gradient(135deg, #0056b3, #004494); }
+    .arrow { font-size: 12px; margin-left: 5px; }
+    tr { 
+      transition: var(--transition); 
+      opacity: 0; 
+      transform: translateY(10px); 
+      animation: fadeInUp 0.6s ease forwards; 
+    }
+    tr:hover { 
+      background-color: #f8f9fa; 
+      transform: scale(1.01); 
+    }
+    tr:nth-child(even) { animation-delay: 0.1s; }
+    tr:nth-child(odd) { animation-delay: 0.2s; }
+    @keyframes fadeInUp { 
+      to { opacity: 1; transform: translateY(0); } 
+    }
+    .transfer-button { 
+      padding: 8px 12px; 
+      background: linear-gradient(135deg, #6f42c1, #5a2d91); 
+      color: var(--white); 
+      border: none; 
+      width: 100%; 
+      border-radius: 8px; 
+      cursor: pointer; 
+      font-size: 14px; 
+      transition: var(--transition); 
+      box-shadow: var(--shadow-sm);
+    }
+    .transfer-button:hover { 
+      background: linear-gradient(135deg, #5a2d91, #4a1d6e); 
+      transform: translateY(-2px); 
+      box-shadow: var(--shadow-md);
+    }
+    .green-text { color: var(--success-color); font-weight: 500; }
+    .red-text { color: var(--danger-color); font-weight: 500; }
+    .orange-text { color: #fd7e14; font-weight: 500; }
+    .yellow-light { background-color: #fff3cd; }
+    .pink-pastel { background-color: #f8d7da; }
+    .modal { 
+      display: none; 
+      position: fixed; 
+      z-index: 1000; 
+      left: 0; 
+      top: 0; 
+      width: 100%; 
+      height: 100%; 
+      overflow: auto; 
+      background-color: rgba(0,0,0,0.6); 
+      backdrop-filter: blur(5px);
+    }
+    .modal-content { 
+      background: var(--white); 
+      margin: 2% auto; 
+      padding: 24px; 
+      border-radius: var(--border-radius); 
+      width: 95%; 
+      max-width: 1000px; 
+      animation: zoomIn 0.4s ease; 
+      position: relative; 
+      box-shadow: var(--shadow-lg);
+    }
+    .modal-content h2 { 
+      color: #333; 
+      border-bottom: 2px solid var(--primary-color); 
+      padding-bottom: 8px; 
+      margin-bottom: 20px; 
+      font-size: 20px; 
       display: flex;
       align-items: center;
       gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 10px;
     }
-    #employeeFilterLabel, #pendingFilterLabel, #stockFilterLabel {
-      font-size: 16px;
-      color: #333;
+    .close { 
+      color: #aaa; 
+      float: right; 
+      font-size: 28px; 
+      font-weight: bold; 
+      cursor: pointer; 
+      position: absolute;
+      right: 20px;
+      top: 15px;
+      transition: var(--transition);
     }
-    #employeeFilter, #pendingFilter, #stockFilter {
-      margin-left: 5px;
-      padding: 10px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      font-size: 16px;
-      background-color: #fff;
-      cursor: pointer;
-      transition: all 0.3s ease;
+    .close:hover { color: var(--danger-color); transform: scale(1.2); }
+    .form-section { 
+      margin-bottom: 24px; 
+      padding: 16px; 
+      background: var(--light-bg); 
+      border-radius: var(--border-radius); 
+      border-left: 4px solid var(--primary-color);
     }
-    #employeeFilter:hover, #pendingFilter:hover, #stockFilter:hover {
-      border-color: #2980b9;
-    }
-    #searchInput {
-      width: 300px;
-      padding: 12px;
-      border-radius: 12px;
-      border: 1px solid #ccc;
-      font-size: 16px;
-      transition: all 0.3s ease;
-    }
-    #searchInput:focus {
-      border-color: #2980b9;
-      box-shadow: 0 0 8px rgba(41, 128, 185, 0.3);
-      outline: none;
-    }
-    .action-button {
-      display: flex;
-      align-items: center;
+    .form-section h3 { 
+      margin: 0 0 16px 0; 
+      color: var(--primary-color); 
+      font-size: 16px; 
+      display: flex; 
+      align-items: center; 
       gap: 8px;
-      padding: 10px 16px;
-      background: linear-gradient(135deg, #3498db, #2980b9);
-      color: white;
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
-      font-size: 14px;
-      font-weight: 500;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
-    .action-button i {
-      font-size: 18px;
+    .form-grid { 
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+      gap: 16px; 
+      margin-bottom: 20px;
     }
-    .action-button:hover {
-      background: linear-gradient(135deg, #2980b9, #1c6ea4);
-      transform: scale(1.05);
-      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    .form-group { 
+      display: flex; 
+      flex-direction: column; 
     }
-    .action-button:active {
-      transform: scale(0.95);
-    }
-    .table-container {
-      overflow-x: auto;
-      width: 100%;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      background: #fff;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-      border-radius: 12px;
-      overflow: hidden;
-      min-width: 1000px;
-    }
-    th, td {
-      padding: 8px 12px;
-      text-align: left;
-      border: 1px solid #ccc;
-      white-space: nowrap;
-    }
-    th {
-      background-color: #007bff;
-      color: white;
-    }
-    th.sortable {
-      cursor: pointer;
-    }
-    th.sortable:hover {
-      background-color: #0056b3;
-    }
-    .arrow {
-      font-size: 12px;
-      margin-left: 5px;
-    }
-    tr:hover {
-      background-color: #f1f1f1;
-    }
-    .detail-button {
-      padding: 6px 10px;
-      background-color: #3498db;
-      color: white;
-      border: none;
-      width: 100px;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-    .detail-button:hover {
-      background-color: #2980b9;
-      transform: translateY(-2px);
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    }
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 1000;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      overflow: auto;
-      background-color: rgba(0,0,0,0.5);
-    }
-    .modal-content {
-      background-color: #fff;
-      margin: 10% auto;
-      padding: 20px;
-      border-radius: 12px;
-      width: 90%;
-      max-width: 1200px;
-      animation: zoomIn 0.4s ease;
-      overflow-x: auto;
-      position: relative;
-    }
-    .graph-modal-content {
-      background-color: #fff;
-      margin: 10% auto;
-      padding: 20px;
-      border-radius: 12px;
-      width: 90%;
-      max-width: 800px;
-      animation: zoomIn 0.4s ease;
-      position: relative;
-    }
-    .close {
-      color: #aaa;
-      float: right;
-      font-size: 24px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    .close:hover {
-      color: #000;
-    }
-    .print-button {
-      float: right;
-      margin-right: 10px;
-      padding: 10px 16px;
-      background-color: #3498db;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: all 0.3s ease;
+    .form-group label { 
+      font-weight: 600; 
+      color: #555; 
+      margin-bottom: 4px; 
+      font-size: 14px; 
       display: flex;
-      flex-direction: column;
       align-items: center;
-      gap: 4px;
-      font-size: 16px;
+      gap: 5px;
     }
-    .print-button:hover {
-      background-color: #2980b9;
-      transform: translateY(-2px);
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    .form-input { 
+      padding: 12px; 
+      border: 1px solid #ddd; 
+      border-radius: 8px; 
+      font-size: 14px; 
+      transition: var(--transition); 
     }
-    #modalContent span.label {
-      color: #007bff;
-      font-weight: bold;
+    .form-input:focus { 
+      border-color: var(--primary-color); 
+      box-shadow: 0 0 0 3px rgba(0,123,255,0.1); 
+      outline: none; 
     }
-    #modalContent span.value {
-      color: #000;
+    .form-input[readonly] { 
+      background-color: #f8f9fa; 
+      color: #666; 
     }
-    #graphWarning {
-      color: #d32f2f;
-      font-size: 14px;
-      margin-top: 10px;
-      text-align: center;
+    .search-row-modal { 
+      display: flex; 
+      gap: 8px; 
+      align-items: center; 
+      margin-top: 4px; 
     }
-    .pagination {
+    #tf_note { 
+      resize: vertical; 
+      min-height: 80px; 
+    }
+    .modal-buttons { 
+      display: flex; 
+      gap: 12px; 
+      margin-top: 20px; 
+      flex-wrap: wrap; 
+      justify-content: flex-end; 
+    }
+    #historyBox { 
+      display: none; 
+      margin-top: 24px; 
+    }
+    #historyBox h3 { 
+      color: var(--primary-color); 
+      border-bottom: 1px solid #ddd; 
+      padding-bottom: 8px; 
+      margin-bottom: 12px; 
       display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
       align-items: center;
-      margin-top: 20px;
+      gap: 10px;
     }
-    .pagination button,
-    .pagination select {
-      padding: 8px 12px;
-      background-color: #3498db;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 16px;
-      margin: 0 5px;
-      transition: all 0.3s ease;
+    .timeline-table { 
+      width: 100%; 
+      border-collapse: collapse; 
+      margin-top: 12px; 
     }
-    .pagination button:hover,
-    .pagination select:hover {
-      background-color: #2980b9;
+    .timeline-table th, .timeline-table td { 
+      padding: 12px; 
+      border: 1px solid #ddd; 
+      text-align: left; 
+      white-space: pre-wrap; 
+      word-wrap: break-word; 
     }
-    .pagination .page-number {
-      width: 36px;
-      height: 36px;
-      background-color: #3498db;
-      color: white;
-      border-radius: 50%;
-      display: inline-flex;
-      justify-content: center;
-      align-items: center;
-      margin: 0 5px;
-      cursor: pointer;
-      font-size: 16px;
-      border: none;
-      transition: all 0.3s ease;
+    .timeline-table th { 
+      background: linear-gradient(135deg, var(--primary-color), #0056b3); 
+      color: var(--white); 
     }
-    .pagination .page-number:hover {
-      background-color: #2980b9;
-      transform: scale(1.1);
+    .picker-modal .modal-content { max-width: 600px; }
+    #pickerList { 
+      max-height: 360px; 
+      overflow: auto; 
+      margin-top: 10px; 
+      border: 1px solid #eee; 
+      border-radius: 8px; 
+      background: var(--white);
     }
-    .pagination .page-number.active {
-      background-color: #e67e22;
-      color: white;
+    .picker-item { 
+      padding: 12px; 
+      cursor: pointer; 
+      border-bottom: 1px solid #f1f1f1; 
+      transition: var(--transition);
     }
-    .items-per-page {
-      margin-left: 10px;
-      font-size: 16px;
+    .picker-item:hover { 
+      background: #f8f9fa; 
+      color: var(--primary-color);
     }
-    tr {
-      opacity: 0;
-      transform: translateY(10px);
-      animation: fadeInUp 0.5s ease forwards;
+    .pagination { 
+      display: flex; 
+      align-items: center; 
+      justify-content: space-between; 
+      margin-top: 20px; 
+      flex-wrap: wrap; 
+      gap: 10px;
     }
-    tr:nth-child(even) {
-      animation-delay: 0.1s;
+    .pagination button { 
+      padding: 8px 12px; 
+      background: var(--white); 
+      border: 1px solid #ddd; 
+      border-radius: 6px; 
+      cursor: pointer; 
+      transition: var(--transition);
     }
-    tr:nth-child(odd) {
-      animation-delay: 0.2s;
+    .pagination button:hover:not(:disabled) { 
+      background: var(--primary-color); 
+      color: var(--white);
     }
-    @keyframes fadeInUp {
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+    .pagination button:disabled { opacity: 0.5; cursor: not-allowed; }
+    .page-number.active { 
+      background: var(--primary-color); 
+      color: var(--white); 
     }
-    @keyframes zoomIn {
-      from {
-        opacity: 0;
-        transform: scale(0.8);
-      }
-      to {
-        opacity: 1;
-        transform: scale(1);
-      }
+    .items-per-page { 
+      display: flex; 
+      align-items: center; 
+      gap: 5px; 
+      font-size: 14px;
     }
-    th:nth-child(3), td:nth-child(3) {
-      width: auto;
-      min-width: 200px;
-      max-width: 350px;
-      white-space: normal;
+    .loading { 
+      text-align: center; 
+      padding: 40px; 
+      color: var(--secondary-color);
     }
-    th:nth-child(5), td:nth-child(5) {
-      min-width: 150px;
+    .loading i { 
+      font-size: 48px; 
+      animation: spin 1s linear infinite; 
+      margin-bottom: 10px;
     }
-    th:nth-child(9), td:nth-child(9) {
-      min-width: 100px;
-      text-align: center;
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    @keyframes zoomIn { 
+      from { opacity: 0; transform: scale(0.8); } 
+      to { opacity: 1; transform: scale(1); } 
     }
+    th:nth-child(3), td:nth-child(3) { width: auto; min-width: 200px; max-width: 350px; white-space: normal; }
+    th:nth-child(5), td:nth-child(5) { min-width: 150px; }
+    th:nth-child(9), td:nth-child(9) { min-width: 100px; text-align: center; }
     @media (max-width: 768px) {
-      th:nth-child(3), td:nth-child(3) {
-        min-width: 150px;
-        font-size: 14px;
-      }
-      #searchInput {
-        width: 100%;
-        max-width: 300px;
-      }
-      .search-row {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-      .action-button {
-        width: 100%;
-        max-width: 150px;
-        justify-content: center;
-      }
-    }
-    .yellow-light {
-      background-color: #c9ffc4;
-    }
-    .pink-pastel {
-      background-color: #fce4ec;
-    }
-    .text-left {
-      text-align: left;
-    }
-    .text-center {
-      text-align: center;
-    }
-    .call-count-box {
-      margin-left: 20px;
-      padding: 10px 16px;
-      background-color: #e6f2ff;
-      color: #007bff;
-      border-radius: 10px;
-      font-size: 16px;
-      font-weight: bold;
-      display: inline-flex;
-      align-items: center;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-      transition: background-color 0.3s ease;
-    }
-    .call-count-box span {
-      color: #d63384;
-      margin: 0 4px;
-      font-size: 18px;
-    }
-    .modern-label {
-      display: inline-block;
-      padding: 10px 16px;
-      background-color: #ffffff;
-      color: #007bff;
-      border-radius: 10px;
-      font-size: 16px;
-      font-weight: bold;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-      border: 1px solid #d0eaff;
-      transition: all 0.3s ease;
-      margin-right: 8px;
-    }
-    .modern-label:hover {
-      background-color: #e6f2ff;
-      color: #0056b3;
-    }
-    .detail-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 10px;
-    }
-    .detail-table th, .detail-table td {
-      padding: 8px;
-      border: 1px solid #ccc;
-      text-align: center;
-    }
-    .detail-table th {
-      background-color: #007bff;
-      color: white;
-    }
-    .detail-table tr:nth-child(even) {
-      background-color: #f9f9f9;
-    }
-    .detail-table th:not(:first-child), .detail-table td:not(:first-child) {
-      width: 80px;
-      min-width: 80px;
-      max-width: 80px;
-    }
-    .detail-table th:first-child, .detail-table td:first-child {
-      width: auto;
-      min-width: 120px;
-    }
-    @media print {
-      .report-title, .close, .print-button, #printTableButton, #searchButton, #graphButton, #excelButton, #summaryButton, #searchInput, .pagination, #searchContainer, .modal, .table-container {
-        display: none;
-      }
-      .modal-content {
-        margin: 0;
-        padding: 0;
-        width: 100%;
-        max-width: none;
-        border-radius: 0;
-        box-shadow: none;
-      }
-      .sticker {
-        width: 80mm;
-        height: 100mm;
-        border: 1px solid #000;
-        padding: 2mm;
-        box-sizing: border-box;
-        font-size: 13pt;
-        line-height: 1.3;
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        page-break-after: always;
-      }
-      .sticker div {
-        margin-bottom: 1.5mm;
-        overflow-wrap: break-word;
-      }
-      .sticker div.description {
-        flex: 1;
-      }
-      .sticker .label {
-        font-weight: bold;
-        color: #000;
-        font-size: 14pt;
-      }
-      .sticker .value {
-        color: #000;
-      }
-      h2 {
-        font-size: 14pt;
-        color: #000;
-        margin: 1.5mm 0;
-      }
-      @page {
-        size: 80mm 100mm;
-        margin: 0;
-      }
-      body {
-        margin: 0;
-        padding: 0;
-      }
-      .detail-table th, .detail-table td {
-        text-align: center;
-      }
-      .detail-table th:not(:first-child), .detail-table td:not(:first-child) {
-        width: 80px;
-        min-width: 80px;
-        max-width: 80px;
-      }
-      .detail-table th:first-child, .detail-table td:first-child {
-        width: auto;
-        min-width: 120px;
-      }
-    }
-    .green-text {
-      color: green;
-    }
-    .red-text {
-      color: red;
-    }
-    .orange-text {
-      color: #ff8c00;
-    }
-    .timeline-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-    }
-    .timeline-table th, .timeline-table td {
-      padding: 8px;
-      border: 1px solid #ccc;
-      text-align: left;
-      white-space: pre-wrap;
-      word-wrap: break-word;
-    }
-    .timeline-table th {
-      background-color: #007bff;
-      color: white;
-    }
-    .timeline-table tr:nth-child(even) {
-      background-color: #f9f9f9;
+      .filter-row { grid-template-columns: 1fr; }
+      #searchInput { min-width: 100%; }
+      .search-row { flex-direction: column; align-items: stretch; }
+      .action-button { width: 100%; justify-content: center; }
+      .table-container { border-radius: 8px; }
+      th, td { padding: 8px 10px; font-size: 14px; }
+      th:nth-child(3), td:nth-child(3) { min-width: 150px; }
+      .form-grid { grid-template-columns: 1fr; }
+      .modal-content { margin: 1% auto; padding: 16px; width: 98%; }
+      .modal-buttons { justify-content: center; }
+      .pagination { flex-direction: column; align-items: center; }
+      .call-count-box { margin-left: 0; margin-top: 10px; width: 100%; justify-content: center; }
+      .form-section { padding: 12px; }
     }
   </style>
 </head>
@@ -515,91 +471,46 @@
   <h1 class="report-title">รายงาน ทรัพย์สิน คลังสินค้าทั่วประเทศ</h1>
   <div id="searchContainer">
     <div class="filter-row">
-      <label id="employeeFilterLabel" for="employeeFilter" class="modern-label">ผู้รับผิดชอบ</label>
-      <select id="employeeFilter">
-        <option value="">ทั้งหมด</option>
-      </select>
-      <div id="ticketCountInfo" class="call-count-box">
-        จำนวนทรัพย์สิน: <span id="ticketCountValue">0</span> รายการ
-      </div>
+      <label id="employeeFilterLabel" for="employeeFilter" class="modern-label"><i class="fas fa-user"></i> ผู้รับผิดชอบ</label>
+      <select id="employeeFilter"><option value="">ทั้งหมด</option></select>
+      <div id="ticketCountInfo" class="call-count-box"><i class="fas fa-tags"></i> จำนวนทรัพย์สิน: <span id="ticketCountValue">0</span> รายการ</div>
     </div>
     <div class="filter-row">
-      <label id="pendingFilterLabel" for="pendingFilter" class="modern-label">Location</label>
-      <select id="pendingFilter">
-        <option value="">ทั้งหมด</option>
-      </select>
-      <div id="callCountInfo" class="call-count-box">
-        จำนวนรายการ: <span id="callCountValue">0</span> รายการ
-      </div>
+      <label id="pendingFilterLabel" for="pendingFilter" class="modern-label"><i class="fas fa-map-marker-alt"></i> Location</label>
+      <select id="pendingFilter"><option value="">ทั้งหมด</option></select>
+      <div id="callCountInfo" class="call-count-box"><i class="fas fa-list"></i> จำนวนรายการ: <span id="callCountValue">0</span> รายการ</div>
     </div>
     <div class="filter-row">
-      <label id="stockFilterLabel" for="stockFilter" class="modern-label">สถานะทรัพย์สิน</label>
-      <select id="stockFilter">
-        <option value="">ทั้งหมด</option>
-      </select>
+      <label id="stockFilterLabel" for="stockFilter" class="modern-label"><i class="fas fa-info-circle"></i> สถานะทรัพย์สิน</label>
+      <select id="stockFilter"><option value="">ทั้งหมด</option></select>
     </div>
     <div class="search-row">
       <input type="text" id="searchInput" placeholder="ค้นหา รหัสทรัพย์สิน, Sno., ชื่อทรัพย์สิน, UL, Physical Location, วันที่ซื้อทรัพย์สิน, ผู้รับผิดชอบ, สถานะทรัพย์สิน, อายุ..." />
       <button id="searchButton" class="action-button"><i class="fas fa-search"></i> ค้นหา</button>
-      <button id="printTableButton" class="action-button"><i class="fas fa-print"></i> พิมพ์</button>
-      <button id="graphButton" class="action-button"><i class="fas fa-chart-line"></i> กราฟ</button>
       <button id="excelButton" class="action-button"><i class="fas fa-file-excel"></i> Excel</button>
-      <button id="summaryButton" class="action-button"><i class="fas fa-list"></i> สรุปข้อมูล</button>
     </div>
   </div>
   <div class="table-container">
     <table id="data-table">
       <thead>
         <tr>
-          <th class="sortable" data-column="รหัสทรัพย์สิน">รหัสทรัพย์สิน <span class="arrow"></span></th>
-          <th class="sortable" data-column="Sno.">Sno. <span class="arrow"></span></th>
-          <th class="sortable" data-column="ชื่อทรัพย์สิน">ชื่อทรัพย์สิน <span class="arrow"></span></th>
-          <th class="sortable" data-column="UL">UL <span class="arrow"></span></th>
-          <th class="sortable" data-column="Physical Location">Physical Location <span class="arrow"></span></th>
-          <th class="sortable" data-column="วันที่ซื้อทรัพย์สิน">วันที่ซื้อทรัพย์สิน <span class="arrow"></span></th>
-          <th class="sortable" data-column="ผู้รับผิดชอบ">ผู้รับผิดชอบ <span class="arrow"></span></th>
-          <th class="sortable" data-column="สถานะทรัพย์สิน">สถานะทรัพย์สิน <span class="arrow"></span></th>
-          <th class="sortable" data-column="อายุ">อายุ <span class="arrow"></span></th>
-          <th>ดูรายละเอียด</th>
+          <th class="sortable" data-column="รหัสทรัพย์สิน"><i class="fas fa-tag"></i> รหัสทรัพย์สิน <span class="arrow"></span></th>
+          <th class="sortable" data-column="Sno."><i class="fas fa-hashtag"></i> Sno. <span class="arrow"></span></th>
+          <th class="sortable" data-column="ชื่อทรัพย์สิน"><i class="fas fa-cube"></i> ชื่อทรัพย์สิน <span class="arrow"></span></th>
+          <th class="sortable" data-column="UL"><i class="fas fa-building"></i> UL <span class="arrow"></span></th>
+          <th class="sortable" data-column="Physical Location"><i class="fas fa-map-marker-alt"></i> Physical Location <span class="arrow"></span></th>
+          <th class="sortable" data-column="วันที่ซื้อทรัพย์สิน"><i class="fas fa-calendar"></i> วันที่ซื้อทรัพย์สิน <span class="arrow"></span></th>
+          <th class="sortable" data-column="ผู้รับผิดชอบ"><i class="fas fa-user"></i> ผู้รับผิดชอบ <span class="arrow"></span></th>
+          <th class="sortable" data-column="สถานะทรัพย์สิน"><i class="fas fa-info-circle"></i> สถานะทรัพย์สิน <span class="arrow"></span></th>
+          <th class="sortable" data-column="อายุ"><i class="fas fa-clock"></i> อายุ <span class="arrow"></span></th>
+          <th><i class="fas fa-exchange-alt"></i> โอนย้าย</th>
         </tr>
       </thead>
-      <tbody></tbody>
+      <tbody id="tableBody">
+        <tr><td colspan="10" class="loading"><i class="fas fa-spinner"></i> กำลังโหลดข้อมูล...</td></tr>
+      </tbody>
     </table>
   </div>
-
-  <div id="detailModal" class="modal">
-    <div class="modal-content">
-      <span class="close" id="closeModal">×</span>
-      <button class="print-button" onclick="printModalContent()">
-        <i class="fas fa-print"></i>
-        <span>พิมพ์</span>
-      </button>
-      <h2>รายละเอียด</h2>
-      <div id="modalContent"></div>
-    </div>
-  </div>
-
-  <div id="graphModal" class="modal">
-    <div class="graph-modal-content">
-      <span class="close" id="closeGraphModal">×</span>
-      <h2>จำนวนทรัพย์สินตามผู้รับผิดชอบ</h2>
-      <canvas id="teamChart" style="max-height: 400px;"></canvas>
-      <div id="graphWarning"></div>
-    </div>
-  </div>
-
-  <div id="summaryModal" class="modal">
-    <div class="modal-content">
-      <span class="close" id="closeSummaryModal">×</span>
-      <button class="print-button" onclick="printSummaryContent()">
-        <i class="fas fa-print"></i>
-        <span>พิมพ์สรุป</span>
-      </button>
-      <h2>สรุปข้อมูลทรัพย์สิน</h2>
-      <div id="summaryContent"></div>
-    </div>
-  </div>
-
   <div class="pagination">
     <button id="firstPage"><i class="fas fa-chevron-left"></i><i class="fas fa-chevron-left"></i></button>
     <button id="prevPage"><i class="fas fa-chevron-left"></i></button>
@@ -607,7 +518,7 @@
     <button id="nextPage"><i class="fas fa-chevron-right"></i></button>
     <button id="lastPage"><i class="fas fa-chevron-right"></i><i class="fas fa-chevron-right"></i></button>
     <div class="items-per-page">
-      <label for="itemsPerPage">รายการต่อหน้า:</label>
+      <label for="itemsPerPage"><i class="fas fa-list-ol"></i> รายการต่อหน้า:</label>
       <select id="itemsPerPage">
         <option value="10">10 รายการ</option>
         <option value="20" selected>20 รายการ</option>
@@ -616,1124 +527,840 @@
     </div>
   </div>
 
-  <script>
-    const sheetID = '1caJemfomWLXEeqAlKFNMzGrT6divjSt5QZYeIjuTg58';
-    const sheetName = 'ASSET';
-    const url = `https://opensheet.elk.sh/${sheetID}/${sheetName}`;
-
-    const modal = document.getElementById("detailModal");
-    const graphModal = document.getElementById("graphModal");
-    const summaryModal = document.getElementById("summaryModal");
-    const modalContent = document.getElementById("modalContent");
-    const closeModal = document.getElementById("closeModal");
-    const closeGraphModal = document.getElementById("closeGraphModal");
-    const closeSummaryModal = document.getElementById("closeSummaryModal");
-    const employeeFilter = document.getElementById("employeeFilter");
-    const pendingFilter = document.getElementById("pendingFilter");
-    const stockFilter = document.getElementById("stockFilter");
-    const searchInput = document.getElementById("searchInput");
-    const searchButton = document.getElementById("searchButton");
-    const printTableButton = document.getElementById("printTableButton");
-    const graphButton = document.getElementById("graphButton");
-    const excelButton = document.getElementById("excelButton");
-    const summaryButton = document.getElementById("summaryButton");
-    const tableBody = document.querySelector("#data-table tbody");
-    const pageNumbersContainer = document.getElementById("pageNumbers");
-    const firstPageButton = document.getElementById("firstPage");
-    const prevPageButton = document.getElementById("prevPage");
-    const nextPageButton = document.getElementById("nextPage");
-    const lastPageButton = document.getElementById("lastPage");
-    const itemsPerPageSelect = document.getElementById("itemsPerPage");
-    const graphWarning = document.getElementById("graphWarning");
-    const summaryContent = document.getElementById("summaryContent");
-
-    let allData = [];
-    let currentPage = 1;
-    let itemsPerPage = 20;
-    let sortConfig = { column: 'รหัสทรัพย์สิน', direction: 'asc' };
-    let teamChart = null;
-    let currentAssetId = null;
-
-    function calculateAge(purchaseDate) {
-      if (!purchaseDate || purchaseDate === "-") return "-";
-      try {
-        const [day, month, year] = purchaseDate.split('/');
-        const date = new Date(`${year}-${month}-${day}`);
-        if (isNaN(date.getTime())) return "-";
-        const today = new Date();
-        let years = today.getFullYear() - date.getFullYear();
-        let months = today.getMonth() - date.getMonth();
-        if (months < 0 || (months === 0 && today.getDate() < date.getDate())) {
-          years--;
-          months += 12;
-        }
-        if (today.getDate() < date.getDate()) {
-          months--;
-          if (months < 0) {
-            years--;
-            months += 12;
-          }
-        }
-        if (years < 0) return "-";
-        return years === 0 && months === 0 ? "0 เดือน" : `${years} ปี ${months} เดือน`;
-      } catch (e) {
-        return "-";
-      }
-    }
-
-    function parseAgeForSorting(ageString) {
-      if (ageString === "-") return { years: -Infinity, months: -Infinity };
-      const match = ageString.match(/(\d+)\s*ปี\s*(\d+)\s*เดือน/);
-      if (!match) {
-        const monthMatch = ageString.match(/(\d+)\s*เดือน/);
-        if (monthMatch) return { years: 0, months: parseInt(monthMatch[1]) };
-        return { years: -Infinity, months: -Infinity };
-      }
-      return {
-        years: parseInt(match[1]),
-        months: parseInt(match[2])
-      };
-    }
-
-    function escapeCSVValue(value) {
-      if (value == null) return '""';
-      const stringValue = value.toString();
-      if (stringValue.includes(',') || stringValue.includes('"') || stringValue.includes('\n')) {
-        return `"${stringValue.replace(/"/g, '""')}"`;
-      }
-      return stringValue;
-    }
-
-    function exportToCSV() {
-      if (!allData || allData.length === 0) {
-        alert("ไม่มีข้อมูลในระบบสำหรับการส่งออก CSV");
-        return;
-      }
-
-      const selectedEmployee = employeeFilter.value;
-      const selectedLocation = pendingFilter.value;
-      const selectedStatus = stockFilter.value;
-      const keyword = searchInput.value.toLowerCase().trim();
-
-      let filteredData = allData.filter(row => {
-        if (!row) return false;
-        const age = calculateAge(row["วันที่ซื้อทรัพย์สิน"]);
-        return (
-          (!selectedEmployee || (row["ผู้รับผิดชอบ"] || "") === selectedEmployee) &&
-          (!selectedLocation || (row["Physical Location"] || "") === selectedLocation) &&
-          (!selectedStatus || (row["สถานะทรัพย์สิน"] || "") === selectedStatus) &&
-          (!keyword ||
-            (row["รหัสทรัพย์สิน"] || "").toLowerCase().includes(keyword) ||
-            (row["Sno."] || "").toLowerCase().includes(keyword) ||
-            (row["ชื่อทรัพย์สิน"] || "").toLowerCase().includes(keyword) ||
-            (row["UL"] || "").toLowerCase().includes(keyword) ||
-            (row["Physical Location"] || "").toLowerCase().includes(keyword) ||
-            (row["วันที่ซื้อทรัพย์สิน"] || "").toLowerCase().includes(keyword) ||
-            (row["ผู้รับผิดชอบ"] || "").toLowerCase().includes(keyword) ||
-            (row["สถานะทรัพย์สิน"] || "").toLowerCase().includes(keyword) ||
-            age.toLowerCase().includes(keyword)
-          )
-        );
-      });
-
-      if (filteredData.length === 0) {
-        alert("ไม่มีข้อมูลที่ตรงกับเงื่อนไขการกรอง");
-        return;
-      }
-
-      filteredData.sort((a, b) => {
-        let idA = a["รหัสทรัพย์สิน"] || "";
-        let idB = b["รหัสทรัพย์สิน"] || "";
-        return idA.localeCompare(idB);
-      });
-
-      const columns = ["รหัสทรัพย์สิน", "Sno.", "ชื่อทรัพย์สิน", "UL", "Physical Location", "วันที่ซื้อทรัพย์สิน", "ผู้รับผิดชอบ", "สถานะทรัพย์สิน", "อายุ"];
-      const displayColumns = {
-        "รหัสทรัพย์สิน": "รหัสทรัพย์สิน",
-        "Sno.": "Sno.",
-        "ชื่อทรัพย์สิน": "ชื่อทรัพย์สิน",
-        "UL": "UL",
-        "Physical Location": "Physical Location",
-        "วันที่ซื้อทรัพย์สิน": "วันที่ซื้อทรัพย์สิน",
-        "ผู้รับผิดชอบ": "ผู้รับผิดชอบ",
-        "สถานะทรัพย์สิน": "สถานะทรัพย์สิน",
-        "อายุ": "อายุ"
-      };
-
-      const csvRows = [];
-      csvRows.push(columns.map(col => `"${displayColumns[col]}"`).join(','));
-
-      filteredData.forEach(row => {
-        const rowData = columns.map(col => {
-          let value = col === "อายุ" ? calculateAge(row["วันที่ซื้อทรัพย์สิน"]) : (row[col] || "-");
-          return escapeCSVValue(value);
-        });
-        csvRows.push(rowData.join(','));
-      });
-
-      const csvContent = csvRows.join('\n');
-      const bom = '\uFEFF';
-      const blob = new Blob([bom + csvContent], { type: 'text/csv;charset=utf-8;' });
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(blob);
-      link.download = `asset_report_${new Date().toISOString().replace(/[:.]/g, '-')}.csv`;
-      link.click();
-      URL.revokeObjectURL(link.href);
-    }
-
-    function printModalContent() {
-      if (!currentAssetId) {
-        alert("ไม่พบรหัสทรัพย์สินสำหรับการพิมพ์");
-        return;
-      }
-      const modalData = allData.find(row => row["รหัสทรัพย์สิน"] === currentAssetId);
-      if (!modalData) {
-        alert("ไม่พบข้อมูลสำหรับรหัสทรัพย์สิน: " + currentAssetId);
-        return;
-      }
-
-      let stickerContent = `
-        <div><span class="label">รหัสทรัพย์สิน:</span> <span class="value">${modalData["รหัสทรัพย์สิน"] || "-"}</span></div>
-        <div><span class="label">Sno.:</span> <span class="value">${modalData["Sno."] || "-"}</span></div>
-        <div><span class="label">ชื่อทรัพย์สิน:</span> <span class="value">${modalData["ชื่อทรัพย์สิน"] || "-"}</span></div>
-        <div><span class="label">UL:</span> <span class="value">${modalData["UL"] || "-"}</span></div>
-        <div><span class="label">Physical Location:</span> <span class="value">${modalData["Physical Location"] || "-"}</span></div>
-        <div><span class="label">วันที่ซื้อทรัพย์สิน:</span> <span class="value">${modalData["วันที่ซื้อทรัพย์สิน"] || "-"}</span></div>
-        <div><span class="label">ผู้รับผิดชอบ:</span> <span class="value">${modalData["ผู้รับผิดชอบ"] || "-"}</span></div>
-        <div><span class="label">สถานะทรัพย์สิน:</span> <span class="value">${modalData["สถานะทรัพย์สิน"] || "-"}</span></div>
-        <div><span class="label">อายุ:</span> <span class="value">${calculateAge(modalData["วันที่ซื้อทรัพย์สิน"])}</span></div>
-      `;
-
-      const printWindow = window.open('', '_blank');
-      printWindow.document.write(`
-        <html>
-          <head>
-            <title>พิมพ์รายละเอียดทรัพย์สิน</title>
-            <style>
-              body {
-                font-family: 'Prompt', sans-serif;
-                margin: 0;
-                padding: 0;
-              }
-              .sticker {
-                width: 80mm;
-                height: 100mm;
-                border: 1px solid #000;
-                padding: 2mm;
-                box-sizing: border-box;
-                font-size: 13pt;
-                line-height: 1.3;
-                overflow: hidden;
-                display: flex;
-                flex-direction: column;
-                justify-content: space-between;
-                page-break-after: always;
-              }
-              .sticker div {
-                margin-bottom: 1.5mm;
-                overflow-wrap: break-word;
-              }
-              .sticker div.description {
-                flex: 1;
-              }
-              .sticker .label {
-                font-weight: bold;
-                color: #000;
-                font-size: 14pt;
-              }
-              .sticker .value {
-                color: #000;
-              }
-              .sticker .value.team-brand {
-                font-size: 16pt;
-                font-weight: bold;
-              }
-              h2 {
-                font-size: 14pt;
-                color: #000;
-                margin: 1.5mm 0;
-              }
-              @media print {
-                body {
-                  margin: 0;
-                }
-                @page {
-                  size: 80mm 100mm;
-                  margin: 0;
-                }
-              }
-            </style>
-          </head>
-          <body onload="window.print()">
-            <div class="sticker">
-              <h2>รายละเอียดทรัพย์สิน</h2>
-              ${stickerContent}
+  <!-- Transfer Modal -->
+  <div id="transferModal" class="modal">
+    <div class="modal-content">
+      <span class="close" id="closeTransferModal">&times;</span>
+      <h2><i class="fas fa-exchange-alt"></i> โอนย้ายทรัพย์สิน</h2>
+      <form id="transferForm">
+        <!-- กลุ่มข้อมูลทรัพย์สิน -->
+        <div class="form-section">
+          <h3><i class="fas fa-cube"></i> ข้อมูลทรัพย์สิน</h3>
+          <div class="form-grid">
+            <div class="form-group">
+              <label><i class="fas fa-tag"></i> รหัสทรัพย์สิน</label>
+              <input type="text" id="tf_assetId" class="form-input" readonly>
             </div>
-          </body>
-        </html>
-      `);
-      printWindow.document.close();
-    }
-
-    function printTable() {
-      const selectedEmployee = employeeFilter.value;
-      const selectedLocation = pendingFilter.value;
-      const selectedStatus = stockFilter.value;
-      const keyword = searchInput.value.toLowerCase().trim();
-
-      let filteredData = allData.filter(row => {
-        if (!row) return false;
-        const age = calculateAge(row["วันที่ซื้อทรัพย์สิน"]);
-        return (
-          (!selectedEmployee || (row["ผู้รับผิดชอบ"] || "") === selectedEmployee) &&
-          (!selectedLocation || (row["Physical Location"] || "") === selectedLocation) &&
-          (!selectedStatus || (row["สถานะทรัพย์สิน"] || "") === selectedStatus) &&
-          (!keyword ||
-            (row["รหัสทรัพย์สิน"] || "").toLowerCase().includes(keyword) ||
-            (row["Sno."] || "").toLowerCase().includes(keyword) ||
-            (row["ชื่อทรัพย์สิน"] || "").toLowerCase().includes(keyword) ||
-            (row["UL"] || "").toLowerCase().includes(keyword) ||
-            (row["Physical Location"] || "").toLowerCase().includes(keyword) ||
-            (row["วันที่ซื้อทรัพย์สิน"] || "").toLowerCase().includes(keyword) ||
-            (row["ผู้รับผิดชอบ"] || "").toLowerCase().includes(keyword) ||
-            (row["สถานะทรัพย์สิน"] || "").toLowerCase().includes(keyword) ||
-            age.toLowerCase().includes(keyword)
-          )
-        );
-      });
-
-      if (filteredData.length === 0) {
-        alert("ไม่มีข้อมูลที่ตรงกับเงื่อนไขการค้นหา");
-        return;
-      }
-
-      filteredData.sort((a, b) => {
-        let idA = a["รหัสทรัพย์สิน"] || "";
-        let idB = b["รหัสทรัพย์สิน"] || "";
-        return idA.localeCompare(idB);
-      });
-
-      const startIdx = (currentPage - 1) * itemsPerPage;
-      const endIdx = startIdx + itemsPerPage;
-      const paginatedData = filteredData.slice(startIdx, endIdx);
-
-      const stickersHtml = paginatedData.map(row => {
-        return `
-          <div class="sticker">
-            <div><span class="label">รหัสทรัพย์สิน:</span> <span class="value">${row["รหัสทรัพย์สิน"] || "-"}</span></div>
-            <div><span class="label">Sno.:</span> <span class="value">${row["Sno."] || "-"}</span></div>
-            <div><span class="label">ชื่อทรัพย์สิน:</span> <span class="value">${row["ชื่อทรัพย์สิน"] || "-"}</span></div>
-            <div><span class="label">UL:</span> <span class="value">${row["UL"] || "-"}</span></div>
-            <div><span class="label">Physical Location:</span> <span class="value">${row["Physical Location"] || "-"}</span></div>
-            <div><span class="label">วันที่ซื้อทรัพย์สิน:</span> <span class="value">${row["วันที่ซื้อทรัพย์สิน"] || "-"}</span></div>
-            <div><span class="label">ผู้รับผิดชอบ:</span> <span class="value">${row["ผู้รับผิดชอบ"] || "-"}</span></div>
-            <div><span class="label">สถานะทรัพย์สิน:</span> <span class="value">${row["สถานะทรัพย์สิน"] || "-"}</span></div>
-            <div><span class="label">อายุ:</span> <span class="value">${calculateAge(row["วันที่ซื้อทรัพย์สิน"])}</span></div>
+            <div class="form-group">
+              <label><i class="fas fa-cube"></i> ชื่อทรัพย์สิน</label>
+              <input type="text" id="tf_name" class="form-input" readonly>
+            </div>
+            <div class="form-group">
+              <label><i class="fas fa-building"></i> UL</label>
+              <input type="text" id="tf_ul" class="form-input" readonly>
+            </div>
+            <div class="form-group">
+              <label><i class="fas fa-map-marker-alt"></i> สถานที่ปัจจุบัน</label>
+              <input type="text" id="tf_fromLocation" class="form-input" readonly>
+            </div>
           </div>
-        `;
-      }).join('');
+        </div>
 
-      const printWindow = window.open('', '_blank');
-      printWindow.document.write(`
-        <html>
-          <head>
-            <title>พิมพ์สติ๊กเกอร์ทรัพย์สิน</title>
-            <style>
-              body {
-                font-family: 'Prompt', sans-serif;
-                margin: 0;
-                padding: 0;
-              }
-              .sticker {
-                width: 80mm;
-                height: 100mm;
-                border: 1px solid #000;
-                padding: 2mm;
-                box-sizing: border-box;
-                font-size: 13pt;
-                line-height: 1.3;
-                overflow: hidden;
-                display: flex;
-                flex-direction: column;
-                justify-content: space-between;
-                page-break-after: always;
-              }
-              .sticker div {
-                margin-bottom: 1.5mm;
-                overflow-wrap: break-word;
-              }
-              .sticker div.description {
-                flex: 1;
-              }
-              .sticker .label {
-                font-weight: bold;
-                color: #000;
-                font-size: 14pt;
-              }
-              .sticker .value {
-                color: #000;
-              }
-              .sticker .value.team-brand {
-                font-size: 16pt;
-                font-weight: bold;
-              }
-              @media print {
-                body {
-                  margin: 0;
-                }
-                @page {
-                  size: 80mm 100mm;
-                  margin: 0;
-                }
-              }
-            </style>
-          </head>
-          <body onload="window.print()">
-            ${stickersHtml}
-          </body>
-        </html>
-      `);
-      printWindow.document.close();
-    }
+        <!-- กลุ่มผู้โอน -->
+        <div class="form-section">
+          <h3><i class="fas fa-user-times"></i> ผู้โอน (ข้อมูลปัจจุบัน)</h3>
+          <div class="form-grid">
+            <div class="form-group">
+              <label><i class="fas fa-id-card"></i> รหัสพนักงาน (ผู้โอน)</label>
+              <input type="text" id="tf_fromEmpId" class="form-input" readonly>
+            </div>
+            <div class="form-group">
+              <label><i class="fas fa-user"></i> ผู้รับผิดชอบ (ผู้โอน)</label>
+              <input type="text" id="tf_fromOwnerName" class="form-input" readonly placeholder="ชื่อผู้รับผิดชอบปัจจุบัน (ตัดรหัสพนักงานออก)">
+            </div>
+          </div>
+        </div>
 
-    function showGraph() {
-      const selectedEmployee = employeeFilter.value;
-      const selectedLocation = pendingFilter.value;
-      const selectedStatus = stockFilter.value;
-      const keyword = searchInput.value.toLowerCase().trim();
-      let filteredData = allData.filter(row => {
-        if (!row) return false;
-        const age = calculateAge(row["วันที่ซื้อทรัพย์สิน"]);
-        return (
-          (!selectedEmployee || (row["ผู้รับผิดชอบ"] || "") === selectedEmployee) &&
-          (!selectedLocation || (row["Physical Location"] || "") === selectedLocation) &&
-          (!selectedStatus || (row["สถานะทรัพย์สิน"] || "") === selectedStatus) &&
-          (!keyword ||
-            (row["รหัสทรัพย์สิน"] || "").toLowerCase().includes(keyword) ||
-            (row["Sno."] || "").toLowerCase().includes(keyword) ||
-            (row["ชื่อทรัพย์สิน"] || "").toLowerCase().includes(keyword) ||
-            (row["UL"] || "").toLowerCase().includes(keyword) ||
-            (row["Physical Location"] || "").toLowerCase().includes(keyword) ||
-            (row["วันที่ซื้อทรัพย์สิน"] || "").toLowerCase().includes(keyword) ||
-            (row["ผู้รับผิดชอบ"] || "").toLowerCase().includes(keyword) ||
-            (row["สถานะทรัพย์สิน"] || "").toLowerCase().includes(keyword) ||
-            age.toLowerCase().includes(keyword)
-          )
-        );
-      });
+        <!-- กลุ่มผู้รับและสถานที่ใหม่ -->
+        <div class="form-section">
+          <h3><i class="fas fa-user-plus"></i> ผู้รับและสถานที่ใหม่</h3>
+          <div class="form-grid">
+            <div class="form-group">
+              <label><i class="fas fa-user-plus"></i> ผู้รับผิดชอบ (ผู้รับ)</label>
+              <div class="search-row-modal">
+                <input type="text" id="tf_toOwner" list="ownersList" placeholder="เลือก/ค้นหา ชื่อผู้รับผิดชอบใหม่" required class="form-input">
+                <button type="button" id="btnFindOwner" class="action-button" style="padding:8px 12px; font-size:12px;"><i class="fas fa-search"></i></button>
+              </div>
+            </div>
+            <div class="form-group">
+              <label><i class="fas fa-id-card"></i> รหัสพนักงาน (ผู้รับ)</label>
+              <input type="text" id="tf_toEmpId" class="form-input" placeholder="อัปเดตอัตโนมัติเมื่อเลือกชื่อ" readonly>
+            </div>
+            <div class="form-group">
+              <label><i class="fas fa-map-marker-alt"></i> ย้ายไปสถานที่</label>
+              <div class="search-row-modal">
+                <input type="text" id="tf_toLocation" list="locationsList" placeholder="เลือก/ค้นหา สถานที่ใหม่" required class="form-input">
+                <button type="button" id="btnFindLocation" class="action-button" style="padding:8px 12px; font-size:12px;"><i class="fas fa-search"></i></button>
+              </div>
+            </div>
+          </div>
+        </div>
 
-      const assetCounts = {};
-      filteredData.forEach(row => {
-        const asset = row["รหัสทรัพย์สิน"];
-        const employee = row["ผู้รับผิดชอบ"] || "ไม่ระบุผู้รับผิดชอบ";
-        if (asset && !assetCounts[asset]) {
-          assetCounts[asset] = employee;
-        }
-      });
+        <!-- กลุ่มข้อมูลเพิ่มเติม -->
+        <div class="form-section">
+          <h3><i class="fas fa-info-circle"></i> ข้อมูลเพิ่มเติม</h3>
+          <div class="form-grid">
+            <div class="form-group">
+              <label><i class="fas fa-calendar"></i> วันที่โอน</label>
+              <input type="date" id="tf_date" required class="form-input">
+            </div>
+            <div class="form-group">
+              <label><i class="fas fa-user-edit"></i> ผู้ดำเนินการ</label>
+              <input type="text" id="tf_operator" placeholder="ชื่อผู้ดำเนินการ (จำเป็น)" required class="form-input">
+            </div>
+          </div>
+        </div>
 
-      const employeeCounts = {};
-      Object.values(assetCounts).forEach(employee => {
-        employeeCounts[employee] = (employeeCounts[employee] || 0) + 1;
-      });
-
-      const sortedEmployees = Object.keys(employeeCounts).sort((a, b) => employeeCounts[b] - employeeCounts[a]);
-      let limitedEmployees = sortedEmployees;
-      let warningMessage = "";
-      if (sortedEmployees.length > 50) {
-        limitedEmployees = sortedEmployees.slice(0, 50);
-        warningMessage = `แสดงเฉพาะ 50 ผู้รับผิดชอบแรกจากทั้งหมด ${sortedEmployees.length} ผู้รับผิดชอบเนื่องจากข้อจำกัดด้านการแสดงผล`;
-      }
-      const sortedCounts = limitedEmployees.map(employee => employeeCounts[employee]);
-      const backgroundColors = limitedEmployees.map((_, index) => index % 2 === 0 ? '#c9ffc4' : '#fce4ec');
-      const borderColors = limitedEmployees.map((_, index) => index % 2 === 0 ? '#4caf50' : '#f06292');
-
-      graphWarning.textContent = warningMessage;
-
-      if (limitedEmployees.length === 0 || sortedCounts.length === 0) {
-        graphWarning.textContent = "ไม่มีข้อมูลสำหรับแสดงกราฟ";
-        graphModal.style.display = "block";
-        return;
-      }
-
-      if (teamChart) {
-        teamChart.destroy();
-      }
-
-      const ctx = document.getElementById('teamChart').getContext('2d');
-      teamChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: limitedEmployees,
-          datasets: [{
-            label: 'จำนวนทรัพย์สิน',
-            data: sortedCounts,
-            backgroundColor: backgroundColors,
-            borderColor: borderColors,
-            borderWidth: 3,
-            pointRadius: 5,
-            pointHoverRadius: 8,
-            fill: false,
-            tension: 0.4
-          }]
-        },
-        options: {
-          responsive: true,
-          scales: {
-            x: {
-              ticks: {
-                maxRotation: 45,
-                minRotation: 45
-              },
-              grid: {
-                display: false
-              }
-            },
-            y: {
-              beginAtZero: true,
-              ticks: {
-                stepSize: 1
-              }
-            }
-          },
-          plugins: {
-            legend: {
-              display: false
-            }
-          }
-        }
-      });
-
-      graphModal.style.display = "block";
-    }
-
-    function showSummary() {
-      const selectedEmployee = employeeFilter.value;
-      const selectedLocation = pendingFilter.value;
-      const selectedStatus = stockFilter.value;
-      const keyword = searchInput.value.toLowerCase().trim();
-
-      let filteredData = allData.filter(row => {
-        if (!row) return false;
-        const age = calculateAge(row["วันที่ซื้อทรัพย์สิน"]);
-        return (
-          (!selectedEmployee || (row["ผู้รับผิดชอบ"] || "") === selectedEmployee) &&
-          (!selectedLocation || (row["Physical Location"] || "") === selectedLocation) &&
-          (!selectedStatus || (row["สถานะทรัพย์สิน"] || "") === selectedStatus) &&
-          (!keyword ||
-            (row["รหัสทรัพย์สิน"] || "").toLowerCase().includes(keyword) ||
-            (row["Sno."] || "").toLowerCase().includes(keyword) ||
-            (row["ชื่อทรัพย์สิน"] || "").toLowerCase().includes(keyword) ||
-            (row["UL"] || "").toLowerCase().includes(keyword) ||
-            (row["Physical Location"] || "").toLowerCase().includes(keyword) ||
-            (row["วันที่ซื้อทรัพย์สิน"] || "").toLowerCase().includes(keyword) ||
-            (row["ผู้รับผิดชอบ"] || "").toLowerCase().includes(keyword) ||
-            (row["สถานะทรัพย์สิน"] || "").toLowerCase().includes(keyword) ||
-            age.toLowerCase().includes(keyword)
-          )
-        );
-      });
-
-      const uniqueAssets = [...new Set(filteredData.map(row => row["รหัสทรัพย์สิน"]).filter(asset => asset))].length;
-      const totalAssets = uniqueAssets;
-
-      const pivotData = {};
-      const employees = [...new Set(filteredData.map(row => row["ผู้รับผิดชอบ"] || "ไม่ระบุ"))].sort();
-
-      employees.forEach(employee => {
-        pivotData[employee] = { "ใช้งาน": 0, "ไม่ใช้งาน": 0, "โอนย้ายทรัพย์สิน": 0 };
-      });
-
-      const assetCounts = {};
-      filteredData.forEach(row => {
-        const asset = row["รหัสทรัพย์สิน"];
-        if (!assetCounts[asset]) {
-          const employee = row["ผู้รับผิดชอบ"] || "ไม่ระบุ";
-          const status = (row["สถานะทรัพย์สิน"] || "").trim().toLowerCase();
-          if (status === "stock" || status === "ใช้งาน") {
-            pivotData[employee]["ใช้งาน"]++;
-          } else if (status === "โอนย้ายทรัพย์สิน") {
-            pivotData[employee]["โอนย้ายทรัพย์สิน"]++;
-          } else {
-            pivotData[employee]["ไม่ใช้งาน"]++;
-          }
-          assetCounts[asset] = true;
-        }
-      });
-
-      const employeeTotals = employees.map(employee => {
-        const total = pivotData[employee]["ใช้งาน"] + pivotData[employee]["ไม่ใช้งาน"] + pivotData[employee]["โอนย้ายทรัพย์สิน"];
-        const answeredCount = pivotData[employee]["ใช้งาน"] || 0;
-        const waitAnsCount = pivotData[employee]["ไม่ใช้งาน"] || 0;
-        const transferCount = pivotData[employee]["โอนย้ายทรัพย์สิน"] || 0;
-        return { employee, total, answeredCount, waitAnsCount, transferCount };
-      }).sort((a, b) => b.total - a.total);
-
-      let pivotTableHtml = `
-        <table class='detail-table'>
+        <div class="form-group">
+          <label><i class="fas fa-sticky-note"></i> หมายเหตุ</label>
+          <textarea id="tf_note" placeholder="รายละเอียดเพิ่มเติม (ถ้ามี)" class="form-input"></textarea>
+        </div>
+        <div class="modal-buttons">
+          <button type="submit" class="action-button"><i class="fas fa-save"></i> บันทึกการโอนย้าย</button>
+          <button type="button" id="viewHistoryBtn" class="action-button" style="background:linear-gradient(135deg,var(--secondary-color),#495057);"><i class="fas fa-history"></i> ดูประวัติ</button>
+          <button type="button" id="printFormBtn" class="action-button" style="background:linear-gradient(135deg,var(--success-color),#20c997);"><i class="fas fa-print"></i> พิมพ์ฟอร์ม</button>
+        </div>
+        <datalist id="ownersList"></datalist>
+        <datalist id="locationsList"></datalist>
+      </form>
+      <div id="historyBox">
+        <h3><i class="fas fa-history"></i> ประวัติการโอนย้ายทรัพย์สิน</h3>
+        <table class="timeline-table" id="historyTable">
           <thead>
             <tr>
-              <th>ผู้รับผิดชอบ</th>
-              <th class='fixed-width'>รวม</th>
-              <th class='fixed-width'>ใช้งาน</th>
-              <th class='fixed-width'>ไม่ใช้งาน</th>
-              <th class='fixed-width'>โอนย้ายทรัพย์สิน</th>
+              <th>วันที่โอน</th>
+              <th>จากสถานที่</th>
+              <th>ไปสถานที่</th>
+              <th>จากผู้รับผิดชอบ</th>
+              <th>ผู้รับผิดชอบใหม่</th>
+              <th>ผู้ดำเนินการ</th>
+              <th>หมายเหตุ</th>
             </tr>
           </thead>
-          <tbody>
-            ${employeeTotals.map(({ employee, total, answeredCount, waitAnsCount, transferCount }) => `
-              <tr>
-                <td>${employee}</td>
-                <td class='fixed-width'>${total === 0 ? '-' : total}</td>
-                <td class='fixed-width'>${answeredCount === 0 ? '-' : answeredCount}</td>
-                <td class='fixed-width'>${waitAnsCount === 0 ? '-' : waitAnsCount}</td>
-                <td class='fixed-width'>${transferCount === 0 ? '-' : transferCount}</td>
-              </tr>
-            `).join('')}
-            <tr>
-              <td><strong>รวม</strong></td>
-              <td class='fixed-width'><strong>${totalAssets === 0 ? '-' : totalAssets}</strong></td>
-              <td class='fixed-width'><strong>${
-                employees.reduce((sum, employee) => sum + pivotData[employee]["ใช้งาน"], 0) === 0 
-                  ? '-' 
-                  : employees.reduce((sum, employee) => sum + pivotData[employee]["ใช้งาน"], 0)
-              }</strong></td>
-              <td class='fixed-width'><strong>${
-                employees.reduce((sum, employee) => sum + pivotData[employee]["ไม่ใช้งาน"], 0) === 0 
-                  ? '-' 
-                  : employees.reduce((sum, employee) => sum + pivotData[employee]["ไม่ใช้งาน"], 0)
-              }</strong></td>
-              <td class='fixed-width'><strong>${
-                employees.reduce((sum, employee) => sum + pivotData[employee]["โอนย้ายทรัพย์สิน"], 0) === 0 
-                  ? '-' 
-                  : employees.reduce((sum, employee) => sum + pivotData[employee]["โอนย้ายทรัพย์สิน"], 0)
-              }</strong></td>
-            </tr>
-          </tbody>
+          <tbody></tbody>
         </table>
-      `;
+      </div>
+      <div style="margin-top:16px;font-size:12px;color:var(--secondary-color);padding:12px;background:var(--light-bg);border-radius:8px;border-left:4px solid var(--primary-color);">
+        <i class="fas fa-info-circle"></i> ระบบบันทึกข้อมูลใน localStorage ของเบราว์เซอร์ หากต้องการเชื่อม Google Sheets ให้กำหนด <code>transferEndpoint</code> ในสคริปต์
+      </div>
+    </div>
+  </div>
 
-      let summaryHtml = `
-        <div><span class='label'>จำนวนทรัพย์สินทั้งหมด:</span> <span class='value'>${totalAssets} รายการ</span></div>
-        <h3>จำนวนทรัพย์สินตามผู้รับผิดชอบและสถานะ</h3>
-        ${pivotTableHtml}
-      `;
+  <!-- Picker Modal -->
+  <div id="pickerModal" class="modal picker-modal">
+    <div class="modal-content">
+      <span class="close" id="closePickerModal">&times;</span>
+      <h2 id="pickerTitle">เลือกค่า</h2>
+      <input type="text" id="pickerSearch" placeholder="พิมพ์เพื่อค้นหา..." class="form-input">
+      <div id="pickerList"></div>
+    </div>
+  </div>
 
-      summaryContent.innerHTML = summaryHtml;
-      summaryModal.style.display = "block";
-    }
+  <script>
+    // DOMContentLoaded
+    document.addEventListener('DOMContentLoaded', function() {
+      const sheetID = '1caJemfomWLXEeqAlKFNMzGrT6divjSt5QZYeIjuTg58';
+      const sheetName = 'ASSET';
+      const url = `https://opensheet.elk.sh/${sheetID}/${sheetName}`;
+      const transferEndpoint = ''; // Optional: URL สำหรับ Apps Script
 
-    function printSummaryContent() {
-      const printWindow = window.open('', '_blank');
-      printWindow.document.write(`
-        <html>
-          <head>
-            <title>พิมพ์สรุปข้อมูลทรัพย์สิน</title>
-            <style>
-              body {
-                font-family: 'Prompt', sans-serif;
-                margin: 10mm;
-                padding: 0;
-              }
-              h2, h3 {
-                color: #000;
-                margin: 10px 0;
-              }
-              .detail-table {
-                width: 100%;
-                border-collapse: collapse;
-                margin-top: 10px;
-              }
-              .detail-table th, .detail-table td {
-                padding: 8px;
-                border: 1px solid #ccc;
-                text-align: center;
-              }
-              .detail-table th {
-                background-color: #007bff;
-                color: white;
-              }
-              .detail-table tr:nth-child(even) {
-                background-color: #f9f9f9;
-              }
-              .detail-table th:not(:first-child), .detail-table td:not(:first-child) {
-                width: 80px;
-                min-width: 80px;
-                max-width: 80px;
-              }
-              .detail-table th:first-child, .detail-table td:first-child {
-                width: auto;
-                min-width: 120px;
-              }
-              .label {
-                font-weight: bold;
-                color: #007bff;
-              }
-              .value {
-                color: #000;
-              }
-              @media print {
-                body {
-                  margin: 0;
-                }
-                @page {
-                  margin: 10mm;
-                }
-              }
-            </style>
-          </head>
-          <body onload="window.print()">
-            <h2>สรุปข้อมูลทรัพย์สิน</h2>
-            ${summaryContent.innerHTML}
-          </body>
-        </html>
-      `);
-      printWindow.document.close();
-    }
+      // DOM refs
+      const transferModal = document.getElementById('transferModal');
+      const closeTransferModal = document.getElementById('closeTransferModal');
+      const transferForm = document.getElementById('transferForm');
+      const historyBox = document.getElementById('historyBox');
+      const historyTableBody = document.querySelector('#historyTable tbody');
+      const viewHistoryBtn = document.getElementById('viewHistoryBtn');
+      const ownersListEl = document.getElementById('ownersList');
+      const locationsListEl = document.getElementById('locationsList');
+      const pickerModal = document.getElementById('pickerModal');
+      const closePickerModal = document.getElementById('closePickerModal');
+      const pickerTitle = document.getElementById('pickerTitle');
+      const pickerSearch = document.getElementById('pickerSearch');
+      const pickerList = document.getElementById('pickerList');
+      let pickerTarget = null;
+      const btnFindOwner = document.getElementById('btnFindOwner');
+      const btnFindLocation = document.getElementById('btnFindLocation');
+      const employeeFilter = document.getElementById('employeeFilter');
+      const pendingFilter = document.getElementById('pendingFilter');
+      const stockFilter = document.getElementById('stockFilter');
+      const searchInput = document.getElementById('searchInput');
+      const searchButton = document.getElementById('searchButton');
+      const excelButton = document.getElementById('excelButton');
+      const tableBody = document.getElementById('tableBody');
+      const pageNumbersContainer = document.getElementById('pageNumbers');
+      const firstPageButton = document.getElementById('firstPage');
+      const prevPageButton = document.getElementById('prevPage');
+      const nextPageButton = document.getElementById('nextPage');
+      const lastPageButton = document.getElementById('lastPage');
+      const itemsPerPageSelect = document.getElementById('itemsPerPage');
+      let allData = [];
+      let currentPage = 1;
+      let itemsPerPage = 20;
+      let sortConfig = { column: 'รหัสทรัพย์สิน', direction: 'asc' };
+      let currentAssetRow = null;
 
-    closeModal.onclick = () => {
-      modal.style.display = "none";
-      currentAssetId = null;
-    };
-    closeGraphModal.onclick = () => graphModal.style.display = "none";
-    closeSummaryModal.onclick = () => summaryModal.style.display = "none";
-
-    window.onclick = event => {
-      if (event.target == modal) {
-        modal.style.display = "none";
-        currentAssetId = null;
+      function todayISO() {
+        const d = new Date();
+        const m = (d.getMonth() + 1).toString().padStart(2, '0');
+        const day = d.getDate().toString().padStart(2, '0');
+        return `${d.getFullYear()}-${m}-${day}`;
       }
-      if (event.target == graphModal) {
-        graphModal.style.display = "none";
-      }
-      if (event.target == summaryModal) {
-        summaryModal.style.display = "none";
-      }
-    };
 
-    graphButton.addEventListener("click", showGraph);
-    excelButton.addEventListener("click", exportToCSV);
-    summaryButton.addEventListener("click", showSummary);
-
-    itemsPerPageSelect.addEventListener("change", (e) => {
-      itemsPerPage = parseInt(e.target.value);
-      currentPage = 1;
-      filterAndRenderTable();
-    });
-
-    searchInput.addEventListener("keypress", (e) => {
-      if (e.key === "Enter") {
-        filterAndRenderTable();
+      function calculateAge(purchaseDate) {
+        if (!purchaseDate || purchaseDate === '-') return '-';
+        try {
+          const [day, month, year] = purchaseDate.split('/');
+          const date = new Date(`${year}-${month}-${day}`);
+          if (isNaN(date.getTime())) return '-';
+          const today = new Date();
+          let years = today.getFullYear() - date.getFullYear();
+          let months = today.getMonth() - date.getMonth();
+          if (months < 0 || (months === 0 && today.getDate() < date.getDate())) { years--; months += 12; }
+          if (today.getDate() < date.getDate()) { months--; if (months < 0) { years--; months += 12; } }
+          if (years < 0) return '-';
+          return years === 0 && months === 0 ? '0 เดือน' : `${years} ปี ${months} เดือน`;
+        } catch (e) { return '-'; }
       }
-    });
 
-    searchButton.addEventListener("click", () => {
-      filterAndRenderTable();
-    });
-
-    printTableButton.addEventListener("click", printTable);
-
-    function populateEmployeeFilter(data) {
-      if (!data || data.length === 0) {
-        console.warn("No data to populate Employee filter");
-        return;
-      }
-      const employees = [...new Set(data.map(row => row["ผู้รับผิดชอบ"]).filter(employee => employee))].sort();
-      employeeFilter.innerHTML = '<option value="">ทั้งหมด</option>';
-      employees.forEach(employee => {
-        const option = document.createElement("option");
-        option.value = employee;
-        option.textContent = employee;
-        employeeFilter.appendChild(option);
-      });
-    }
-
-    function updateLocationFilter(data, selectedEmployee) {
-      if (!data || data.length === 0) {
-        console.warn("No data to populate Location filter");
-        return;
-      }
-      const currentLocationValue = pendingFilter.value;
-      const filteredData = selectedEmployee ? data.filter(row => (row["ผู้รับผิดชอบ"] || "") === selectedEmployee) : data;
-      const locations = [...new Set(filteredData.map(row => row["Physical Location"]).filter(location => location))].sort();
-      pendingFilter.innerHTML = '<option value="">ทั้งหมด</option>';
-      locations.forEach(location => {
-        const option = document.createElement("option");
-        option.value = location;
-        option.textContent = location;
-        pendingFilter.appendChild(option);
-      });
-      if (currentLocationValue && locations.includes(currentLocationValue)) {
-        pendingFilter.value = currentLocationValue;
-      } else {
-        pendingFilter.value = "";
-      }
-      updateStatusFilter(data, selectedEmployee, pendingFilter.value);
-    }
-
-    function updateStatusFilter(data, selectedEmployee, selectedLocation) {
-      if (!data || data.length === 0) {
-        console.warn("No data to populate Status filter");
-        return;
-      }
-      const currentStatusValue = stockFilter.value;
-      let filteredData = data;
-      if (selectedEmployee) {
-        filteredData = filteredData.filter(row => (row["ผู้รับผิดชอบ"] || "") === selectedEmployee);
-      }
-      if (selectedLocation) {
-        filteredData = filteredData.filter(row => (row["Physical Location"] || "") === selectedLocation);
-      }
-      const statuses = [...new Set(filteredData.map(row => row["สถานะทรัพย์สิน"]).filter(status => status))].sort();
-      stockFilter.innerHTML = '<option value="">ทั้งหมด</option>';
-      statuses.forEach(status => {
-        const option = document.createElement("option");
-        option.value = status;
-        option.textContent = status;
-        stockFilter.appendChild(option);
-      });
-      if (currentStatusValue && statuses.includes(currentStatusValue)) {
-        stockFilter.value = currentStatusValue;
-      } else {
-        stockFilter.value = "";
-      }
-    }
-
-    function addSortListeners() {
-      const sortableHeaders = document.querySelectorAll("th.sortable");
-      sortableHeaders.forEach(header => {
-        header.addEventListener("click", () => {
-          const column = header.getAttribute("data-column");
-          if (sortConfig.column === column) {
-            sortConfig.direction = sortConfig.direction === 'asc' ? 'desc' : 'asc';
-          } else {
-            sortConfig.column = column;
-            sortConfig.direction = 'asc';
-          }
-          updateSortArrows();
-          filterAndRenderTable();
-        });
-      });
-    }
-
-    function updateSortArrows() {
-      const sortableHeaders = document.querySelectorAll("th.sortable");
-      sortableHeaders.forEach(header => {
-        const arrow = header.querySelector(".arrow");
-        const column = header.getAttribute("data-column");
-        if (column === sortConfig.column) {
-          arrow.textContent = sortConfig.direction === 'asc' ? '↑' : '↓';
-        } else {
-          arrow.textContent = '';
+      function parseAgeForSorting(ageString) {
+        if (ageString === '-') return { years: -Infinity, months: -Infinity };
+        const match = ageString.match(/(\d+)\s*ปี\s*(\d+)\s*เดือน/);
+        if (!match) {
+          const monthMatch = ageString.match(/(\d+)\s*เดือน/);
+          if (monthMatch) return { years: 0, months: parseInt(monthMatch[1]) };
+          return { years: -Infinity, months: -Infinity };
         }
-      });
-    }
+        return { years: parseInt(match[1]), months: parseInt(match[2]) };
+      }
 
-    function filterAndRenderTable() {
-      const selectedEmployee = employeeFilter.value;
-      const selectedLocation = pendingFilter.value;
-      const selectedStatus = stockFilter.value;
-      const keyword = searchInput.value.toLowerCase().trim();
-      let filteredData = allData.filter(row => {
-        if (!row) return false;
-        const age = calculateAge(row["วันที่ซื้อทรัพย์สิน"]);
-        return (
-          (!selectedEmployee || (row["ผู้รับผิดชอบ"] || "") === selectedEmployee) &&
-          (!selectedLocation || (row["Physical Location"] || "") === selectedLocation) &&
-          (!selectedStatus || (row["สถานะทรัพย์สิน"] || "") === selectedStatus) &&
-          (!keyword ||
-            (row["รหัสทรัพย์สิน"] || "").toLowerCase().includes(keyword) ||
-            (row["Sno."] || "").toLowerCase().includes(keyword) ||
-            (row["ชื่อทรัพย์สิน"] || "").toLowerCase().includes(keyword) ||
-            (row["UL"] || "").toLowerCase().includes(keyword) ||
-            (row["Physical Location"] || "").toLowerCase().includes(keyword) ||
-            (row["วันที่ซื้อทรัพย์สิน"] || "").toLowerCase().includes(keyword) ||
-            (row["ผู้รับผิดชอบ"] || "").toLowerCase().includes(keyword) ||
-            (row["สถานะทรัพย์สิน"] || "").toLowerCase().includes(keyword) ||
-            age.toLowerCase().includes(keyword)
-          )
-        );
-      });
+      function extractEmpId(text) {
+        if (!text) return '';
+        const m = String(text).trim().match(/^(\d{4,})\b/);
+        return m ? m[1] : '';
+      }
 
-      updateLocationFilter(allData, selectedEmployee);
-      updateStatusFilter(allData, selectedEmployee, selectedLocation);
+      // ฟังก์ชันใหม่: แยกชื่อผู้รับผิดชอบ (ตัดรหัสพนักงานออก)
+      function extractOwnerName(text) {
+        if (!text) return '';
+        return String(text).trim().replace(/^(\d{4,})\s*/, '').trim();
+      }
 
-      const uniqueAssets = [...new Set(filteredData.map(row => row["รหัสทรัพย์สิน"]).filter(asset => asset))].length;
-      const ticketCountValue = document.getElementById("ticketCountValue");
-      ticketCountValue.textContent = uniqueAssets;
+      function escapeCSVValue(value) {
+        if (value == null) return '""';
+        const s = value.toString();
+        if (s.includes(',') || s.includes('"') || s.includes('\n')) return '"' + s.replace(/"/g, '""') + '"';
+        return s;
+      }
 
-      if (sortConfig.column) {
-        filteredData.sort((a, b) => {
-          if (sortConfig.column === "อายุ") {
-            const ageA = parseAgeForSorting(calculateAge(a["วันที่ซื้อทรัพย์สิน"]));
-            const ageB = parseAgeForSorting(calculateAge(b["วันที่ซื้อทรัพย์สิน"]));
-            if (ageA.years === ageB.years) {
-              return sortConfig.direction === 'asc'
-                ? ageA.months - ageB.months
-                : ageB.months - ageA.months;
-            }
-            return sortConfig.direction === 'asc'
-              ? ageA.years - ageB.years
-              : ageB.years - ageA.years;
-          }
-          let valueA = a[sortConfig.column] || "";
-          let valueB = b[sortConfig.column] || "";
-          valueA = valueA.toString().toLowerCase();
-          valueB = valueB.toString().toLowerCase();
-          return sortConfig.direction === 'asc'
-            ? (valueA > valueB ? 1 : valueA < valueB ? -1 : 0)
-            : (valueA < valueB ? 1 : valueA > valueB ? -1 : 0);
+      function exportToCSV() {
+        if (!allData || allData.length === 0) { alert('ไม่มีข้อมูลในระบบสำหรับการส่งออก CSV'); return; }
+        const selectedEmployee = employeeFilter.value;
+        const selectedLocation = pendingFilter.value;
+        const selectedStatus = stockFilter.value;
+        const keyword = searchInput.value.toLowerCase().trim();
+        let filteredData = allData.filter(row => {
+          if (!row) return false;
+          const age = calculateAge(row['วันที่ซื้อทรัพย์สิน']);
+          return (
+            (!selectedEmployee || (row['ผู้รับผิดชอบ'] || '') === selectedEmployee) &&
+            (!selectedLocation || (row['Physical Location'] || '') === selectedLocation) &&
+            (!selectedStatus || (row['สถานะทรัพย์สิน'] || '') === selectedStatus) &&
+            (!keyword ||
+              (row['รหัสทรัพย์สิน'] || '').toLowerCase().includes(keyword) ||
+              (row['Sno.'] || '').toLowerCase().includes(keyword) ||
+              (row['ชื่อทรัพย์สิน'] || '').toLowerCase().includes(keyword) ||
+              (row['UL'] || '').toLowerCase().includes(keyword) ||
+              (row['Physical Location'] || '').toLowerCase().includes(keyword) ||
+              (row['วันที่ซื้อทรัพย์สิน'] || '').toLowerCase().includes(keyword) ||
+              (row['ผู้รับผิดชอบ'] || '').toLowerCase().includes(keyword) ||
+              (row['สถานะทรัพย์สิน'] || '').toLowerCase().includes(keyword) ||
+              age.toLowerCase().includes(keyword)
+            )
+          );
         });
-      } else {
-        filteredData.sort((a, b) => {
-          let idA = a["รหัสทรัพย์สิน"] || "";
-          let idB = b["รหัสทรัพย์สิน"] || "";
-          return idA.localeCompare(idB);
+        if (filteredData.length === 0) { alert('ไม่มีข้อมูลที่ตรงกับเงื่อนไขการกรอง'); return; }
+        filteredData.sort((a, b) => (a['รหัสทรัพย์สิน'] || '').localeCompare(b['รหัสทรัพย์สิน'] || ''));
+        const columns = ['รหัสทรัพย์สิน', 'Sno.', 'ชื่อทรัพย์สิน', 'UL', 'Physical Location', 'วันที่ซื้อทรัพย์สิน', 'ผู้รับผิดชอบ', 'สถานะทรัพย์สิน', 'อายุ'];
+        const rows = [];
+        rows.push(columns.map(c => `"${c}"`).join(','));
+        filteredData.forEach(r => {
+          const rowData = columns.map(c => escapeCSVValue(c === 'อายุ' ? calculateAge(r['วันที่ซื้อทรัพย์สิน']) : (r[c] || '-')));
+          rows.push(rowData.join(','));
+        });
+        const csv = rows.join('\n');
+        const bom = '\uFEFF';
+        const blob = new Blob([bom + csv], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `asset_report_${new Date().toISOString().replace(/[:.]/g, '-')}.csv`;
+        link.click();
+        URL.revokeObjectURL(link.href);
+      }
+
+      function populateEmployeeFilter(data) {
+        if (!data || data.length === 0) return;
+        const employees = [...new Set(data.map(r => r['ผู้รับผิดชอบ']).filter(Boolean))].sort();
+        employeeFilter.innerHTML = '<option value="">ทั้งหมด</option>';
+        employees.forEach(e => {
+          const o = document.createElement('option');
+          o.value = e;
+          o.textContent = e;
+          employeeFilter.appendChild(o);
         });
       }
 
-      renderTable(filteredData);
-      updateAssetCount(filteredData);
-    }
-
-    employeeFilter.addEventListener("change", () => {
-      filterAndRenderTable();
-    });
-
-    pendingFilter.addEventListener("change", () => {
-      filterAndRenderTable();
-    });
-
-    stockFilter.addEventListener("change", filterAndRenderTable);
-
-    function updateAssetCount(data) {
-      const count = [...new Set(data.map(row => row["รหัสทรัพย์สิน"]).filter(asset => asset))].length;
-      const callCountValue = document.getElementById("callCountValue");
-      callCountValue.textContent = count;
-    }
-
-    function renderTable(data) {
-      tableBody.innerHTML = '';
-      if (!data || data.length === 0) {
-        tableBody.innerHTML = '<tr><td colspan="10">ไม่มีข้อมูลที่ตรงกับเงื่อนไข</td></tr>';
-        return;
+      function updateLocationFilter(data, selectedEmployee) {
+        if (!data || data.length === 0) return;
+        const current = pendingFilter.value;
+        const filtered = selectedEmployee ? data.filter(r => (r['ผู้รับผิดชอบ'] || '') === selectedEmployee) : data;
+        const locations = [...new Set(filtered.map(r => r['Physical Location']).filter(Boolean))].sort();
+        pendingFilter.innerHTML = '<option value="">ทั้งหมด</option>';
+        locations.forEach(l => {
+          const o = document.createElement('option');
+          o.value = l;
+          o.textContent = l;
+          pendingFilter.appendChild(o);
+        });
+        pendingFilter.value = (current && locations.includes(current)) ? current : '';
+        updateStatusFilter(data, selectedEmployee, pendingFilter.value);
       }
 
-      const startIdx = (currentPage - 1) * itemsPerPage;
-      const endIdx = startIdx + itemsPerPage;
-      const paginatedData = data.slice(startIdx, endIdx);
+      function updateStatusFilter(data, selectedEmployee, selectedLocation) {
+        if (!data || data.length === 0) return;
+        const current = stockFilter.value;
+        let filtered = data;
+        if (selectedEmployee) filtered = filtered.filter(r => (r['ผู้รับผิดชอบ'] || '') === selectedEmployee);
+        if (selectedLocation) filtered = filtered.filter(r => (r['Physical Location'] || '') === selectedLocation);
+        const statuses = [...new Set(filtered.map(r => r['สถานะทรัพย์สิน']).filter(Boolean))].sort();
+        stockFilter.innerHTML = '<option value="">ทั้งหมด</option>';
+        statuses.forEach(s => {
+          const o = document.createElement('option');
+          o.value = s;
+          o.textContent = s;
+          stockFilter.appendChild(o);
+        });
+        stockFilter.value = (current && statuses.includes(current)) ? current : '';
+      }
 
-      const assetGroups = {};
-      data.forEach(row => {
-        const asset = row["รหัสทรัพย์สิน"];
-        if (!assetGroups[asset]) {
-          assetGroups[asset] = [];
-        }
-        assetGroups[asset].push(row);
-      });
-
-      const uniqueAssets = Object.keys(assetGroups).sort();
-      const colorMap = {};
-      uniqueAssets.forEach((asset, index) => {
-        colorMap[asset] = index % 2 === 0 ? "yellow-light" : "pink-pastel";
-      });
-
-      paginatedData.forEach((row, i) => {
-        const tr = document.createElement("tr");
-        tr.style.animationDelay = `${i * 0.05}s`;
-        const asset = row["รหัสทรัพย์สิน"];
-        tr.className = colorMap[asset] || "yellow-light";
-
-        const columns = ["รหัสทรัพย์สิน", "Sno.", "ชื่อทรัพย์สิน", "UL", "Physical Location", "วันที่ซื้อทรัพย์สิน", "ผู้รับผิดชอบ", "สถานะทรัพย์สิน", "อายุ"];
-        columns.forEach(col => {
-          const td = document.createElement("td");
-          let cellValue = col === "อายุ" ? calculateAge(row["วันที่ซื้อทรัพย์สิน"]) : (row[col] || "-");
-          let displayValue = cellValue;
-          if (col === "สถานะทรัพย์สิน") {
-            const normalizedValue = cellValue.toString().trim().toLowerCase();
-            if (normalizedValue === "stock" || normalizedValue === "ใช้งาน") {
-              displayValue = "ใช้งาน";
-              td.classList.add("green-text");
-            } else if (normalizedValue === "โอนย้ายทรัพย์สิน") {
-              displayValue = "โอนย้ายทรัพย์สิน";
-              td.classList.add("orange-text");
+      function addSortListeners() {
+        document.querySelectorAll('th.sortable').forEach(h => {
+          h.addEventListener('click', () => {
+            const col = h.getAttribute('data-column');
+            if (sortConfig.column === col) {
+              sortConfig.direction = sortConfig.direction === 'asc' ? 'desc' : 'asc';
             } else {
-              displayValue = "ไม่ใช้งาน";
-              td.classList.add("red-text");
+              sortConfig.column = col;
+              sortConfig.direction = 'asc';
             }
-          } else if (col === "อายุ") {
-            td.classList.add("text-center");
-          }
-          td.textContent = displayValue;
-          td.classList.add("text-left");
-          tr.appendChild(td);
+            updateSortArrows();
+            filterAndRenderTable();
+          });
         });
-
-        const detailTd = document.createElement("td");
-        const btn = document.createElement("button");
-        btn.textContent = "ดูรายละเอียด";
-        btn.className = "detail-button";
-        btn.onclick = () => {
-          currentAssetId = row["รหัสทรัพย์สิน"];
-          let detailHtml = `
-            <div><span class="label">รหัสทรัพย์สิน:</span> <span class="value">${row["รหัสทรัพย์สิน"] || "-"}</span></div>
-            <div><span class="label">Sno.:</span> <span class="value">${row["Sno."] || "-"}</span></div>
-            <div><span class="label">ชื่อทรัพย์สิน:</span> <span class="value">${row["ชื่อทรัพย์สิน"] || "-"}</span></div>
-            <div><span class="label">UL:</span> <span class="value">${row["UL"] || "-"}</span></div>
-            <div><span class="label">Physical Location:</span> <span class="value">${row["Physical Location"] || "-"}</span></div>
-            <div><span class="label">วันที่ซื้อทรัพย์สิน:</span> <span class="value">${row["วันที่ซื้อทรัพย์สิน"] || "-"}</span></div>
-            <div><span class="label">ผู้รับผิดชอบ:</span> <span class="value">${row["ผู้รับผิดชอบ"] || "-"}</span></div>
-            <div><span class="label">สถานะทรัพย์สิน:</span> <span class="value">${row["สถานะทรัพย์สิน"] || "-"}</span></div>
-            <div><span class="label">อายุ:</span> <span class="value">${calculateAge(row["วันที่ซื้อทรัพย์สิน"])}</span></div>
-          `;
-          modalContent.innerHTML = detailHtml;
-          modal.style.display = "block";
-        };
-        detailTd.appendChild(btn);
-        tr.appendChild(detailTd);
-
-        tableBody.appendChild(tr);
-      });
-      updatePagination(data);
-    }
-
-    function updatePagination(data) {
-      const totalPages = Math.ceil(data.length / itemsPerPage);
-      pageNumbersContainer.innerHTML = '';
-
-      if (currentPage > totalPages) {
-        currentPage = totalPages || 1;
       }
 
-      const maxPagesToShow = 4;
-      const halfPages = Math.floor(maxPagesToShow / 2);
-      let startPage = Math.max(1, currentPage - halfPages);
-      let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
-
-      if (endPage - startPage < maxPagesToShow - 1) {
-        startPage = Math.max(1, endPage - maxPagesToShow + 1);
+      function updateSortArrows() {
+        document.querySelectorAll('th.sortable').forEach(h => {
+          const arrow = h.querySelector('.arrow');
+          const col = h.getAttribute('data-column');
+          arrow.textContent = (col === sortConfig.column) ? (sortConfig.direction === 'asc' ? '↑' : '↓') : '';
+        });
       }
 
-      for (let i = startPage; i <= endPage; i++) {
-        const pageNumberButton = document.createElement("button");
-        pageNumberButton.className = `page-number ${i === currentPage ? 'active' : ''}`;
-        pageNumberButton.textContent = i;
-        pageNumberButton.onclick = () => {
-          currentPage = i;
-          filterAndRenderTable();
-        };
-        pageNumbersContainer.appendChild(pageNumberButton);
-      }
-
-      firstPageButton.disabled = currentPage === 1;
-      prevPageButton.disabled = currentPage === 1;
-      nextPageButton.disabled = currentPage === totalPages;
-      lastPageButton.disabled = currentPage === totalPages;
-    }
-
-    firstPageButton.onclick = () => {
-      currentPage = 1;
-      filterAndRenderTable();
-    };
-
-    prevPageButton.onclick = () => {
-      if (currentPage > 1) {
-        currentPage--;
-        filterAndRenderTable();
-      }
-    };
-
-    nextPageButton.onclick = () => {
-      const totalPages = Math.ceil(
-        allData.filter(row => {
+      function filterAndRenderTable() {
+        const selectedEmployee = employeeFilter.value;
+        const selectedLocation = pendingFilter.value;
+        const selectedStatus = stockFilter.value;
+        const keyword = searchInput.value.toLowerCase().trim();
+        let filtered = allData.filter(row => {
           if (!row) return false;
-          const selectedEmployee = employeeFilter.value;
-          const selectedLocation = pendingFilter.value;
-          const selectedStatus = stockFilter.value;
-          const keyword = searchInput.value.toLowerCase().trim();
-          const age = calculateAge(row["วันที่ซื้อทรัพย์สิน"]);
+          const age = calculateAge(row['วันที่ซื้อทรัพย์สิน']);
           return (
-            (!selectedEmployee || (row["ผู้รับผิดชอบ"] || "") === selectedEmployee) &&
-            (!selectedLocation || (row["Physical Location"] || "") === selectedLocation) &&
-            (!selectedStatus || (row["สถานะทรัพย์สิน"] || "") === selectedStatus) &&
+            (!selectedEmployee || (row['ผู้รับผิดชอบ'] || '') === selectedEmployee) &&
+            (!selectedLocation || (row['Physical Location'] || '') === selectedLocation) &&
+            (!selectedStatus || (row['สถานะทรัพย์สิน'] || '') === selectedStatus) &&
             (!keyword ||
-              (row["รหัสทรัพย์สิน"] || "").toLowerCase().includes(keyword) ||
-              (row["Sno."] || "").toLowerCase().includes(keyword) ||
-              (row["ชื่อทรัพย์สิน"] || "").toLowerCase().includes(keyword) ||
-              (row["UL"] || "").toLowerCase().includes(keyword) ||
-              (row["Physical Location"] || "").toLowerCase().includes(keyword) ||
-              (row["วันที่ซื้อทรัพย์สิน"] || "").toLowerCase().includes(keyword) ||
-              (row["ผู้รับผิดชอบ"] || "").toLowerCase().includes(keyword) ||
-              (row["สถานะทรัพย์สิน"] || "").toLowerCase().includes(keyword) ||
+              (row['รหัสทรัพย์สิน'] || '').toLowerCase().includes(keyword) ||
+              (row['Sno.'] || '').toLowerCase().includes(keyword) ||
+              (row['ชื่อทรัพย์สิน'] || '').toLowerCase().includes(keyword) ||
+              (row['UL'] || '').toLowerCase().includes(keyword) ||
+              (row['Physical Location'] || '').toLowerCase().includes(keyword) ||
+              (row['วันที่ซื้อทรัพย์สิน'] || '').toLowerCase().includes(keyword) ||
+              (row['ผู้รับผิดชอบ'] || '').toLowerCase().includes(keyword) ||
+              (row['สถานะทรัพย์สิน'] || '').toLowerCase().includes(keyword) ||
               age.toLowerCase().includes(keyword)
             )
           );
-        }).length / itemsPerPage
-      );
-      if (currentPage < totalPages) {
-        currentPage++;
-        filterAndRenderTable();
-      }
-    };
-
-    lastPageButton.onclick = () => {
-      currentPage = Math.ceil(
-        allData.filter(row => {
-          if (!row) return false;
-          const selectedEmployee = employeeFilter.value;
-          const selectedLocation = pendingFilter.value;
-          const selectedStatus = stockFilter.value;
-          const keyword = searchInput.value.toLowerCase().trim();
-          const age = calculateAge(row["วันที่ซื้อทรัพย์สิน"]);
-          return (
-            (!selectedEmployee || (row["ผู้รับผิดชอบ"] || "") === selectedEmployee) &&
-            (!selectedLocation || (row["Physical Location"] || "") === selectedLocation) &&
-            (!selectedStatus || (row["สถานะทรัพย์สิน"] || "") === selectedStatus) &&
-            (!keyword ||
-              (row["รหัสทรัพย์สิน"] || "").toLowerCase().includes(keyword) ||
-              (row["Sno."] || "").toLowerCase().includes(keyword) ||
-              (row["ชื่อทรัพย์สิน"] || "").toLowerCase().includes(keyword) ||
-              (row["UL"] || "").toLowerCase().includes(keyword) ||
-              (row["Physical Location"] || "").toLowerCase().includes(keyword) ||
-              (row["วันที่ซื้อทรัพย์สิน"] || "").toLowerCase().includes(keyword) ||
-              (row["ผู้รับผิดชอบ"] || "").toLowerCase().includes(keyword) ||
-              (row["สถานะทรัพย์สิน"] || "").toLowerCase().includes(keyword) ||
-              age.toLowerCase().includes(keyword)
-            )
-          );
-        }).length / itemsPerPage
-      );
-      filterAndRenderTable();
-    };
-
-    fetch(url)
-      .then(response => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+        });
+        updateLocationFilter(allData, selectedEmployee);
+        updateStatusFilter(allData, selectedEmployee, selectedLocation);
+        const uniqueAssets = [...new Set(filtered.map(r => r['รหัสทรัพย์สิน']).filter(Boolean))].length;
+        document.getElementById('ticketCountValue').textContent = uniqueAssets;
+        if (sortConfig.column) {
+          filtered.sort((a, b) => {
+            if (sortConfig.column === 'อายุ') {
+              const aAge = parseAgeForSorting(calculateAge(a['วันที่ซื้อทรัพย์สิน']));
+              const bAge = parseAgeForSorting(calculateAge(b['วันที่ซื้อทรัพย์สิน']));
+              if (aAge.years === bAge.years) return sortConfig.direction === 'asc' ? aAge.months - bAge.months : bAge.months - aAge.months;
+              return sortConfig.direction === 'asc' ? aAge.years - bAge.years : bAge.years - aAge.years;
+            }
+            let va = (a[sortConfig.column] || '').toString().toLowerCase();
+            let vb = (b[sortConfig.column] || '').toString().toLowerCase();
+            if (va === vb) return 0;
+            return sortConfig.direction === 'asc' ? (va > vb ? 1 : -1) : (va < vb ? 1 : -1);
+          });
+        } else {
+          filtered.sort((a, b) => (a['รหัสทรัพย์สิน'] || '').localeCompare(b['รหัสทรัพย์สิน'] || ''));
         }
-        return response.json();
-      })
-      .then(data => {
+        renderTable(filtered);
+        updateAssetCount(filtered);
+      }
+
+      function updateAssetCount(data) {
+        const count = [...new Set(data.map(r => r['รหัสทรัพย์สิน']).filter(Boolean))].length;
+        document.getElementById('callCountValue').textContent = count;
+      }
+
+      function renderTable(data) {
+        tableBody.innerHTML = '';
         if (!data || data.length === 0) {
-          console.error("No data received from Google Sheets");
-          tableBody.innerHTML = '<tr><td colspan="10">ไม่มีข้อมูลจาก Google Sheets</td></tr>';
+          tableBody.innerHTML = '<tr><td colspan="10" style="text-align:center; padding:40px; color:var(--secondary-color);">ไม่มีข้อมูลที่ตรงกับเงื่อนไข</td></tr>';
           return;
         }
-        allData = data;
-        console.log("Data loaded from Google Sheets:", allData.length, "rows");
-        console.log("Sample data:", allData.slice(0, 2));
-        console.log("Column names in data:", Object.keys(allData[0] || {}));
-        console.log("Unique สถานะทรัพย์สิน values:", [...new Set(allData.map(row => row["สถานะทรัพย์สิน"]).filter(val => val))]);
-        populateEmployeeFilter(allData);
-        updateLocationFilter(allData, "");
-        updateStatusFilter(allData, "", "");
-        addSortListeners();
-        updateSortArrows();
+        const start = (currentPage - 1) * itemsPerPage;
+        const end = start + itemsPerPage;
+        const page = data.slice(start, end);
+        const assetGroups = {};
+        data.forEach(r => {
+          const a = r['รหัสทรัพย์สิน'];
+          if (!assetGroups[a]) assetGroups[a] = [];
+          assetGroups[a].push(r);
+        });
+        const uniq = Object.keys(assetGroups).sort();
+        const colorMap = {};
+        uniq.forEach((a, i) => { colorMap[a] = i % 2 === 0 ? 'yellow-light' : 'pink-pastel'; });
+        page.forEach((row, i) => {
+          const tr = document.createElement('tr');
+          tr.style.animationDelay = `${i * 0.05}s`;
+          const asset = row['รหัสทรัพย์สิน'];
+          tr.className = colorMap[asset] || 'yellow-light';
+          const columns = ['รหัสทรัพย์สิน', 'Sno.', 'ชื่อทรัพย์สิน', 'UL', 'Physical Location', 'วันที่ซื้อทรัพย์สิน', 'ผู้รับผิดชอบ', 'สถานะทรัพย์สิน', 'อายุ'];
+          columns.forEach(col => {
+            const td = document.createElement('td');
+            let cell = col === 'อายุ' ? calculateAge(row['วันที่ซื้อทรัพย์สิน']) : (row[col] || '-');
+            let display = cell;
+            if (col === 'สถานะทรัพย์สิน') {
+              const n = cell.toString().trim().toLowerCase();
+              if (n === 'stock' || n === 'ใช้งาน') {
+                display = 'ใช้งาน';
+                td.classList.add('green-text');
+              } else if (n === 'โอนย้ายทรัพย์สิน') {
+                display = 'โอนย้ายทรัพย์สิน';
+                td.classList.add('orange-text');
+              } else {
+                display = 'ไม่ใช้งาน';
+                td.classList.add('red-text');
+              }
+            } else if (col === 'อายุ') {
+              td.classList.add('text-center');
+            }
+            td.textContent = display;
+            tr.appendChild(td);
+          });
+          const transferTd = document.createElement('td');
+          const btn = document.createElement('button');
+          btn.innerHTML = '<i class="fas fa-exchange-alt"></i> โอนย้าย';
+          btn.className = 'transfer-button';
+          btn.onclick = () => openTransferModal(row);
+          transferTd.appendChild(btn);
+          tr.appendChild(transferTd);
+          tableBody.appendChild(tr);
+        });
+        updatePagination(data.length);
+      }
+
+      function updatePagination(totalItems) {
+        const totalPages = Math.ceil(totalItems / itemsPerPage);
+        pageNumbersContainer.innerHTML = '';
+        if (currentPage > totalPages) currentPage = totalPages || 1;
+        const maxVisible = 5;
+        const half = Math.floor(maxVisible / 2);
+        let start = Math.max(1, currentPage - half);
+        let end = Math.min(totalPages, start + maxVisible - 1);
+        if (end - start < maxVisible - 1) start = Math.max(1, end - maxVisible + 1);
+        for (let i = start; i <= end; i++) {
+          const b = document.createElement('button');
+          b.className = `page-number ${i === currentPage ? 'active' : ''}`;
+          b.textContent = i;
+          b.onclick = () => {
+            currentPage = i;
+            filterAndRenderTable();
+          };
+          pageNumbersContainer.appendChild(b);
+        }
+        firstPageButton.disabled = currentPage === 1;
+        prevPageButton.disabled = currentPage === 1;
+        nextPageButton.disabled = currentPage === totalPages;
+        lastPageButton.disabled = currentPage === totalPages;
+      }
+
+      function getCurrentFilteredLength() {
+        // คำนวณ filtered length เหมือน filterAndRenderTable
+        const selectedEmployee = employeeFilter.value;
+        const selectedLocation = pendingFilter.value;
+        const selectedStatus = stockFilter.value;
+        const keyword = searchInput.value.toLowerCase().trim();
+        return allData.filter(row => {
+          if (!row) return false;
+          const age = calculateAge(row['วันที่ซื้อทรัพย์สิน']);
+          return (
+            (!selectedEmployee || (row['ผู้รับผิดชอบ'] || '') === selectedEmployee) &&
+            (!selectedLocation || (row['Physical Location'] || '') === selectedLocation) &&
+            (!selectedStatus || (row['สถานะทรัพย์สิน'] || '') === selectedStatus) &&
+            (!keyword ||
+              (row['รหัสทรัพย์สิน'] || '').toLowerCase().includes(keyword) ||
+              (row['Sno.'] || '').toLowerCase().includes(keyword) ||
+              (row['ชื่อทรัพย์สิน'] || '').toLowerCase().includes(keyword) ||
+              (row['UL'] || '').toLowerCase().includes(keyword) ||
+              (row['Physical Location'] || '').toLowerCase().includes(keyword) ||
+              (row['วันที่ซื้อทรัพย์สิน'] || '').toLowerCase().includes(keyword) ||
+              (row['ผู้รับผิดชอบ'] || '').toLowerCase().includes(keyword) ||
+              (row['สถานะทรัพย์สิน'] || '').toLowerCase().includes(keyword) ||
+              age.toLowerCase().includes(keyword)
+            )
+          );
+        }).length;
+      }
+
+      // Event listeners
+      employeeFilter.addEventListener('change', filterAndRenderTable);
+      pendingFilter.addEventListener('change', filterAndRenderTable);
+      stockFilter.addEventListener('change', filterAndRenderTable);
+      searchInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') filterAndRenderTable(); });
+      searchButton.addEventListener('click', filterAndRenderTable);
+      itemsPerPageSelect.addEventListener('change', (e) => {
+        itemsPerPage = parseInt(e.target.value);
+        currentPage = 1;
         filterAndRenderTable();
-      })
-      .catch(error => {
-        console.error("ไม่สามารถโหลดข้อมูลได้:", error);
-        tableBody.innerHTML = '<tr><td colspan="10">เกิดข้อผิดพลาดในการโหลดข้อมูล: ' + error.message + '</td></tr>';
       });
+      excelButton.addEventListener('click', exportToCSV);
+      firstPageButton.onclick = () => { currentPage = 1; filterAndRenderTable(); };
+      prevPageButton.onclick = () => { if (currentPage > 1) { currentPage--; filterAndRenderTable(); } };
+      nextPageButton.onclick = () => {
+        const total = Math.ceil(getCurrentFilteredLength() / itemsPerPage);
+        if (currentPage < total) { currentPage++; filterAndRenderTable(); }
+      };
+      lastPageButton.onclick = () => {
+        currentPage = Math.ceil(getCurrentFilteredLength() / itemsPerPage);
+        filterAndRenderTable();
+      };
+
+      // Transfer Modal Functions
+      function openTransferModal(row) {
+        currentAssetRow = row;
+        document.getElementById('tf_assetId').value = row['รหัสทรัพย์สิน'] || '-';
+        document.getElementById('tf_name').value = row['ชื่อทรัพย์สิน'] || '-';
+        document.getElementById('tf_ul').value = row['UL'] || '-';
+        document.getElementById('tf_fromLocation').value = row['Physical Location'] || '-';
+        const fromOwnerFull = row['ผู้รับผิดชอบ'] || '-';
+        const fromEmpId = extractEmpId(fromOwnerFull);
+        const fromOwnerName = extractOwnerName(fromOwnerFull); // ตัดรหัสออก
+        document.getElementById('tf_fromEmpId').value = fromEmpId;
+        document.getElementById('tf_fromOwnerName').value = fromOwnerName;
+        document.getElementById('tf_toLocation').value = '';
+        document.getElementById('tf_toOwner').value = '';
+        document.getElementById('tf_toEmpId').value = '';
+        document.getElementById('tf_date').value = todayISO();
+        document.getElementById('tf_operator').value = '';
+        document.getElementById('tf_note').value = '';
+        fillTransferDatalists();
+        renderHistory(row['รหัสทรัพย์สิน']);
+        historyBox.style.display = 'none';
+        transferModal.style.display = 'block';
+      }
+
+      closeTransferModal.onclick = () => { transferModal.style.display = 'none'; currentAssetRow = null; };
+      window.addEventListener('click', (e) => {
+        if (e.target === transferModal) { transferModal.style.display = 'none'; currentAssetRow = null; }
+        if (e.target === pickerModal) { pickerModal.style.display = 'none'; }
+      });
+
+      // อัปเดตรหัสพนักงานผู้รับเมื่อกรอกชื่อผู้รับผิดชอบใหม่
+      document.getElementById('tf_toOwner').addEventListener('input', () => {
+        const toOwnerFull = document.getElementById('tf_toOwner').value;
+        const toEmpId = extractEmpId(toOwnerFull);
+        document.getElementById('tf_toEmpId').value = toEmpId;
+      });
+
+      viewHistoryBtn.addEventListener('click', () => {
+        if (!currentAssetRow) return;
+        renderHistory(currentAssetRow['รหัสทรัพย์สิน']);
+        historyBox.style.display = (historyBox.style.display === 'none' || !historyBox.style.display) ? 'block' : 'none';
+      });
+
+      function getTransfers() {
+        try { return JSON.parse(localStorage.getItem('assetTransfers') || '[]'); } catch { return []; }
+      }
+
+      function setTransfers(arr) {
+        localStorage.setItem('assetTransfers', JSON.stringify(arr));
+      }
+
+      function renderHistory(assetId) {
+        const transfers = getTransfers().filter(t => t.assetId === assetId);
+        historyTableBody.innerHTML = '';
+        if (transfers.length === 0) {
+          historyTableBody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:20px; color:var(--secondary-color);">ยังไม่มีประวัติการโอนย้าย</td></tr>';
+          return;
+        }
+        transfers.sort((a, b) => new Date(b.date) - new Date(a.date));
+        transfers.forEach(t => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `<td>${t.date}</td><td>${t.fromLocation || '-'}</td><td>${t.toLocation || '-'}</td><td>${t.fromOwnerName || '-'}</td><td>${t.toOwnerName || '-'}</td><td>${t.operator || '-'}</td><td>${t.note || '-'}</td>`;
+          historyTableBody.appendChild(tr);
+        });
+      }
+
+      async function submitTransfer(e) {
+        e.preventDefault();
+        if (!currentAssetRow) { alert('ไม่พบข้อมูลทรัพย์สิน'); return; }
+        // Validation (ข้อมูลกรอกไม่ครบถ้วน)
+        const requiredFields = [
+          { id: 'tf_toLocation', label: 'ย้ายไปสถานที่' },
+          { id: 'tf_toOwner', label: 'ผู้รับผิดชอบ (ผู้รับ)' },
+          { id: 'tf_date', label: 'วันที่โอน' },
+          { id: 'tf_operator', label: 'ผู้ดำเนินการ' }
+        ];
+        for (let field of requiredFields) {
+          const el = document.getElementById(field.id);
+          if (!el.value.trim()) {
+            alert(`กรุณากรอกข้อมูลให้ครบถ้วน: ${field.label}`);
+            el.focus();
+            return;
+          }
+        }
+        const fromOwnerFull = currentAssetRow['ผู้รับผิดชอบ'] || '-';
+        const toOwnerFull = document.getElementById('tf_toOwner').value.trim();
+        const payload = {
+          assetId: document.getElementById('tf_assetId').value,
+          name: document.getElementById('tf_name').value,
+          ul: document.getElementById('tf_ul').value,
+          fromLocation: document.getElementById('tf_fromLocation').value,
+          fromOwnerFull: fromOwnerFull,
+          fromOwnerName: extractOwnerName(fromOwnerFull),
+          fromEmpId: document.getElementById('tf_fromEmpId').value,
+          toLocation: document.getElementById('tf_toLocation').value.trim(),
+          toOwnerFull: toOwnerFull,
+          toOwnerName: extractOwnerName(toOwnerFull),
+          toEmpId: document.getElementById('tf_toEmpId').value.trim(),
+          date: document.getElementById('tf_date').value,
+          operator: document.getElementById('tf_operator').value.trim(),
+          note: document.getElementById('tf_note').value.trim(),
+          status: 'โอนย้ายทรัพย์สิน'
+        };
+        // Save to localStorage
+        const list = getTransfers();
+        list.push(payload);
+        setTransfers(list);
+        // Update allData
+        const assetId = payload.assetId;
+        allData = allData.map(r => {
+          if (r['รหัสทรัพย์สิน'] === assetId) {
+            return { ...r, 'Physical Location': payload.toLocation, 'ผู้รับผิดชอบ': payload.toOwnerFull, 'สถานะทรัพย์สิน': 'โอนย้ายทรัพย์สิน' };
+          }
+          return r;
+        });
+        filterAndRenderTable();
+        renderHistory(assetId);
+        historyBox.style.display = 'block';
+        addValueToDatalists(payload.toOwnerFull, payload.toLocation);
+        // Send to endpoint if set
+        if (transferEndpoint) {
+          try {
+            const res = await fetch(transferEndpoint, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload)
+            });
+            if (!res.ok) throw new Error('ส่งข้อมูลไปยังเซิร์ฟเวอร์ไม่สำเร็จ');
+          } catch (err) {
+            console.error(err);
+            alert('บันทึกในเครื่องเรียบร้อย แต่ส่งข้อมูลไปยังเซิร์ฟเวอร์ไม่สำเร็จ');
+          }
+        }
+        alert('บันทึกการโอนย้ายเรียบร้อย');
+        transferModal.style.display = 'none';
+      }
+
+      transferForm.addEventListener('submit', submitTransfer);
+
+      // Datalist & Picker
+      function uniqueSorted(arr) {
+        return [...new Set(arr.filter(Boolean))].sort((a, b) => a.localeCompare(b, 'th'));
+      }
+
+      function fillTransferDatalists() {
+        const owners = uniqueSorted(allData.map(r => r['ผู้รับผิดชอบ']));
+        const locations = uniqueSorted(allData.map(r => r['Physical Location']));
+        ownersListEl.innerHTML = owners.map(v => `<option value="${v}"></option>`).join('');
+        locationsListEl.innerHTML = locations.map(v => `<option value="${v}"></option>`).join('');
+      }
+
+      function openPicker(type) {
+        pickerTarget = type;
+        const items = type === 'owner' ? [...ownersListEl.options].map(o => o.value) : [...locationsListEl.options].map(o => o.value);
+        pickerTitle.textContent = type === 'owner' ? 'เลือกผู้รับผิดชอบใหม่' : 'เลือกสถานที่ใหม่';
+        renderPickerList(items);
+        pickerSearch.value = '';
+        pickerModal.style.display = 'block';
+        setTimeout(() => pickerSearch.focus(), 0);
+      }
+
+      function renderPickerList(items) {
+        if (!items || items.length === 0) {
+          pickerList.innerHTML = '<div style="padding:20px;text-align:center;color:var(--secondary-color);">ไม่พบข้อมูล</div>';
+          return;
+        }
+        pickerList.innerHTML = items.map(v => `<div class="picker-item" data-value="${v}">${v}</div>`).join('');
+        pickerList.querySelectorAll('.picker-item').forEach(el => {
+          el.addEventListener('click', () => {
+            const val = el.getAttribute('data-value');
+            if (pickerTarget === 'owner') {
+              document.getElementById('tf_toOwner').value = val;
+              document.getElementById('tf_toEmpId').value = extractEmpId(val);
+            } else {
+              document.getElementById('tf_toLocation').value = val;
+            }
+            pickerModal.style.display = 'none';
+          });
+        });
+      }
+
+      pickerSearch.addEventListener('input', () => {
+        const base = pickerTarget === 'owner' ? [...ownersListEl.options].map(o => o.value) : [...locationsListEl.options].map(o => o.value);
+        const q = pickerSearch.value.toLowerCase();
+        renderPickerList(base.filter(v => v.toLowerCase().includes(q)));
+      });
+
+      btnFindOwner.addEventListener('click', () => { fillTransferDatalists(); openPicker('owner'); });
+      btnFindLocation.addEventListener('click', () => { fillTransferDatalists(); openPicker('location'); });
+      closePickerModal.onclick = () => { pickerModal.style.display = 'none'; };
+
+      function addValueToDatalists(owner, location) {
+        if (owner) {
+          const v = owner.trim();
+          if (v && ![...ownersListEl.options].some(o => o.value === v)) {
+            ownersListEl.insertAdjacentHTML('beforeend', `<option value="${v}"></option>`);
+          }
+        }
+        if (location) {
+          const v2 = location.trim();
+          if (v2 && ![...locationsListEl.options].some(o => o.value === v2)) {
+            locationsListEl.insertAdjacentHTML('beforeend', `<option value="${v2}"></option>`);
+          }
+        }
+      }
+
+      // Print Form
+      document.getElementById('printFormBtn').addEventListener('click', () => {
+        if (!currentAssetRow) { alert('กรุณาเลือกทรัพย์สินและกรอกฟอร์มก่อนพิมพ์'); return; }
+        const fromOwnerFull = currentAssetRow['ผู้รับผิดชอบ'] || '-';
+        const toOwnerFull = document.getElementById('tf_toOwner').value.trim();
+        const payload = {
+          assetId: document.getElementById('tf_assetId').value,
+          name: document.getElementById('tf_name').value,
+          ul: document.getElementById('tf_ul').value,
+          fromLocation: document.getElementById('tf_fromLocation').value,
+          fromOwnerName: extractOwnerName(fromOwnerFull), // ชื่อตัดรหัส
+          fromEmpId: document.getElementById('tf_fromEmpId').value,
+          toLocation: document.getElementById('tf_toLocation').value,
+          toOwnerName: extractOwnerName(toOwnerFull), // ชื่อตัดรหัส
+          toEmpId: document.getElementById('tf_toEmpId').value,
+          date: document.getElementById('tf_date').value,
+          operator: document.getElementById('tf_operator').value,
+          note: document.getElementById('tf_note').value
+        };
+        printTransferForm(payload);
+      });
+
+      function thaiDateStr(iso) {
+        if (!iso) return '';
+        const d = new Date(iso);
+        const months = ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'];
+        return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear() + 543}`;
+      }
+
+      function printTransferForm(payload) {
+        const w = window.open('', '_blank');
+        const dateStr = thaiDateStr(payload.date) || '';
+        const styles = `<style>
+          @page { size: A4 landscape; margin: 12mm; }
+          body { font-family: 'Prompt', Tahoma, sans-serif; color: #000; }
+          h1 { font-size: 18pt; text-align: center; margin: 0 0 4mm; }
+          h2 { font-size: 14pt; text-align: center; margin: 0 0 6mm; }
+          .meta { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 11pt; }
+          .meta .label { font-weight: bold; }
+          table { width: 100%; border-collapse: collapse; }
+          th, td { border: 1px solid #000; padding: 6px 4px; font-size: 11pt; }
+          th { text-align: center; background: #fff; }
+          .center { text-align: center; }
+          .sign { margin-top: 12mm; display: grid; grid-template-columns: 1fr 1fr; gap: 12mm; font-size: 11pt; }
+          .sign .box { border: 1px solid #000; padding: 6mm; min-height: 38mm; }
+          .line { display: flex; gap: 6px; align-items: center; margin-top: 6px; }
+          .line .lbl { min-width: 120px; }
+          .line .fill { border-bottom: 1px solid #000; flex: 1; height: 16px; }
+        </style>`;
+        const header = `<h1>บริษัท ซีพี รีเทลลิงค์ จำกัด</h1><h2>ใบโอนย้ายทรัพย์สิน</h2><div class="meta"><div><span class="label">รายละเอียดครั้งนี้ :</span> ${payload.note || ''}</div><div><span class="label">วันที่ :</span> ${dateStr}</div></div>`;
+        const firstRow = `<tr><td class="center">1</td><td class="center">${payload.assetId || ''}</td><td>${payload.name || ''}</td><td></td><td class="center">${payload.fromEmpId || ''}</td><td>${payload.fromOwnerName || ''}</td><td></td><td class="center">${payload.toEmpId || ''}</td><td>${payload.toOwnerName || ''}</td><td>${payload.fromLocation ? `จาก ${payload.fromLocation}` : ''}${payload.toLocation ? `${payload.fromLocation ? ' → ' : ''}ไป ${payload.toLocation}` : ''}</td></tr>`;
+        const emptyRows = Array.from({ length: 7 }, (_, i) => `<tr><td class="center">${i + 2}</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>`).join('');
+        const table = `<table><thead><tr><th rowspan="2" style="width:40px">ลำดับ</th><th rowspan="2" style="width:120px">รหัสทรัพย์สิน</th><th rowspan="2">รายการ</th><th colspan="3">ผู้โอน</th><th colspan="3">ผู้รับ</th><th rowspan="2" style="width:160px">หมายเหตุ</th></tr><tr><th style="width:90px">Cost Center</th><th style="width:120px">รหัสพนักงาน</th><th style="width:160px">ชื่อผู้รับผิดชอบเดิม</th><th style="width:90px">Cost Center</th><th style="width:120px">รหัสพนักงาน</th><th style="width:160px">ชื่อผู้รับผิดชอบใหม่</th></tr></thead><tbody>${firstRow}${emptyRows}</tbody></table>`;
+        const sign = `<div class="sign"><div class="box"><div class="center" style="font-weight:bold;margin-bottom:6px;">ผู้โอน</div><div class="line"><div class="lbl">ลายเซ็นต์</div><div class="fill"></div></div><div class="line"><div class="lbl">ชื่อตัวบรรจง</div><div class="fill"></div></div><div class="line"><div class="lbl">รหัสพนักงาน</div><div class="fill"></div></div><div class="line"><div class="lbl">หน่วยงานผู้โอน</div><div class="fill"></div></div></div><div class="box"><div class="center" style="font-weight:bold;margin-bottom:6px;">ผู้รับ</div><div class="line"><div class="lbl">ลายเซ็นต์</div><div class="fill"></div></div><div class="line"><div class="lbl">ชื่อตัวบรรจง</div><div class="fill"></div></div><div class="line"><div class="lbl">รหัสพนักงาน</div><div class="fill"></div></div><div class="line"><div class="lbl">หน่วยงานผู้รับ</div><div class="fill"></div></div></div></div>`;
+        w.document.write(`<html><head><title>พิมพ์ใบโอนย้ายทรัพย์สิน</title>${styles}</head><body>${header}${table}${sign}</body></html>`);
+        w.document.close();
+        w.focus();
+        w.print();
+      }
+
+      // Load Data
+      fetch(url)
+        .then(r => {
+          if (!r.ok) throw new Error(`HTTP error! status: ${r.status}`);
+          return r.json();
+        })
+        .then(data => {
+          if (!data || data.length === 0) {
+            console.error('No data received from Google Sheets');
+            tableBody.innerHTML = '<tr><td colspan="10" style="text-align:center; padding:40px; color:var(--secondary-color);">ไม่มีข้อมูลจาก Google Sheets</td></tr>';
+            return;
+          }
+          allData = data;
+          populateEmployeeFilter(allData);
+          updateLocationFilter(allData, '');
+          updateStatusFilter(allData, '', '');
+          addSortListeners();
+          updateSortArrows();
+          filterAndRenderTable();
+          runSelfTests();
+        })
+        .catch(err => {
+          console.error('ไม่สามารถโหลดข้อมูลได้:', err);
+          tableBody.innerHTML = `<tr><td colspan="10" style="text-align:center; padding:40px; color:var(--danger-color);">เกิดข้อผิดพลาดในการโหลดข้อมูล: ${err.message}</td></tr>`;
+        });
+
+      // Self-tests
+      function runSelfTests() {
+        try {
+          console.assert(!!document.getElementById('data-table'), 'ตารางหลักไม่พบ');
+          console.assert(typeof extractEmpId === 'function', 'extractEmpId หายไป');
+          console.assert(extractEmpId('7512578 ณัลริษาณ์ ชุติสมบูรณ์ไชย') === '7512578', 'extractEmpId ไม่ดึงตัวเลขต้นสตริง');
+          console.assert(extractOwnerName('7512578 ณัลริษาณ์ ชุติสมบูรณ์ไชย') === 'ณัลริษาณ์ ชุติสมบูรณ์ไชย', 'extractOwnerName ไม่ตัดรหัส');
+          console.assert(parseAgeForSorting('1 ปี 2 เดือน').years === 1, 'parseAgeForSorting.year');
+          filterAndRenderTable();
+        } catch (e) {
+          console.warn('Self-test พบปัญหา (ไม่ร้ายแรง):', e);
+        }
+      }
+    });
   </script>
 </body>
 </html>
