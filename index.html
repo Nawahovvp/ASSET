@@ -382,6 +382,12 @@
       overflow-y: auto;
       border: 1px solid rgba(99, 102, 241, 0.1);
     }
+    #globalHistoryModal .modal-content {
+      padding: 16px;
+      margin: 2% auto;
+      max-width: 95%;
+      max-height: 90vh;
+    }
     @keyframes zoomInRotate {
       from { opacity: 0; transform: scale(0.8) rotate(-5deg); }
       to { opacity: 1; transform: scale(1) rotate(0deg); }
@@ -396,6 +402,11 @@
       align-items: center;
       gap: 12px;
       font-weight: 600;
+    }
+    #globalHistoryModal .modal-content h2 {
+      font-size: 20px;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
     }
     .close {
       color: #94a3b8;
@@ -534,9 +545,32 @@
       white-space: pre-wrap;
       word-wrap: break-word;
     }
+    #globalHistoryTable th, #globalHistoryTable td {
+      padding: 8px 6px;
+      font-size: 12px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
     .timeline-table th {
       background: linear-gradient(135deg, var(--primary-color), #8b5cf6);
       color: var(--white);
+    }
+    #globalHistoryTable .manage-col {
+      flex-wrap: nowrap;
+      gap: 2px;
+      justify-content: center;
+    }
+    #globalHistoryTable .print-transfer-btn,
+    #globalHistoryTable .delete-transfer-btn {
+      padding: 4px 6px;
+      font-size: 10px;
+      border-radius: 6px;
+      min-width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     .manage-col {
       display: flex;
@@ -729,6 +763,11 @@
         width: 98%;
         font-size: 14px;
       }
+      #globalHistoryModal .modal-content {
+        padding: 12px;
+        margin: 1% auto;
+        width: 99%;
+      }
       .modal-buttons {
         justify-content: center;
         gap: 12px;
@@ -750,7 +789,15 @@
       .search-row-modal { flex-direction: column; gap: 8px; }
       .action-button[style*="padding:8px 12px"] { width: 100%; }
       .timeline-table th, .timeline-table td { padding: 8px 10px; font-size: 12px; }
+      #globalHistoryTable th, #globalHistoryTable td { padding: 6px 4px; font-size: 10px; }
       .delete-transfer-btn, .print-transfer-btn { padding: 4px 10px; font-size: 12px; }
+      #globalHistoryTable .print-transfer-btn,
+      #globalHistoryTable .delete-transfer-btn {
+        padding: 2px 4px;
+        font-size: 9px;
+        min-width: 28px;
+        height: 28px;
+      }
       .manage-col { flex-direction: column; gap: 4px; }
       body { padding: 10px; }
     }
@@ -763,6 +810,15 @@
       .filter-row { grid-template-columns: 1fr; }
       th:nth-child(2), td:nth-child(2) { min-width: 80px; max-width: 100px; }
       th:nth-child(7), td:nth-child(7) { min-width: 70px; max-width: 90px; }
+      #globalHistoryModal .modal-content h2 { font-size: 18px; }
+      #globalHistoryTable th, #globalHistoryTable td { padding: 4px 2px; font-size: 9px; }
+      #globalHistoryTable .print-transfer-btn,
+      #globalHistoryTable .delete-transfer-btn {
+        padding: 2px 3px;
+        font-size: 8px;
+        min-width: 24px;
+        height: 24px;
+      }
     }
     .delete-button {
       background: linear-gradient(135deg, var(--danger-color), #dc2626);
@@ -773,9 +829,9 @@
       transform: translateY(-2px);
     }
     #globalHistoryBox {
-      max-height: 70vh;
+      max-height: 60vh;
       overflow-y: auto;
-      margin-top: 16px;
+      margin-top: 8px;
       border-radius: var(--border-radius);
       box-shadow: var(--shadow-sm);
       animation: fadeInUp 0.6s ease-out;
@@ -990,15 +1046,15 @@
         <table class="timeline-table" id="globalHistoryTable">
           <thead>
             <tr>
-              <th>วันที่โอน</th>
-              <th>รหัสทรัพย์สิน</th>
-              <th>จาก Location</th>
-              <th>ไป Location</th>
-              <th>จากผู้รับผิดชอบ</th>
-              <th>ผู้รับผิดชอบใหม่</th>
-              <th>ผู้ดำเนินการ</th>
-              <th>หมายเหตุ</th>
-              <th style="width: 140px;">การจัดการ</th>
+              <th style="width:80px;">วันที่โอน</th>
+              <th style="width:100px;">รหัสทรัพย์สิน</th>
+              <th style="width:120px;">จาก Location</th>
+              <th style="width:120px;">ไป Location</th>
+              <th style="width:150px;">จากผู้รับผิดชอบ</th>
+              <th style="width:150px;">ผู้รับผิดชอบใหม่</th>
+              <th style="width:100px;">ผู้ดำเนินการ</th>
+              <th style="width:120px;">หมายเหตุ</th>
+              <th style="width:120px;">การจัดการ</th>
             </tr>
           </thead>
           <tbody></tbody>
@@ -1716,7 +1772,7 @@
           <td>${t.note || '-'}</td>
           <td class="manage-col">
             <button class="print-transfer-btn"><i class="fas fa-print"></i></button>
-            ${t.id ? '<button class="delete-transfer-btn"><i class="fas fa-trash"></i> ลบ</button>' : ''}
+            ${t.id ? '<button class="delete-transfer-btn"><i class="fas fa-trash"></i></button>' : ''}
           </td>
         `;
         const printBtn = tr.querySelector('.manage-col .print-transfer-btn');
