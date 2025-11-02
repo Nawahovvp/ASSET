@@ -133,7 +133,7 @@
       transition: var(--transition);
       box-shadow: var(--shadow-sm);
     }
-    .action-button:hover {
+    .action-button:hover:not(:disabled) {
       background: linear-gradient(135deg, #0056b3, #004494);
       transform: translateY(-2px);
       box-shadow: var(--shadow-md);
@@ -142,6 +142,19 @@
       transform: translateY(0);
     }
     .action-button i { font-size: 16px; }
+    .action-button:disabled {
+      background: var(--secondary-color);
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+    .print-button {
+      background: linear-gradient(135deg, var(--warning-color), #e0a800) !important;
+      color: #212529 !important;
+    }
+    .print-button:hover:not(:disabled) {
+      background: linear-gradient(135deg, #e0a800, #d39e00) !important;
+    }
     .call-count-box {
       margin-left: auto;
       padding: 12px 16px;
@@ -389,6 +402,12 @@
       background: linear-gradient(135deg, var(--primary-color), #0056b3);
       color: var(--white);
     }
+    .manage-col {
+      display: flex;
+      justify-content: center;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
     .delete-transfer-btn {
       background: linear-gradient(135deg, var(--danger-color), #c82333);
       color: var(--white);
@@ -401,6 +420,20 @@
     }
     .delete-transfer-btn:hover {
       background: linear-gradient(135deg, #c82333, #bd2130);
+      transform: translateY(-1px);
+    }
+    .print-transfer-btn {
+      background: linear-gradient(135deg, var(--info-color), #117a8b);
+      color: var(--white);
+      border: none;
+      padding: 4px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+      transition: var(--transition);
+    }
+    .print-transfer-btn:hover {
+      background: linear-gradient(135deg, #117a8b, #0c5460);
       transform: translateY(-1px);
     }
     .picker-modal .modal-content { max-width: 600px; }
@@ -463,7 +496,10 @@
       animation: spin 1s linear infinite;
       margin-bottom: 10px;
     }
-    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
     @keyframes zoomIn {
       from { opacity: 0; transform: scale(0.8); }
       to { opacity: 1; transform: scale(1); }
@@ -472,12 +508,13 @@
     th:nth-child(1), td:nth-child(1) { width: 80px; min-width: 80px; } /* รหัส */
     th:nth-child(2), td:nth-child(2) { width: auto; min-width: 150px; max-width: 200px; white-space: normal; } /* ชื่อ */
     th:nth-child(3), td:nth-child(3) { width: 60px; min-width: 60px; } /* UL */
-    th:nth-child(4), td:nth-child(4) { width: 120px; min-width: 120px; } /* Location */
-    th:nth-child(5), td:nth-child(5) { width: 100px; min-width: 100px; } /* วันที่ซื้อ */
-    th:nth-child(6), td:nth-child(6) { width: auto; min-width: 140px; } /* ผู้รับผิดชอบ */
-    th:nth-child(7), td:nth-child(7) { width: 80px; min-width: 80px; } /* Status */
-    th:nth-child(8), td:nth-child(8) { width: 80px; min-width: 80px; text-align: center; } /* อายุ */
-    th:nth-child(9), td:nth-child(9) { width: 80px; min-width: 80px; } /* โอนย้าย */
+    th:nth-child(4), td:nth-child(4) { width: 120px; min-width: 120px; } /* หน่วยงาน */
+    th:nth-child(5), td:nth-child(5) { width: 120px; min-width: 120px; } /* Location */
+    th:nth-child(6), td:nth-child(6) { width: 100px; min-width: 100px; } /* วันที่ซื้อ */
+    th:nth-child(7), td:nth-child(7) { width: auto; min-width: 140px; } /* ผู้รับผิดชอบ */
+    th:nth-child(8), td:nth-child(8) { width: 80px; min-width: 80px; text-align: center; } /* Status */
+    th:nth-child(9), td:nth-child(9) { width: 80px; min-width: 80px; } /* อายุ */
+    th:nth-child(10), td:nth-child(10) { width: 80px; min-width: 80px; } /* โอนย้าย */
     @media (max-width: 768px) {
       .filter-row {
         grid-template-columns: 1fr;
@@ -531,7 +568,8 @@
       .search-row-modal { flex-direction: column; gap: 6px; }
       .action-button[style*="padding:8px 12px"] { width: 100%; }
       .timeline-table th, .timeline-table td { padding: 4px 6px; font-size: 11px; }
-      .delete-transfer-btn { padding: 2px 6px; font-size: 10px; }
+      .delete-transfer-btn, .print-transfer-btn { padding: 2px 6px; font-size: 10px; }
+      .manage-col { flex-direction: column; gap: 2px; }
     }
     @media (max-width: 480px) {
       body { padding: 5px; }
@@ -568,7 +606,7 @@
       <select id="stockFilter"><option value="">ทั้งหมด</option></select>
     </div>
     <div class="search-row">
-      <input type="text" id="searchInput" placeholder="ค้นหา รหัส, ชื่อ, UL, Location, วันที่ซื้อ, ผู้รับผิดชอบ, Status, อายุ..." />
+      <input type="text" id="searchInput" placeholder="ค้นหา รหัส, ชื่อ, UL, หน่วยงาน, Location, วันที่ซื้อ, ผู้รับผิดชอบ, Status, อายุ..." />
       <button id="searchButton" class="action-button"><i class="fas fa-search"></i> ค้นหา</button>
       <button id="excelButton" class="action-button"><i class="fas fa-file-excel"></i> Excel</button>
     </div>
@@ -580,6 +618,7 @@
           <th class="sortable" data-column="รหัสทรัพย์สิน"><i class="fas fa-tag"></i> รหัส <span class="arrow"></span></th>
           <th class="sortable" data-column="ชื่อทรัพย์สิน"><i class="fas fa-cube"></i> ชื่อ <span class="arrow"></span></th>
           <th class="sortable" data-column="UL"><i class="fas fa-building"></i> UL <span class="arrow"></span></th>
+          <th class="sortable" data-column="หน่วยงาน"><i class="fas fa-sitemap"></i> หน่วยงาน <span class="arrow"></span></th>
           <th class="sortable" data-column="Physical Location"><i class="fas fa-map-marker-alt"></i> Location <span class="arrow"></span></th>
           <th class="sortable" data-column="วันที่ซื้อทรัพย์สิน"><i class="fas fa-calendar"></i> วันที่ซื้อ <span class="arrow"></span></th>
           <th class="sortable" data-column="ผู้รับผิดชอบ"><i class="fas fa-user"></i> ผู้รับผิดชอบ <span class="arrow"></span></th>
@@ -589,7 +628,7 @@
         </tr>
       </thead>
       <tbody id="tableBody">
-        <tr><td colspan="9" class="loading"><i class="fas fa-spinner"></i> กำลังโหลดข้อมูล...</td></tr>
+        <tr><td colspan="10" class="loading"><i class="fas fa-spinner"></i> กำลังโหลดข้อมูล...</td></tr>
       </tbody>
     </table>
   </div>
@@ -652,6 +691,10 @@
               <label><i class="fas fa-building"></i> UL (ผู้โอน)</label>
               <input type="text" id="tf_fromUL" class="form-input" readonly>
             </div>
+            <div class="form-group">
+              <label><i class="fas fa-sitemap"></i> หน่วยงาน (ผู้โอน)</label>
+              <input type="text" id="tf_fromDept" class="form-input" readonly>
+            </div>
           </div>
         </div>
         <!-- กลุ่มผู้รับและสถานที่ใหม่ -->
@@ -672,6 +715,10 @@
             <div class="form-group">
               <label><i class="fas fa-building"></i> UL (ผู้รับ)</label>
               <input type="text" id="tf_toUL" class="form-input" readonly>
+            </div>
+            <div class="form-group">
+              <label><i class="fas fa-sitemap"></i> หน่วยงาน (ผู้รับ)</label>
+              <input type="text" id="tf_toDept" class="form-input" readonly>
             </div>
             <div class="form-group">
               <label><i class="fas fa-map-marker-alt"></i> ย้ายไป Location</label>
@@ -701,9 +748,8 @@
           <textarea id="tf_note" placeholder="รายละเอียดเพิ่มเติม (ถ้ามี)" class="form-input"></textarea>
         </div>
         <div class="modal-buttons">
-          <button type="submit" class="action-button"><i class="fas fa-save"></i> บันทึกการโอนย้าย</button>
+          <button type="submit" class="action-button" disabled><i class="fas fa-save"></i> บันทึกและพิมพ์ฟอร์ม</button>
           <button type="button" id="viewHistoryBtn" class="action-button" style="background:linear-gradient(135deg,var(--secondary-color),#495057);"><i class="fas fa-history"></i> ดูประวัติ</button>
-          <button type="button" id="printFormBtn" class="action-button" style="background:linear-gradient(135deg,var(--success-color),#20c997);"><i class="fas fa-print"></i> พิมพ์ฟอร์ม</button>
         </div>
         <datalist id="ownersList"></datalist>
         <datalist id="locationsList"></datalist>
@@ -720,7 +766,7 @@
               <th>ผู้รับผิดชอบใหม่</th>
               <th>ผู้ดำเนินการ</th>
               <th>หมายเหตุ</th>
-              <th style="width: 80px;">การจัดการ</th>
+              <th style="width: 120px;">การจัดการ</th>
             </tr>
           </thead>
           <tbody></tbody>
@@ -832,9 +878,18 @@
         const match = allData.find(r => (r['ผู้รับผิดชอบ'] || '') === ownerName);
         return match ? (match['UL'] || '-') : '-';
       }
+      function findDeptByOwner(ownerName) {
+        if (!ownerName) return '-';
+        const match = allData.find(r => (r['ผู้รับผิดชอบ'] || '') === ownerName);
+        return match ? (match['หน่วยงาน'] || '-') : '-';
+      }
       function removeLeadingZeros(value) {
         if (!value || value === '-') return value;
         return String(value).replace(/^0+/, '') || '-';
+      }
+      // เพิ่มฟังก์ชัน normalize สำหรับ asset_id
+      function normalizeAssetId(id) {
+        return removeLeadingZeros(id || '');
       }
       function escapeCSVValue(value) {
         if (value == null) return '""';
@@ -859,6 +914,7 @@
               removeLeadingZeros(row['รหัสทรัพย์สิน'] || '').toLowerCase().includes(keyword) ||
               (row['ชื่อทรัพย์สิน'] || '').toLowerCase().includes(keyword) ||
               (row['UL'] || '').toLowerCase().includes(keyword) ||
+              (row['หน่วยงาน'] || '').toLowerCase().includes(keyword) ||
               (row['Physical Location'] || '').toLowerCase().includes(keyword) ||
               (row['วันที่ซื้อทรัพย์สิน'] || '').toLowerCase().includes(keyword) ||
               (row['ผู้รับผิดชอบ'] || '').toLowerCase().includes(keyword) ||
@@ -869,8 +925,8 @@
         });
         if (filteredData.length === 0) { alert('ไม่มีข้อมูลที่ตรงกับเงื่อนไขการกรอง'); return; }
         filteredData.sort((a, b) => removeLeadingZeros(a['รหัสทรัพย์สิน'] || '').localeCompare(removeLeadingZeros(b['รหัสทรัพย์สิน'] || '')));
-        const csvHeaders = ['รหัส', 'ชื่อ', 'UL', 'Location', 'วันที่ซื้อ', 'ผู้รับผิดชอบ', 'Status', 'อายุ'];
-        const csvFields = ['รหัสทรัพย์สิน', 'ชื่อทรัพย์สิน', 'UL', 'Physical Location', 'วันที่ซื้อทรัพย์สิน', 'ผู้รับผิดชอบ', 'สถานะทรัพย์สิน'];
+        const csvHeaders = ['รหัส', 'ชื่อ', 'UL', 'หน่วยงาน', 'Location', 'วันที่ซื้อ', 'ผู้รับผิดชอบ', 'Status', 'อายุ'];
+        const csvFields = ['รหัสทรัพย์สิน', 'ชื่อทรัพย์สิน', 'UL', 'หน่วยงาน', 'Physical Location', 'วันที่ซื้อทรัพย์สิน', 'ผู้รับผิดชอบ', 'สถานะทรัพย์สิน'];
         const rows = [];
         rows.push(csvHeaders.map(c => `"${c}"`).join(','));
         filteredData.forEach(r => {
@@ -969,6 +1025,7 @@
               removeLeadingZeros(row['รหัสทรัพย์สิน'] || '').toLowerCase().includes(keyword) ||
               (row['ชื่อทรัพย์สิน'] || '').toLowerCase().includes(keyword) ||
               (row['UL'] || '').toLowerCase().includes(keyword) ||
+              (row['หน่วยงาน'] || '').toLowerCase().includes(keyword) ||
               (row['Physical Location'] || '').toLowerCase().includes(keyword) ||
               (row['วันที่ซื้อทรัพย์สิน'] || '').toLowerCase().includes(keyword) ||
               (row['ผู้รับผิดชอบ'] || '').toLowerCase().includes(keyword) ||
@@ -1007,7 +1064,7 @@
       function renderTable(data) {
         tableBody.innerHTML = '';
         if (!data || data.length === 0) {
-          tableBody.innerHTML = '<tr><td colspan="9" style="text-align:center; padding:40px; color:var(--secondary-color);">ไม่มีข้อมูลที่ตรงกับเงื่อนไข</td></tr>';
+          tableBody.innerHTML = '<tr><td colspan="10" style="text-align:center; padding:40px; color:var(--secondary-color);">ไม่มีข้อมูลที่ตรงกับเงื่อนไข</td></tr>';
           return;
         }
         const start = (currentPage - 1) * itemsPerPage;
@@ -1027,7 +1084,7 @@
           tr.style.animationDelay = `${i * 0.05}s`;
           const asset = row['รหัสทรัพย์สิน'];
           tr.className = colorMap[asset] || 'yellow-light';
-          const columns = ['รหัสทรัพย์สิน', 'ชื่อทรัพย์สิน', 'UL', 'Physical Location', 'วันที่ซื้อทรัพย์สิน', 'ผู้รับผิดชอบ', 'สถานะทรัพย์สิน', 'อายุ'];
+          const columns = ['รหัสทรัพย์สิน', 'ชื่อทรัพย์สิน', 'UL', 'หน่วยงาน', 'Physical Location', 'วันที่ซื้อทรัพย์สิน', 'ผู้รับผิดชอบ', 'สถานะทรัพย์สิน', 'อายุ'];
           columns.forEach(col => {
             const td = document.createElement('td');
             let cell = col === 'รหัสทรัพย์สิน' ? removeLeadingZeros(row[col]) : (col === 'อายุ' ? calculateAge(row['วันที่ซื้อทรัพย์สิน']) : (row[col] || '-'));
@@ -1101,6 +1158,7 @@
               removeLeadingZeros(row['รหัสทรัพย์สิน'] || '').toLowerCase().includes(keyword) ||
               (row['ชื่อทรัพย์สิน'] || '').toLowerCase().includes(keyword) ||
               (row['UL'] || '').toLowerCase().includes(keyword) ||
+              (row['หน่วยงาน'] || '').toLowerCase().includes(keyword) ||
               (row['Physical Location'] || '').toLowerCase().includes(keyword) ||
               (row['วันที่ซื้อทรัพย์สิน'] || '').toLowerCase().includes(keyword) ||
               (row['ผู้รับผิดชอบ'] || '').toLowerCase().includes(keyword) ||
@@ -1133,9 +1191,21 @@
         filterAndRenderTable();
       };
       // Transfer Modal Functions
+      function validateForm() {
+        const requiredIds = ['tf_toLocation', 'tf_toOwner', 'tf_date', 'tf_operator'];
+        const submitBtn = transferForm.querySelector('button[type="submit"]');
+        const isValid = requiredIds.every(id => {
+          const el = document.getElementById(id);
+          return el && el.value.trim();
+        });
+        submitBtn.disabled = !isValid;
+        return isValid;
+      }
       function openTransferModal(row) {
         currentAssetRow = row;
-        document.getElementById('tf_assetId').value = removeLeadingZeros(row['รหัสทรัพย์สิน'] || '-');
+        // Normalize asset ID สำหรับ display
+        const normalizedAssetId = normalizeAssetId(row['รหัสทรัพย์สิน'] || '-');
+        document.getElementById('tf_assetId').value = normalizedAssetId;
         document.getElementById('tf_name').value = row['ชื่อทรัพย์สิน'] || '-';
         document.getElementById('tf_ul').value = row['UL'] || '-';
         document.getElementById('tf_fromLocation').value = row['Physical Location'] || '-';
@@ -1143,20 +1213,24 @@
         const fromEmpId = extractEmpId(fromOwnerFull);
         const fromOwnerName = extractOwnerName(fromOwnerFull);
         const fromUL = findULByOwner(fromOwnerFull);
+        const fromDept = row['หน่วยงาน'] || '-';
         document.getElementById('tf_fromEmpId').value = fromEmpId;
         document.getElementById('tf_fromOwnerName').value = fromOwnerName;
         document.getElementById('tf_fromUL').value = fromUL;
+        document.getElementById('tf_fromDept').value = fromDept;
         document.getElementById('tf_toLocation').value = '';
         document.getElementById('tf_toOwner').value = '';
         document.getElementById('tf_toEmpId').value = '';
         document.getElementById('tf_toUL').value = '';
+        document.getElementById('tf_toDept').value = '';
         document.getElementById('tf_date').value = todayISO();
         document.getElementById('tf_operator').value = '';
         document.getElementById('tf_note').value = '';
         fillTransferDatalists();
-        renderHistory(row['รหัสทรัพย์สิน']);
+        renderHistory(normalizedAssetId); // ใช้ normalized สำหรับ history
         historyBox.style.display = 'none';
         transferModal.style.display = 'block';
+        validateForm(); // Disable submit button initially
       }
       closeTransferModal.onclick = () => { transferModal.style.display = 'none'; currentAssetRow = null; };
       window.addEventListener('click', (e) => {
@@ -1167,14 +1241,58 @@
         const toOwnerFull = document.getElementById('tf_toOwner').value;
         const toEmpId = extractEmpId(toOwnerFull);
         const toUL = findULByOwner(toOwnerFull);
+        const toDept = findDeptByOwner(toOwnerFull);
         document.getElementById('tf_toEmpId').value = toEmpId;
         document.getElementById('tf_toUL').value = toUL;
+        document.getElementById('tf_toDept').value = toDept;
+        validateForm();
+      });
+      ['tf_toLocation', 'tf_date', 'tf_operator'].forEach(id => {
+        document.getElementById(id).addEventListener('input', validateForm);
       });
       viewHistoryBtn.addEventListener('click', () => {
         if (!currentAssetRow) return;
-        renderHistory(currentAssetRow['รหัสทรัพย์สิน']);
+        const normalizedId = normalizeAssetId(currentAssetRow['รหัสทรัพย์สิน']);
+        renderHistory(normalizedId);
         historyBox.style.display = (historyBox.style.display === 'none' || !historyBox.style.display) ? 'block' : 'none';
       });
+      // ฟังก์ชันโหลดข้อมูลประวัติลงฟอร์ม
+      function loadTransferToForm(t) {
+        if (!currentAssetRow) return;
+        const normalizedAssetId = normalizeAssetId(currentAssetRow['รหัสทรัพย์สิน'] || '-');
+        // ข้อมูลทรัพย์สิน (คงเดิม)
+        document.getElementById('tf_assetId').value = normalizedAssetId;
+        document.getElementById('tf_name').value = currentAssetRow['ชื่อทรัพย์สิน'] || '-';
+        document.getElementById('tf_ul').value = currentAssetRow['UL'] || '-';
+        // จากข้อมูลประวัติ
+        document.getElementById('tf_fromLocation').value = t.from_location || '-';
+        document.getElementById('tf_toLocation').value = t.to_location || '-';
+        document.getElementById('tf_date').value = t.date || todayISO();
+        document.getElementById('tf_operator').value = t.operator || '';
+        document.getElementById('tf_note').value = t.note || '';
+        // ผู้โอน (จากประวัติ)
+        const fromOwnerFull = t.from_owner_full || (t.from_owner_name ? `${extractEmpId(t.from_owner_name)} ${t.from_owner_name}` : currentAssetRow['ผู้รับผิดชอบ'] || '-');
+        const fromEmpId = extractEmpId(fromOwnerFull);
+        const fromOwnerName = extractOwnerName(fromOwnerFull);
+        const fromUL = findULByOwner(fromOwnerFull);
+        const fromDept = findDeptByOwner(fromOwnerFull);
+        document.getElementById('tf_fromEmpId').value = fromEmpId;
+        document.getElementById('tf_fromOwnerName').value = fromOwnerName;
+        document.getElementById('tf_fromUL').value = fromUL;
+        document.getElementById('tf_fromDept').value = fromDept;
+        // ผู้รับ (จากประวัติ)
+        const toOwnerFull = t.to_owner_full || (t.to_owner_name ? `${extractEmpId(t.to_owner_name)} ${t.to_owner_name}` : '');
+        const toEmpId = extractEmpId(toOwnerFull);
+        const toOwnerName = extractOwnerName(toOwnerFull);
+        const toUL = findULByOwner(toOwnerFull);
+        const toDept = findDeptByOwner(toOwnerFull);
+        document.getElementById('tf_toOwner').value = toOwnerFull;
+        document.getElementById('tf_toEmpId').value = toEmpId;
+        document.getElementById('tf_toUL').value = toUL;
+        document.getElementById('tf_toDept').value = toDept;
+        // Validate และ enable ปุ่มพิมพ์
+        validateForm();
+      }
       // ฟังก์ชันลบรายการประวัติเดี่ยว
       async function deleteSingleTransfer(transferId, assetId) {
         if (!confirm('คุณแน่ใจหรือไม่ที่จะลบรายการโอนย้ายนี้?')) return;
@@ -1189,8 +1307,8 @@
           let localList = JSON.parse(localStorage.getItem('assetTransfers') || '[]');
           localList = localList.filter(t => t.id !== transferId);
           localStorage.setItem('assetTransfers', JSON.stringify(localList));
-          // Re-render history
-          await renderHistory(assetId);
+          // Re-render history ด้วย normalized assetId
+          await renderHistory(normalizeAssetId(assetId));
           alert('ลบรายการเรียบร้อย');
         } catch (err) {
           console.error('Delete error:', err);
@@ -1211,7 +1329,8 @@
           if (transfers && transfers.length === 0 && localTransfers.length > 0) {
             // Sync local to Supabase
             for (const t of localTransfers) {
-              const { error: insertError, data: inserted } = await supabaseClient.from('transfers').insert([t]).select();
+              const normalizedT = { ...t, asset_id: normalizeAssetId(t.asset_id) }; // Normalize ก่อน sync
+              const { error: insertError, data: inserted } = await supabaseClient.from('transfers').insert([normalizedT]).select();
               if (insertError) console.error('Sync error:', insertError);
               else {
                 // Update local with id if available
@@ -1232,6 +1351,8 @@
         }
       }
       async function setTransfers(newPayload) {
+        // Normalize asset_id ก่อนบันทึก
+        newPayload.asset_id = normalizeAssetId(newPayload.asset_id);
         // บันทึก localStorage เสมอ (backup)
         const localList = JSON.parse(localStorage.getItem('assetTransfers') || '[]');
         localList.push(newPayload);
@@ -1256,9 +1377,10 @@
           // Fallback: ใช้ localStorage เท่านั้น
         }
       }
-      // renderHistory เปลี่ยนเป็น async
+      // renderHistory เปลี่ยนเป็น async และใช้ normalize
       async function renderHistory(assetId) {
-        const transfers = (await getTransfers()).filter(t => t.asset_id === assetId);
+        const normalizedId = normalizeAssetId(assetId);
+        const transfers = (await getTransfers()).filter(t => normalizeAssetId(t.asset_id) === normalizedId);
         historyTableBody.innerHTML = '';
         if (transfers.length === 0) {
           historyTableBody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:20px; color:var(--secondary-color);">ยังไม่มีประวัติการโอนย้าย</td></tr>';
@@ -1275,10 +1397,20 @@
             <td>${t.to_owner_name || '-'}</td>
             <td>${t.operator || '-'}</td>
             <td>${t.note || '-'}</td>
-            <td style="text-align: center;" class="delete-col">${t.id ? '<button class="delete-transfer-btn"><i class="fas fa-trash"></i> ลบ</button>' : ''}</td>
+            <td class="manage-col">
+              ${t.id ? '<button class="print-transfer-btn"><i class="fas fa-print"></i></button>' : ''}
+              ${t.id ? '<button class="delete-transfer-btn"><i class="fas fa-trash"></i> ลบ</button>' : ''}
+            </td>
           `;
           if (t.id) {
-            const deleteBtn = tr.querySelector('.delete-col .delete-transfer-btn');
+            const printBtn = tr.querySelector('.manage-col .print-transfer-btn');
+            printBtn.addEventListener('click', async (e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              loadTransferToForm(t);
+              setTimeout(() => printCurrentForm(), 50);
+            });
+            const deleteBtn = tr.querySelector('.manage-col .delete-transfer-btn');
             deleteBtn.addEventListener('click', async (e) => {
               e.preventDefault();
               e.stopPropagation();
@@ -1291,26 +1423,16 @@
       // submitTransfer เปลี่ยนเป็น async (ใช้ setTransfers ใหม่)
       async function submitTransfer(e) {
         e.preventDefault();
-        if (!currentAssetRow) { alert('ไม่พบข้อมูลทรัพย์สิน'); return; }
-        // Validation (ข้อมูลกรอกไม่ครบถ้วน)
-        const requiredFields = [
-          { id: 'tf_toLocation', label: 'ย้ายไป Location' },
-          { id: 'tf_toOwner', label: 'ผู้รับผิดชอบ (ผู้รับ)' },
-          { id: 'tf_date', label: 'วันที่โอน' },
-          { id: 'tf_operator', label: 'ผู้ดำเนินการ' }
-        ];
-        for (let field of requiredFields) {
-          const el = document.getElementById(field.id);
-          if (!el.value.trim()) {
-            alert(`กรุณากรอกข้อมูลให้ครบถ้วน: ${field.label}`);
-            el.focus();
-            return;
-          }
+        if (!validateForm()) {
+          alert('กรุณากรอกข้อมูลให้ครบถ้วนก่อนบันทึก');
+          return;
         }
+        if (!currentAssetRow) { alert('ไม่พบข้อมูลทรัพย์สิน'); return; }
         const fromOwnerFull = currentAssetRow['ผู้รับผิดชอบ'] || '-';
         const toOwnerFull = document.getElementById('tf_toOwner').value.trim();
+        const normalizedAssetId = normalizeAssetId(document.getElementById('tf_assetId').value); // Normalize
         const payload = {
-          asset_id: document.getElementById('tf_assetId').value,
+          asset_id: normalizedAssetId, // ใช้ normalized
           name: document.getElementById('tf_name').value,
           ul: document.getElementById('tf_ul').value,
           from_location: document.getElementById('tf_fromLocation').value,
@@ -1318,11 +1440,13 @@
           from_owner_name: extractOwnerName(fromOwnerFull),
           from_emp_id: document.getElementById('tf_fromEmpId').value,
           from_ul: document.getElementById('tf_fromUL').value,
+          from_dept: document.getElementById('tf_fromDept').value,
           to_location: document.getElementById('tf_toLocation').value.trim(),
           to_owner_full: toOwnerFull,
           to_owner_name: extractOwnerName(toOwnerFull),
           to_emp_id: document.getElementById('tf_toEmpId').value.trim(),
           to_ul: document.getElementById('tf_toUL').value,
+          to_dept: document.getElementById('tf_toDept').value,
           date: document.getElementById('tf_date').value,
           operator: document.getElementById('tf_operator').value.trim(),
           note: document.getElementById('tf_note').value.trim(),
@@ -1330,20 +1454,57 @@
         };
         // Save to Supabase + localStorage
         await setTransfers(payload);
-        // Update allData
-        const assetId = payload.asset_id;
+        // Update allData ด้วย normalized assetId
         allData = allData.map(r => {
-          if (r['รหัสทรัพย์สิน'] === assetId) {
-            return { ...r, 'Physical Location': payload.to_location, 'ผู้รับผิดชอบ': payload.to_owner_full, 'สถานะทรัพย์สิน': 'โอนย้ายทรัพย์สิน', 'UL': payload.to_ul };
+          if (normalizeAssetId(r['รหัสทรัพย์สิน']) === normalizedAssetId) { // ใช้ normalize ใน if
+            return { ...r, 'Physical Location': payload.to_location, 'ผู้รับผิดชอบ': payload.to_owner_full, 'สถานะทรัพย์สิน': 'โอนย้ายทรัพย์สิน', 'UL': payload.to_ul, 'หน่วยงาน': payload.to_dept };
           }
           return r;
         });
         filterAndRenderTable();
-        await renderHistory(assetId);
+        await renderHistory(normalizedAssetId);
         historyBox.style.display = 'block';
         addValueToDatalists(payload.to_owner_full, payload.to_location);
         alert('บันทึกการโอนย้ายเรียบร้อย (บันทึกใน Supabase และ localStorage)');
+        printTransferForm(payload);
         transferModal.style.display = 'none';
+      }
+      // ฟังก์ชันพิมพ์ฟอร์มจากข้อมูลปัจจุบัน (ไม่บันทึก)
+      function printCurrentForm() {
+        if (!validateForm()) {
+          alert('กรุณากรอกข้อมูลให้ครบถ้วนก่อนพิมพ์');
+          return;
+        }
+        if (!currentAssetRow) { alert('ไม่พบข้อมูลทรัพย์สิน'); return; }
+        const normalizedAssetId = normalizeAssetId(document.getElementById('tf_assetId').value);
+        // Reconstruct fromOwnerFull จาก form
+        const fromEmpId = document.getElementById('tf_fromEmpId').value.trim();
+        const fromOwnerName = document.getElementById('tf_fromOwnerName').value.trim();
+        const fromOwnerFull = (fromEmpId && fromOwnerName) ? `${fromEmpId} ${fromOwnerName}`.trim() : (currentAssetRow['ผู้รับผิดชอบ'] || '-');
+        // toOwnerFull จาก form
+        const toOwnerFull = document.getElementById('tf_toOwner').value.trim();
+        const payload = {
+          asset_id: normalizedAssetId,
+          name: document.getElementById('tf_name').value,
+          ul: document.getElementById('tf_ul').value,
+          from_location: document.getElementById('tf_fromLocation').value,
+          from_owner_full: fromOwnerFull,
+          from_owner_name: extractOwnerName(fromOwnerFull),
+          from_emp_id: fromEmpId,
+          from_ul: document.getElementById('tf_fromUL').value,
+          from_dept: document.getElementById('tf_fromDept').value,
+          to_location: document.getElementById('tf_toLocation').value.trim(),
+          to_owner_full: toOwnerFull,
+          to_owner_name: extractOwnerName(toOwnerFull),
+          to_emp_id: extractEmpId(toOwnerFull),
+          to_ul: document.getElementById('tf_toUL').value,
+          to_dept: document.getElementById('tf_toDept').value,
+          date: document.getElementById('tf_date').value,
+          operator: document.getElementById('tf_operator').value.trim(),
+          note: document.getElementById('tf_note').value.trim(),
+          status: 'โอนย้ายทรัพย์สิน'
+        };
+        printTransferForm(payload);
       }
       transferForm.addEventListener('submit', submitTransfer);
       // Datalist & Picker
@@ -1378,10 +1539,12 @@
               document.getElementById('tf_toOwner').value = val;
               document.getElementById('tf_toEmpId').value = extractEmpId(val);
               document.getElementById('tf_toUL').value = findULByOwner(val);
+              document.getElementById('tf_toDept').value = findDeptByOwner(val);
             } else {
               document.getElementById('tf_toLocation').value = val;
             }
             pickerModal.style.display = 'none';
+            validateForm();
           });
         });
       }
@@ -1408,28 +1571,6 @@
         }
       }
       // Print Form
-      document.getElementById('printFormBtn').addEventListener('click', () => {
-        if (!currentAssetRow) { alert('กรุณาเลือกทรัพย์สินและกรอกฟอร์มก่อนพิมพ์'); return; }
-        const fromOwnerFull = currentAssetRow['ผู้รับผิดชอบ'] || '-';
-        const toOwnerFull = document.getElementById('tf_toOwner').value.trim();
-        const payload = {
-          assetId: document.getElementById('tf_assetId').value,
-          name: document.getElementById('tf_name').value,
-          ul: document.getElementById('tf_ul').value,
-          fromLocation: document.getElementById('tf_fromLocation').value,
-          fromOwnerName: extractOwnerName(fromOwnerFull),
-          fromEmpId: document.getElementById('tf_fromEmpId').value,
-          fromUL: document.getElementById('tf_fromUL').value,
-          toLocation: document.getElementById('tf_toLocation').value,
-          toOwnerName: extractOwnerName(toOwnerFull),
-          toEmpId: document.getElementById('tf_toEmpId').value,
-          toUL: document.getElementById('tf_toUL').value,
-          date: document.getElementById('tf_date').value,
-          operator: document.getElementById('tf_operator').value,
-          note: document.getElementById('tf_note').value
-        };
-        printTransferForm(payload);
-      });
       function thaiDateStr(iso) {
         if (!iso) return '';
         const d = new Date(iso);
@@ -1458,11 +1599,11 @@
           .line .info { flex: 1; text-align: center; font-weight: bold; border-bottom: none; padding-top: 2px; }
         </style>`;
         const header = `<h1>บริษัท ซีพี รีเทลลิงค์ จำกัด</h1><h2>ใบโอนย้ายทรัพย์สิน</h2><div class="meta"><div><span class="label">รายละเอียดครั้งนี้ :</span> ${payload.note || ''}</div><div><span class="label">วันที่ :</span> ${dateStr}</div></div>`;
-        const firstRow = `<tr><td class="center">1</td><td class="center">${payload.assetId || ''}</td><td>${payload.name || ''}</td><td class="center">${payload.ul || ''}</td><td class="center">${payload.fromEmpId || ''}</td><td>${payload.fromOwnerName || ''}</td><td class="center">${payload.ul || ''}</td><td class="center">${payload.toEmpId || ''}</td><td>${payload.toOwnerName || ''}</td><td>${payload.note || ''}</td></tr>`;
+        const firstRow = `<tr><td class="center">1</td><td class="center">${payload.asset_id || ''}</td><td>${payload.name || ''}</td><td class="center">${payload.from_ul || ''}</td><td class="center">${payload.from_emp_id || ''}</td><td>${payload.from_owner_name || ''}</td><td class="center">${payload.to_ul || ''}</td><td class="center">${payload.to_emp_id || ''}</td><td>${payload.to_owner_name || ''}</td><td>${payload.note || ''}</td></tr>`;
         const emptyRows = Array.from({ length: 7 }, (_, i) => `<tr><td class="center">${i + 2}</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>`).join('');
         const table = `<table><thead><tr><th rowspan="2" style="width:40px">ลำดับ</th><th rowspan="2" style="width:120px">รหัสทรัพย์สิน</th><th rowspan="2">รายการ</th><th colspan="3">ผู้โอน</th><th colspan="3">ผู้รับ</th><th rowspan="2" style="width:160px">หมายเหตุ</th></tr><tr><th style="width:90px">UL</th><th style="width:120px">รหัสพนักงาน</th><th style="width:160px">ชื่อผู้รับผิดชอบเดิม</th><th style="width:90px">UL</th><th style="width:120px">รหัสพนักงาน</th><th style="width:160px">ชื่อผู้รับผิดชอบใหม่</th></tr></thead><tbody>${firstRow}${emptyRows}</tbody></table>`;
-        const signFrom = `<div class="box"><div class="center" style="font-weight:bold;margin-bottom:6px;">ผู้โอน</div><div class="line"><div class="lbl">ลายเซ็นต์</div><div class="fill"></div></div><div class="line"><div class="lbl">ชื่อตัวบรรจง</div><div class="info">${payload.fromOwnerName || ''}</div></div><div class="line"><div class="lbl">รหัสพนักงาน</div><div class="info">${payload.fromEmpId || ''}</div></div><div class="line"><div class="lbl">หน่วยงาน</div><div class="fill"></div></div></div>`;
-        const signTo = `<div class="box"><div class="center" style="font-weight:bold;margin-bottom:6px;">ผู้รับ</div><div class="line"><div class="lbl">ลายเซ็นต์</div><div class="fill"></div></div><div class="line"><div class="lbl">ชื่อตัวบรรจง</div><div class="info">${payload.toOwnerName || ''}</div></div><div class="line"><div class="lbl">รหัสพนักงาน</div><div class="info">${payload.toEmpId || ''}</div></div><div class="line"><div class="lbl">หน่วยงาน</div><div class="fill"></div></div></div>`;
+        const signFrom = `<div class="box"><div class="center" style="font-weight:bold;margin-bottom:6px;">ผู้โอน</div><div class="line"><div class="lbl">ลายเซ็นต์</div><div class="fill"></div></div><div class="line"><div class="lbl">ชื่อตัวบรรจง</div><div class="info">${payload.from_owner_name || ''}</div></div><div class="line"><div class="lbl">รหัสพนักงาน</div><div class="info">${payload.from_emp_id || ''}</div></div><div class="line"><div class="lbl">หน่วยงาน</div><div class="info">${payload.from_dept || ''}</div></div></div>`;
+        const signTo = `<div class="box"><div class="center" style="font-weight:bold;margin-bottom:6px;">ผู้รับ</div><div class="line"><div class="lbl">ลายเซ็นต์</div><div class="fill"></div></div><div class="line"><div class="lbl">ชื่อตัวบรรจง</div><div class="info">${payload.to_owner_name || ''}</div></div><div class="line"><div class="lbl">รหัสพนักงาน</div><div class="info">${payload.to_emp_id || ''}</div></div><div class="line"><div class="lbl">หน่วยงาน</div><div class="info">${payload.to_dept || ''}</div></div></div>`;
         const sign = `<div class="sign">${signFrom}${signTo}</div>`;
         w.document.write(`<html><head><title>พิมพ์ใบโอนย้ายทรัพย์สิน</title>${styles}</head><body>${header}${table}${sign}</body></html>`);
         w.document.close();
@@ -1478,7 +1619,7 @@
         .then(data => {
           if (!data || data.length === 0) {
             console.error('No data received from Google Sheets');
-            tableBody.innerHTML = '<tr><td colspan="9" style="text-align:center; padding:40px; color:var(--secondary-color);">ไม่มีข้อมูลจาก Google Sheets</td></tr>';
+            tableBody.innerHTML = '<tr><td colspan="10" style="text-align:center; padding:40px; color:var(--secondary-color);">ไม่มีข้อมูลจาก Google Sheets</td></tr>';
             return;
           }
           // Process data to remove leading zeros in asset_id for display
@@ -1498,7 +1639,7 @@
         })
         .catch(err => {
           console.error('ไม่สามารถโหลดข้อมูลได้:', err);
-          tableBody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding:40px; color:var(--danger-color);">เกิดข้อผิดพลาดในการโหลดข้อมูล: ${err.message}</td></tr>`;
+          tableBody.innerHTML = `<tr><td colspan="10" style="text-align:center; padding:40px; color:var(--danger-color);">เกิดข้อผิดพลาดในการโหลดข้อมูล: ${err.message}</td></tr>`;
         });
       // Self-tests
       function runSelfTests() {
@@ -1509,6 +1650,7 @@
           console.assert(extractOwnerName('7512578 ณัลริษาณ์ ชุติสมบูรณ์ไชย') === 'ณัลริษาณ์ ชุติสมบูรณ์ไชย', 'extractOwnerName ไม่ตัดรหัส');
           console.assert(parseAgeForSorting('1 ปี 2 เดือน').years === 1, 'parseAgeForSorting.year');
           console.assert(removeLeadingZeros('000000000505') === '505', 'removeLeadingZeros ไม่ทำงาน');
+          console.assert(normalizeAssetId('000000000505') === '505', 'normalizeAssetId ไม่ทำงาน');
           filterAndRenderTable();
         } catch (e) {
           console.warn('Self-test พบปัญหา (ไม่ร้ายแรง):', e);
