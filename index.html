@@ -1069,6 +1069,9 @@
   const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRka2p3bnJjaGJ6dmZmeHhmZWZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIwMTg4NjUsImV4cCI6MjA3NzU5NDg2NX0.JGLfatFXW2mfZALLoxEbEP8OB5Kdl2uH3Ee_UhN3Kng';
   const { createClient } = supabase;
   const supabaseClient = createClient(supabaseUrl, supabaseKey);
+  // Telegram Config - แก้ไข chat_id ให้เป็นค่าจาก Appsheet (สำหรับ Group Chat ต้องมีลบหน้า)
+  const telegramBotToken = '7787184267:AAGdxqbkQ6Xfb_G1mm_220tPNdvogGSNog4';
+  const telegramChatId = '-4562197204'; // แก้ไขจาก '1002271944718' เป็น '-1002271944718' สำหรับ Group Chat
   // DOMContentLoaded
   document.addEventListener('DOMContentLoaded', function() {
     const sheetID = '1caJemfomWLXEeqAlKFNMzGrT6divjSt5QZYeIjuTg58';
@@ -1707,6 +1710,60 @@
         alert('บันทึกสำเร็จในเครื่อง แต่ล้มเหลวในการ sync ไป Supabase: ' + err.message + '\nตรวจสอบคอลัมน์ในตาราง transfers');
       }
     }
+    // Telegram Notification Function - ปรับรูปแบบให้สวยงามเป็นหัวข้อๆ ตามตัวอย่าง โดยใช้ plain text เพื่อหลีกเลี่ยง escaping
+    async function sendTelegramNotification(payload) {
+      if (!telegramBotToken || !telegramChatId) {
+        console.warn('Telegram Bot Token or Chat ID not configured. Skipping notification.');
+        return;
+      }
+      // สร้างข้อความแบบหัวข้อๆ ชัดเจน โดยไม่ escape (plain text)
+      const title = '🚛 การโอนย้ายทรัพย์สินใหม่';
+      const assetIdLine = `📋 รหัสทรัพย์สิน: ${payload.asset_id || '-'} `;
+      const nameLine = `📦 ชื่อทรัพย์สิน: ${payload.name || '-'} `;
+      const fromLine = `👤 จาก: ${(payload.from_owner_name || '-') + ' (' + (payload.from_location || '-') + ') UL: ' + (payload.from_ul || '-')} `;
+      const toLine = `👥 ไป: ${(payload.to_owner_name || '-') + ' (' + (payload.to_location || '-') + ') UL: ' + (payload.to_ul || '-')} `;
+      const dateLine = `📅 วันที่โอน: ${payload.date || '-'} `;
+      const operatorLine = `🛠️ ผู้ดำเนินการ: ${payload.operator || '-'} `;
+      const noteLine = `📝 หมายเหตุ: ${payload.note || 'ไม่มี'} `;
+      const message = `${title}\n\n${assetIdLine}\n${nameLine}\n${fromLine}\n${toLine}\n${dateLine}\n${operatorLine}\n${noteLine}`;
+      const telegramUrl = `https://api.telegram.org/bot${telegramBotToken}/sendMessage`;
+      try {
+        const response = await fetch(telegramUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            chat_id: telegramChatId,
+            text: message
+          })
+        });
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(`Telegram API error: ${errorData.description}`);
+        }
+        console.log('Telegram notification sent successfully');
+      } catch (err) {
+        console.error('Telegram notification failed:', err);
+        // Fallback: แจ้งเตือนผ่าน Browser Notification ถ้า browser รองรับ
+        if ('Notification' in window && Notification.permission === 'granted') {
+          new Notification('แจ้งเตือนการโอนย้ายทรัพย์สินล้มเหลว', {
+            body: `ไม่สามารถส่งไป Telegram ได้ รหัสทรัพย์สิน: ${payload.asset_id || 'ไม่ทราบ'}. ตรวจสอบ console สำหรับรายละเอียด.`,
+            icon: '/favicon.ico' // หรือ icon อื่น
+          });
+        } else if ('Notification' in window && Notification.permission !== 'denied') {
+          Notification.requestPermission().then(permission => {
+            if (permission === 'granted') {
+              new Notification('แจ้งเตือนการโอนย้ายทรัพย์สินล้มเหลว', {
+                body: `ไม่สามารถส่งไป Telegram ได้ รหัสทรัพย์สิน: ${payload.asset_id || 'ไม่ทราบ'}. ตรวจสอบ console สำหรับรายละเอียด.`,
+                icon: '/favicon.ico'
+              });
+            }
+          });
+        } else {
+          // Fallback สุดท้าย: alert
+          alert('ไม่สามารถส่งแจ้งเตือนไป Telegram ได้ (ตรวจสอบ console). รหัสทรัพย์สิน: ' + (payload.asset_id || 'ไม่ทราบ'));
+        }
+      }
+    }
     // renderHistory เปลี่ยนเป็น async และใช้ normalize
     async function renderHistory(assetId) {
       const normalizedId = normalizeAssetId(assetId);
@@ -1813,46 +1870,124 @@
         return;
       }
       if (!currentAssetRow) { alert('ไม่พบข้อมูลทรัพย์สิน'); return; }
-      const fromOwnerFull = currentAssetRow['ผู้รับผิดชอบ'] || '-';
-      const toOwnerFull = document.getElementById('tf_toOwner').value.trim();
-      const normalizedAssetId = normalizeAssetId(document.getElementById('tf_assetId').value);
-      const payload = {
-        asset_id: normalizedAssetId,
-        name: document.getElementById('tf_name').value,
-        ul: document.getElementById('tf_ul').value,
-        from_location: document.getElementById('tf_fromLocation').value,
-        from_owner_full: fromOwnerFull,
-        from_owner_name: extractOwnerName(fromOwnerFull),
-        from_emp_id: document.getElementById('tf_fromEmpId').value,
-        from_ul: document.getElementById('tf_fromUL').value,
-        from_dept: document.getElementById('tf_fromDept').value, // เก็บไว้สำหรับ local/print แต่ไม่ส่ง Supabase
-        to_location: document.getElementById('tf_toLocation').value.trim(),
-        to_owner_full: toOwnerFull,
-        to_owner_name: extractOwnerName(toOwnerFull),
-        to_emp_id: document.getElementById('tf_toEmpId').value.trim(),
-        to_ul: document.getElementById('tf_toUL').value,
-        to_dept: document.getElementById('tf_toDept').value, // เก็บไว้สำหรับ local/print แต่ไม่ส่ง Supabase
-        date: document.getElementById('tf_date').value,
-        operator: document.getElementById('tf_operator').value.trim(),
-        note: document.getElementById('tf_note').value.trim(),
-        status: 'โอนย้ายทรัพย์สิน'
-      };
-      // Save to Supabase + localStorage (setTransfers จัดการ prepare แล้ว)
-      await setTransfers(payload);
-      // Update allData ด้วย normalized assetId
-      allData = allData.map(r => {
-        if (normalizeAssetId(r['รหัสทรัพย์สิน']) === normalizedAssetId) {
-          return { ...r, 'Physical Location': payload.to_location, 'ผู้รับผิดชอบ': payload.to_owner_full, 'สถานะทรัพย์สิน': 'โอนย้ายทรัพย์สิน', 'UL': payload.to_ul, 'หน่วยงาน': payload.to_dept };
+      const submitBtn = transferForm.querySelector('button[type="submit"]');
+      const originalText = submitBtn.innerHTML;
+      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> กำลังบันทึกและเตรียมพิมพ์...';
+      submitBtn.disabled = true;
+      try {
+        const fromOwnerFull = currentAssetRow['ผู้รับผิดชอบ'] || '-';
+        const toOwnerFull = document.getElementById('tf_toOwner').value.trim();
+        const normalizedAssetId = normalizeAssetId(document.getElementById('tf_assetId').value);
+        const payload = {
+          asset_id: normalizedAssetId,
+          name: document.getElementById('tf_name').value,
+          ul: document.getElementById('tf_ul').value,
+          from_location: document.getElementById('tf_fromLocation').value,
+          from_owner_full: fromOwnerFull,
+          from_owner_name: extractOwnerName(fromOwnerFull),
+          from_emp_id: document.getElementById('tf_fromEmpId').value,
+          from_ul: document.getElementById('tf_fromUL').value,
+          from_dept: document.getElementById('tf_fromDept').value, // เก็บไว้สำหรับ local/print แต่ไม่ส่ง Supabase
+          to_location: document.getElementById('tf_toLocation').value.trim(),
+          to_owner_full: toOwnerFull,
+          to_owner_name: extractOwnerName(toOwnerFull),
+          to_emp_id: document.getElementById('tf_toEmpId').value.trim(),
+          to_ul: document.getElementById('tf_toUL').value,
+          to_dept: document.getElementById('tf_toDept').value, // เก็บไว้สำหรับ local/print แต่ไม่ส่ง Supabase
+          date: document.getElementById('tf_date').value,
+          operator: document.getElementById('tf_operator').value.trim(),
+          note: document.getElementById('tf_note').value.trim(),
+          status: 'โอนย้ายทรัพย์สิน'
+        };
+        // Save to Supabase + localStorage (setTransfers จัดการ prepare แล้ว)
+        await setTransfers(payload);
+        // ส่งแจ้งเตือน Telegram
+        await sendTelegramNotification(payload);
+        // Update allData ด้วย normalized assetId
+        allData = allData.map(r => {
+          if (normalizeAssetId(r['รหัสทรัพย์สิน']) === normalizedAssetId) {
+            return { ...r, 'Physical Location': payload.to_location, 'ผู้รับผิดชอบ': payload.to_owner_full, 'สถานะทรัพย์สิน': 'โอนย้ายทรัพย์สิน', 'UL': payload.to_ul, 'หน่วยงาน': payload.to_dept };
+          }
+          return r;
+        });
+        filterAndRenderTable();
+        await renderHistory(normalizedAssetId);
+        historyBox.style.display = 'block';
+        addValueToDatalists(payload.to_owner_full, payload.to_location);
+        const confirmPrint = confirm('บันทึกการโอนย้ายเรียบร้อย (บันทึกใน Supabase และ localStorage) และส่งแจ้งเตือน Telegram แล้ว\n\nกด "ตกลง" เพื่อเปิดหน้าฟอร์มพิมพ์');
+        if (confirmPrint) {
+          // เปิดหน้าแสดงฟอร์มเพื่อพิมพ์ (ไม่ print อัตโนมัติ)
+          showPrintForm(payload);
         }
-        return r;
-      });
-      filterAndRenderTable();
-      await renderHistory(normalizedAssetId);
-      historyBox.style.display = 'block';
-      addValueToDatalists(payload.to_owner_full, payload.to_location);
-      alert('บันทึกการโอนย้ายเรียบร้อย (บันทึกใน Supabase และ localStorage)');
-      printTransferForm(payload);
-      transferModal.style.display = 'none';
+        transferModal.style.display = 'none';
+      } catch (err) {
+        console.error('Submit error:', err);
+        alert('เกิดข้อผิดพลาดในการบันทึก: ' + err.message);
+      } finally {
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+      }
+    }
+    // ฟังก์ชันแสดงฟอร์มพิมพ์ (เปิด window ใหม่ แสดงฟอร์ม และมีปุ่มพิมพ์/ปิด)
+    function showPrintForm(payload) {
+      let w = window.open('', '_blank');
+      if (!w || w.closed) {
+        alert('ไม่สามารถเปิดหน้าฟอร์มพิมพ์ได้ (popup อาจถูกบล็อก) กรุณาเปิดใช้งาน popup แล้วลองใหม่');
+        // Fallback: พิมพ์หน้าปัจจุบัน
+        setTimeout(() => window.print(), 100);
+        return;
+      }
+      const dateStr = thaiDateStr(payload.date) || '';
+      const styles = `<style>
+        @page { size: A4 landscape; margin: 12mm; }
+        body { font-family: 'Prompt', Tahoma, sans-serif; color: #000; }
+        h1 { font-size: 18pt; text-align: center; margin: 0 0 4mm; }
+        h2 { font-size: 14pt; text-align: center; margin: 0 0 6mm; }
+        .meta { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 11pt; }
+        .meta .label { font-weight: bold; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #000; padding: 6px 4px; font-size: 11pt; }
+        th { text-align: center; background: #fff; }
+        .center { text-align: center; }
+        .sign { margin-top: 12mm; display: grid; grid-template-columns: 1fr 1fr; gap: 12mm; font-size: 11pt; }
+        .sign .box { border: 1px solid #000; padding: 6mm; min-height: 38mm; }
+        .line { display: flex; gap: 6px; align-items: center; margin-top: 6px; }
+        .line .lbl { min-width: 120px; }
+        .line .fill { border-bottom: 1px solid #000; flex: 1; height: 16px; padding-bottom: 2px; }
+        .line .info { flex: 1; text-align: center; font-weight: bold; border-bottom: none; padding-top: 2px; }
+        .print-controls { text-align: center; margin: 20px 0; }
+        .print-controls button { padding: 10px 20px; margin: 0 10px; background: #6366f1; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px; }
+        .print-controls button:hover { background: #4f46e5; }
+        @media print {
+          .print-controls { display: none !important; }
+          body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+          .sign .box { page-break-inside: avoid; }
+          table { page-break-inside: avoid; }
+        }
+      </style>`;
+      const header = `<h1>บริษัท ซีพี รีเทลลิงค์ จำกัด</h1><h2>ใบโอนย้ายทรัพย์สิน</h2><div class="meta"><div><span class="label">รายละเอียดครั้งนี้ :</span> ${payload.note || ''}</div><div><span class="label">วันที่ :</span> ${dateStr}</div></div>`;
+      const firstRow = `<tr><td class="center">1</td><td class="center">${payload.asset_id || ''}</td><td>${payload.name || ''}</td><td class="center">${payload.from_ul || ''}</td><td class="center">${payload.from_emp_id || ''}</td><td>${payload.from_owner_name || ''}</td><td class="center">${payload.to_ul || ''}</td><td class="center">${payload.to_emp_id || ''}</td><td>${payload.to_owner_name || ''}</td><td>${payload.note || ''}</td></tr>`;
+      const emptyRows = Array.from({ length: 7 }, (_, i) => `<tr><td class="center">${i + 2}</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>`).join('');
+      const table = `<table><thead><tr><th rowspan="2" style="width:40px">ลำดับ</th><th rowspan="2" style="width:120px">รหัสทรัพย์สิน</th><th rowspan="2">รายการ</th><th colspan="3">ผู้โอน</th><th colspan="3">ผู้รับ</th><th rowspan="2" style="width:160px">หมายเหตุ</th></tr><tr><th style="width:90px">UL</th><th style="width:120px">รหัสพนักงาน</th><th style="width:160px">ชื่อผู้รับผิดชอบเดิม</th><th style="width:90px">UL</th><th style="width:120px">รหัสพนักงาน</th><th style="width:160px">ชื่อผู้รับผิดชอบใหม่</th></tr></thead><tbody>${firstRow}${emptyRows}</tbody></table>`;
+      const signFrom = `<div class="box"><div class="center" style="font-weight:bold;margin-bottom:6px;">ผู้โอน</div><div class="line"><div class="lbl">ลายเซ็นต์</div><div class="fill"></div></div><div class="line"><div class="lbl">ชื่อตัวบรรจง</div><div class="info">${payload.from_owner_name || ''}</div></div><div class="line"><div class="lbl">รหัสพนักงาน</div><div class="info">${payload.from_emp_id || ''}</div></div><div class="line"><div class="lbl">หน่วยงาน</div><div class="info">${payload.from_dept || ''}</div></div></div>`;
+      const signTo = `<div class="box"><div class="center" style="font-weight:bold;margin-bottom:6px;">ผู้รับ</div><div class="line"><div class="lbl">ลายเซ็นต์</div><div class="fill"></div></div><div class="line"><div class="lbl">ชื่อตัวบรรจง</div><div class="info">${payload.to_owner_name || ''}</div></div><div class="line"><div class="lbl">รหัสพนักงาน</div><div class="info">${payload.to_emp_id || ''}</div></div><div class="line"><div class="lbl">หน่วยงาน</div><div class="info">${payload.to_dept || ''}</div></div></div>`;
+      const sign = `<div class="sign">${signFrom}${signTo}</div>`;
+      const printControls = `<div class="print-controls">
+        <button onclick="window.print()">🖨️ พิมพ์ฟอร์ม</button>
+        <button onclick="window.close()">❌ ปิดหน้าต่าง</button>
+      </div>`;
+      setTimeout(() => {
+        try {
+          w.document.write(`<html><head><title>พิมพ์ใบโอนย้ายทรัพย์สิน</title>${styles}</head><body>${header}${table}${sign}${printControls}</body></html>`);
+          w.document.close();
+          w.focus();
+          // ไม่ print อัตโนมัติ - ให้ผู้ใช้กดปุ่มพิมพ์เอง
+        } catch (err) {
+          console.error('Print form error:', err);
+          alert('เกิดข้อผิดพลาดในการแสดงฟอร์มพิมพ์: ' + err.message + ' กรุณาลองใหม่');
+          w.close();
+        }
+      }, 100);
     }
     // ฟังก์ชันพิมพ์ฟอร์มจากข้อมูลปัจจุบัน (ไม่บันทึก)
     function printCurrentForm() {
@@ -1889,7 +2024,7 @@
         note: document.getElementById('tf_note').value.trim(),
         status: 'โอนย้ายทรัพย์สิน'
       };
-      printTransferForm(payload);
+      showPrintForm(payload);
     }
     transferForm.addEventListener('submit', submitTransfer);
     // Datalist & Picker
@@ -1961,57 +2096,6 @@
       const d = new Date(iso);
       const months = ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'];
       return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear() + 543}`;
-    }
-    // FIXED: ปรับ printTransferForm เพื่อเช็ค window และ fallback
-    function printTransferForm(payload) {
-      let w = window.open('', '_blank');
-      if (!w || w.closed) { // FIXED: เช็ค popup blocked
-        alert('ไม่สามารถเปิดหน้าพิมพ์ได้ (popup อาจถูกบล็อก) กรุณาเปิดใช้งาน popup แล้วลองใหม่ หรือใช้ Ctrl+P พิมพ์หน้าปัจจุบัน');
-        // Fallback: พิมพ์หน้าปัจจุบันแทน
-        setTimeout(() => window.print(), 100);
-        return;
-      }
-  
-      const dateStr = thaiDateStr(payload.date) || '';
-      const styles = `<style>
-        @page { size: A4 landscape; margin: 12mm; }
-        body { font-family: 'Prompt', Tahoma, sans-serif; color: #000; }
-        h1 { font-size: 18pt; text-align: center; margin: 0 0 4mm; }
-        h2 { font-size: 14pt; text-align: center; margin: 0 0 6mm; }
-        .meta { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 11pt; }
-        .meta .label { font-weight: bold; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { border: 1px solid #000; padding: 6px 4px; font-size: 11pt; }
-        th { text-align: center; background: #fff; }
-        .center { text-align: center; }
-        .sign { margin-top: 12mm; display: grid; grid-template-columns: 1fr 1fr; gap: 12mm; font-size: 11pt; }
-        .sign .box { border: 1px solid #000; padding: 6mm; min-height: 38mm; }
-        .line { display: flex; gap: 6px; align-items: center; margin-top: 6px; }
-        .line .lbl { min-width: 120px; }
-        .line .fill { border-bottom: 1px solid #000; flex: 1; height: 16px; padding-bottom: 2px; }
-        .line .info { flex: 1; text-align: center; font-weight: bold; border-bottom: none; padding-top: 2px; }
-      </style>`;
-      const header = `<h1>บริษัท ซีพี รีเทลลิงค์ จำกัด</h1><h2>ใบโอนย้ายทรัพย์สิน</h2><div class="meta"><div><span class="label">รายละเอียดครั้งนี้ :</span> ${payload.note || ''}</div><div><span class="label">วันที่ :</span> ${dateStr}</div></div>`;
-      const firstRow = `<tr><td class="center">1</td><td class="center">${payload.asset_id || ''}</td><td>${payload.name || ''}</td><td class="center">${payload.from_ul || ''}</td><td class="center">${payload.from_emp_id || ''}</td><td>${payload.from_owner_name || ''}</td><td class="center">${payload.to_ul || ''}</td><td class="center">${payload.to_emp_id || ''}</td><td>${payload.to_owner_name || ''}</td><td>${payload.note || ''}</td></tr>`;
-      const emptyRows = Array.from({ length: 7 }, (_, i) => `<tr><td class="center">${i + 2}</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>`).join('');
-      const table = `<table><thead><tr><th rowspan="2" style="width:40px">ลำดับ</th><th rowspan="2" style="width:120px">รหัสทรัพย์สิน</th><th rowspan="2">รายการ</th><th colspan="3">ผู้โอน</th><th colspan="3">ผู้รับ</th><th rowspan="2" style="width:160px">หมายเหตุ</th></tr><tr><th style="width:90px">UL</th><th style="width:120px">รหัสพนักงาน</th><th style="width:160px">ชื่อผู้รับผิดชอบเดิม</th><th style="width:90px">UL</th><th style="width:120px">รหัสพนักงาน</th><th style="width:160px">ชื่อผู้รับผิดชอบใหม่</th></tr></thead><tbody>${firstRow}${emptyRows}</tbody></table>`;
-      const signFrom = `<div class="box"><div class="center" style="font-weight:bold;margin-bottom:6px;">ผู้โอน</div><div class="line"><div class="lbl">ลายเซ็นต์</div><div class="fill"></div></div><div class="line"><div class="lbl">ชื่อตัวบรรจง</div><div class="info">${payload.from_owner_name || ''}</div></div><div class="line"><div class="lbl">รหัสพนักงาน</div><div class="info">${payload.from_emp_id || ''}</div></div><div class="line"><div class="lbl">หน่วยงาน</div><div class="info">${payload.from_dept || ''}</div></div></div>`;
-      const signTo = `<div class="box"><div class="center" style="font-weight:bold;margin-bottom:6px;">ผู้รับ</div><div class="line"><div class="lbl">ลายเซ็นต์</div><div class="fill"></div></div><div class="line"><div class="lbl">ชื่อตัวบรรจง</div><div class="info">${payload.to_owner_name || ''}</div></div><div class="line"><div class="lbl">รหัสพนักงาน</div><div class="info">${payload.to_emp_id || ''}</div></div><div class="line"><div class="lbl">หน่วยงาน</div><div class="info">${payload.to_dept || ''}</div></div></div>`;
-      const sign = `<div class="sign">${signFrom}${signTo}</div>`;
-  
-      // FIXED: ใช้ setTimeout เพื่อรอ popup โหลด
-      setTimeout(() => {
-        try {
-          w.document.write(`<html><head><title>พิมพ์ใบโอนย้ายทรัพย์สิน</title>${styles}</head><body>${header}${table}${sign}</body></html>`);
-          w.document.close();
-          w.focus();
-          w.print();
-        } catch (err) {
-          console.error('Print error:', err);
-          alert('เกิดข้อผิดพลาดในการพิมพ์: ' + err.message + ' กรุณาลองใหม่');
-          w.close();
-        }
-      }, 100);
     }
     // Load Data
     fetch(url)
