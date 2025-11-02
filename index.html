@@ -198,6 +198,13 @@
     .print-button:hover:not(:disabled) {
       background: linear-gradient(135deg, #f59e0b, #f59e0b) !important;
     }
+    .history-button {
+      background: linear-gradient(135deg, var(--info-color), #0891b2) !important;
+      color: var(--white) !important;
+    }
+    .history-button:hover:not(:disabled) {
+      background: linear-gradient(135deg, #0891b2, #0e7490) !important;
+    }
     .call-count-box {
       margin-left: auto;
       padding: 14px 18px;
@@ -697,20 +704,20 @@
         font-size: 11px; /* ลด font-size */
         white-space: nowrap; /* บังคับ nowrap ยกเว้นชื่อ */
       }
-      th:nth-child(2), td:nth-child(2) { 
-        min-width: 100px; 
-        max-width: 120px; 
-        white-space: normal; 
-        overflow: hidden; 
-        text-overflow: ellipsis; 
+      th:nth-child(2), td:nth-child(2) {
+        min-width: 100px;
+        max-width: 120px;
+        white-space: normal;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
       th:nth-child(4), td:nth-child(4) { min-width: 60px; max-width: 80px; }
       th:nth-child(5), td:nth-child(5) { min-width: 60px; max-width: 80px; }
       th:nth-child(6), td:nth-child(6) { min-width: 60px; max-width: 80px; }
       th:nth-child(7), td:nth-child(7) { min-width: 80px; max-width: 100px; }
-      .transfer-button { 
-        padding: 6px 8px; 
-        font-size: 10px; 
+      .transfer-button {
+        padding: 6px 8px;
+        font-size: 10px;
       }
       .form-grid {
         grid-template-columns: 1fr;
@@ -765,6 +772,14 @@
       background: linear-gradient(135deg, #dc2626, #b91c1c);
       transform: translateY(-2px);
     }
+    #globalHistoryBox {
+      max-height: 70vh;
+      overflow-y: auto;
+      margin-top: 16px;
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow-sm);
+      animation: fadeInUp 0.6s ease-out;
+    }
   </style>
 </head>
 <body>
@@ -788,6 +803,7 @@
       <input type="text" id="searchInput" placeholder="ค้นหา รหัส, ชื่อ, UL, หน่วยงาน, Location, วันที่ซื้อ, ผู้รับผิดชอบ, Status, อายุ..." />
       <button id="searchButton" class="action-button"><i class="fas fa-search"></i> ค้นหา</button>
       <button id="excelButton" class="action-button print-button"><i class="fas fa-file-excel"></i> Excel</button>
+      <button id="historyButton" class="action-button history-button"><i class="fas fa-history"></i> ประวัติ</button>
     </div>
   </div>
   <div class="table-container">
@@ -965,6 +981,31 @@
       <div id="pickerList"></div>
     </div>
   </div>
+  <!-- Global History Modal -->
+  <div id="globalHistoryModal" class="modal">
+    <div class="modal-content">
+      <span class="close" id="closeGlobalHistoryModal">&times;</span>
+      <h2><i class="fas fa-history"></i> ประวัติการโอนย้ายทั้งหมด</h2>
+      <div id="globalHistoryBox">
+        <table class="timeline-table" id="globalHistoryTable">
+          <thead>
+            <tr>
+              <th>วันที่โอน</th>
+              <th>รหัสทรัพย์สิน</th>
+              <th>จาก Location</th>
+              <th>ไป Location</th>
+              <th>จากผู้รับผิดชอบ</th>
+              <th>ผู้รับผิดชอบใหม่</th>
+              <th>ผู้ดำเนินการ</th>
+              <th>หมายเหตุ</th>
+              <th style="width: 140px;">การจัดการ</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
   // Supabase Config - ใช้ค่าจริงจากผู้ใช้
@@ -1000,6 +1041,10 @@
     const searchInput = document.getElementById('searchInput');
     const searchButton = document.getElementById('searchButton');
     const excelButton = document.getElementById('excelButton');
+    const historyButton = document.getElementById('historyButton');
+    const globalHistoryModal = document.getElementById('globalHistoryModal');
+    const closeGlobalHistoryModal = document.getElementById('closeGlobalHistoryModal');
+    const globalHistoryTableBody = document.querySelector('#globalHistoryTable tbody');
     const tableBody = document.getElementById('tableBody');
     const pageNumbersContainer = document.getElementById('pageNumbers');
     const firstPageButton = document.getElementById('firstPage');
@@ -1385,6 +1430,11 @@
       filterAndRenderTable();
     });
     excelButton.addEventListener('click', exportToCSV);
+    historyButton.addEventListener('click', async () => {
+      await renderGlobalHistory();
+      globalHistoryModal.style.display = 'block';
+    });
+    closeGlobalHistoryModal.onclick = () => { globalHistoryModal.style.display = 'none'; };
     firstPageButton.onclick = () => { currentPage = 1; filterAndRenderTable(); };
     prevPageButton.onclick = () => { if (currentPage > 1) { currentPage--; filterAndRenderTable(); } };
     nextPageButton.onclick = () => {
@@ -1441,6 +1491,7 @@
     window.addEventListener('click', (e) => {
       if (e.target === transferModal) { transferModal.style.display = 'none'; currentAssetRow = null; }
       if (e.target === pickerModal) { pickerModal.style.display = 'none'; }
+      if (e.target === globalHistoryModal) { globalHistoryModal.style.display = 'none'; }
     });
     document.getElementById('tf_toOwner').addEventListener('input', () => {
       const toOwnerFull = document.getElementById('tf_toOwner').value;
@@ -1643,6 +1694,61 @@
         historyTableBody.appendChild(tr);
       });
     }
+    // Global History Render
+    async function renderGlobalHistory() {
+      const transfers = await getTransfers();
+      globalHistoryTableBody.innerHTML = '';
+      if (transfers.length === 0) {
+        globalHistoryTableBody.innerHTML = '<tr><td colspan="9" style="text-align:center; padding:20px; color:var(--secondary-color);">ยังไม่มีประวัติการโอนย้าย</td></tr>';
+        return;
+      }
+      transfers.sort((a, b) => new Date(b.date) - new Date(a.date));
+      transfers.forEach(t => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${t.date}</td>
+          <td>${t.asset_id || '-'}</td>
+          <td>${t.from_location || '-'}</td>
+          <td>${t.to_location || '-'}</td>
+          <td>${t.from_owner_name || '-'}</td>
+          <td>${t.to_owner_name || '-'}</td>
+          <td>${t.operator || '-'}</td>
+          <td>${t.note || '-'}</td>
+          <td class="manage-col">
+            <button class="print-transfer-btn"><i class="fas fa-print"></i></button>
+            ${t.id ? '<button class="delete-transfer-btn"><i class="fas fa-trash"></i> ลบ</button>' : ''}
+          </td>
+        `;
+        const printBtn = tr.querySelector('.manage-col .print-transfer-btn');
+        printBtn.addEventListener('click', async (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          const assetRow = allData.find(r => normalizeAssetId(r['รหัสทรัพย์สิน']) === t.asset_id);
+          if (!assetRow) {
+            alert('ไม่พบข้อมูลทรัพย์สิน');
+            return;
+          }
+          currentAssetRow = assetRow;
+          openTransferModal(assetRow);
+          loadTransferToForm(t);
+          setTimeout(() => {
+            printCurrentForm();
+            transferModal.style.display = 'none';
+            currentAssetRow = null;
+          }, 100);
+        });
+        if (t.id) {
+          const deleteBtn = tr.querySelector('.manage-col .delete-transfer-btn');
+          deleteBtn.addEventListener('click', async (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            await deleteSingleTransfer(t.id, t.asset_id);
+            await renderGlobalHistory();
+          });
+        }
+        globalHistoryTableBody.appendChild(tr);
+      });
+    }
     // FIXED: submitTransfer - ใช้ preparePayloadForSupabase ใน setTransfers แล้ว
     async function submitTransfer(e) {
       e.preventDefault();
@@ -1809,7 +1915,7 @@
         setTimeout(() => window.print(), 100);
         return;
       }
-   
+  
       const dateStr = thaiDateStr(payload.date) || '';
       const styles = `<style>
         @page { size: A4 landscape; margin: 12mm; }
@@ -1836,7 +1942,7 @@
       const signFrom = `<div class="box"><div class="center" style="font-weight:bold;margin-bottom:6px;">ผู้โอน</div><div class="line"><div class="lbl">ลายเซ็นต์</div><div class="fill"></div></div><div class="line"><div class="lbl">ชื่อตัวบรรจง</div><div class="info">${payload.from_owner_name || ''}</div></div><div class="line"><div class="lbl">รหัสพนักงาน</div><div class="info">${payload.from_emp_id || ''}</div></div><div class="line"><div class="lbl">หน่วยงาน</div><div class="info">${payload.from_dept || ''}</div></div></div>`;
       const signTo = `<div class="box"><div class="center" style="font-weight:bold;margin-bottom:6px;">ผู้รับ</div><div class="line"><div class="lbl">ลายเซ็นต์</div><div class="fill"></div></div><div class="line"><div class="lbl">ชื่อตัวบรรจง</div><div class="info">${payload.to_owner_name || ''}</div></div><div class="line"><div class="lbl">รหัสพนักงาน</div><div class="info">${payload.to_emp_id || ''}</div></div><div class="line"><div class="lbl">หน่วยงาน</div><div class="info">${payload.to_dept || ''}</div></div></div>`;
       const sign = `<div class="sign">${signFrom}${signTo}</div>`;
-   
+  
       // FIXED: ใช้ setTimeout เพื่อรอ popup โหลด
       setTimeout(() => {
         try {
