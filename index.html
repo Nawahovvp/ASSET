@@ -710,6 +710,20 @@
     th:nth-child(8), td:nth-child(8) { width: 50px; min-width: 50px; text-align: center; } /* Status */
     th:nth-child(9), td:nth-child(9) { width: 50px; min-width: 50px; text-align: center; } /* อายุ */
     th:nth-child(10), td:nth-child(10) { width: 70px; min-width: 70px; text-align: center; } /* โอนย้าย */
+    /* Highlight required fields */
+    .required-label::after {
+      content: " *";
+      color: var(--danger-color);
+      font-weight: bold;
+    }
+    .required-input {
+      border-left: 4px solid var(--danger-color);
+      background-color: #fff5f5;
+    }
+    .required-input:focus {
+      border-left: 4px solid var(--danger-color);
+      background-color: #fef2f2;
+    }
     @media (max-width: 768px) {
       .filter-row {
         grid-template-columns: repeat(auto-fit, minmax(100%, 1fr));
@@ -953,9 +967,9 @@
           <h3><i class="fas fa-user-plus"></i> ผู้รับและสถานที่ใหม่</h3>
           <div class="form-grid">
             <div class="form-group">
-              <label><i class="fas fa-user-plus"></i> ผู้รับผิดชอบ (ผู้รับ)</label>
+              <label class="required-label"><i class="fas fa-user-plus"></i> ผู้รับผิดชอบ (ผู้รับ)</label>
               <div class="search-row-modal">
-                <input type="text" id="tf_toOwner" list="ownersList" placeholder="เลือก/ค้นหา ชื่อผู้รับผิดชอบใหม่" required class="form-input">
+                <input type="text" id="tf_toOwner" list="ownersList" placeholder="เลือก/ค้นหา ชื่อผู้รับผิดชอบใหม่" required class="form-input required-input">
                 <button type="button" id="btnFindOwner" class="action-button" style="padding:10px 14px; font-size:13px;"><i class="fas fa-search"></i></button>
               </div>
             </div>
@@ -972,9 +986,9 @@
               <input type="text" id="tf_toDept" class="form-input" readonly>
             </div>
             <div class="form-group">
-              <label><i class="fas fa-map-marker-alt"></i> ย้ายไป Location</label>
+              <label class="required-label"><i class="fas fa-map-marker-alt"></i> ย้ายไป Location</label>
               <div class="search-row-modal">
-                <input type="text" id="tf_toLocation" list="locationsList" placeholder="เลือก/ค้นหา Location ใหม่" required class="form-input">
+                <input type="text" id="tf_toLocation" list="locationsList" placeholder="เลือก/ค้นหา Location ใหม่" required class="form-input required-input">
                 <button type="button" id="btnFindLocation" class="action-button" style="padding:10px 14px; font-size:13px;"><i class="fas fa-search"></i></button>
               </div>
             </div>
@@ -985,12 +999,12 @@
           <h3><i class="fas fa-info-circle"></i> ข้อมูลเพิ่มเติม</h3>
           <div class="form-grid">
             <div class="form-group">
-              <label><i class="fas fa-calendar"></i> วันที่โอน</label>
-              <input type="date" id="tf_date" required class="form-input">
+              <label class="required-label"><i class="fas fa-calendar"></i> วันที่โอน</label>
+              <input type="date" id="tf_date" required class="form-input required-input">
             </div>
             <div class="form-group">
-              <label><i class="fas fa-user-edit"></i> ผู้ดำเนินการ</label>
-              <input type="text" id="tf_operator" placeholder="ชื่อผู้ดำเนินการ (จำเป็น)" required class="form-input">
+              <label class="required-label"><i class="fas fa-user-edit"></i> ผู้ดำเนินการ</label>
+              <input type="text" id="tf_operator" placeholder="ชื่อผู้ดำเนินการ (จำเป็น)" required class="form-input required-input">
             </div>
           </div>
         </div>
@@ -1490,8 +1504,9 @@
     });
     excelButton.addEventListener('click', exportToCSV);
     historyButton.addEventListener('click', async () => {
-      await renderGlobalHistory();
+      globalHistoryTableBody.innerHTML = '<tr><td colspan="9" class="loading"><i class="fas fa-spinner"></i> กำลังโหลดประวัติ...</td></tr>';
       globalHistoryModal.style.display = 'block';
+      await renderGlobalHistory();
     });
     closeGlobalHistoryModal.onclick = () => { globalHistoryModal.style.display = 'none'; };
     firstPageButton.onclick = () => { currentPage = 1; filterAndRenderTable(); };
@@ -1717,7 +1732,7 @@
         return;
       }
       // สร้างข้อความแบบหัวข้อๆ ชัดเจน โดยไม่ escape (plain text)
-      const title = '🚛 พบการขอโอนย้ายทรัพย์สินใหม่';
+      const title = '🚛 การโอนย้ายทรัพย์สินใหม่';
       const assetIdLine = `📋 รหัสทรัพย์สิน: ${payload.asset_id || '-'} `;
       const nameLine = `📦 ชื่อทรัพย์สิน: ${payload.name || '-'} `;
       const fromLine = `👤 จาก: ${(payload.from_owner_name || '-') + ' (' + (payload.from_location || '-') + ') UL: ' + (payload.from_ul || '-')} `;
