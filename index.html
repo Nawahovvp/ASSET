@@ -1076,7 +1076,7 @@
     <div class="search-row">
       <input type="text" id="searchInput" placeholder="ค้นหา รหัส, ชื่อ, UL, หน่วยงาน, Location, วันที่ซื้อ, ผู้รับผิดชอบ, Status, อายุ..." />
       <button id="searchButton" class="action-button"><i class="fas fa-search"></i> ค้นหา</button>
-      <button id="excelButton" class="action-button print-button"><i class="fas fa-file-excel"></i> Excel</button>
+      <button id="reportButton" class="action-button print-button"><i class="fas fa-print"></i> รายงาน</button>
       <button id="historyButton" class="action-button history-button"><i class="fas fa-history"></i> ประวัติ</button>
       <button id="documentsButton" class="action-button documents-button"><i class="fas fa-file-alt"></i> เอกสารทั้งหมด</button>
       <button id="cartButton" class="action-button cart-button" disabled><i class="fas fa-shopping-cart"></i> โอนย้ายตะกร้า</button>
@@ -1330,7 +1330,7 @@
           <input type="text" id="loginUserId" class="form-input" placeholder="กรอกรหัสผู้ใช้ (IDUser)" required>
         </div>
         <div class="form-group">
-          <label><i class="fas fa-lock"></i> รหัสผ่าน (ไม่ใกล้ไม่ไกล 4 ตัวท้ายนั้นไง)</label>
+          <label><i class="fas fa-lock"></i> รหัสผ่าน (4 ตัวท้ายของ IDUser)</label>
           <input type="password" id="loginPassword" class="form-input" placeholder="กรอกรหัสผ่าน" required>
         </div>
         <div id="rememberMe">
@@ -1382,7 +1382,7 @@
       const stockFilter = document.getElementById('stockFilter');
       const searchInput = document.getElementById('searchInput');
       const searchButton = document.getElementById('searchButton');
-      const excelButton = document.getElementById('excelButton');
+      const reportButton = document.getElementById('reportButton');
       const historyButton = document.getElementById('historyButton');
       const documentsButton = document.getElementById('documentsButton');
       const cartButton = document.getElementById('cartButton');
@@ -1453,7 +1453,7 @@
       // ฟังก์ชันแสดง UI หลังล็อกอิน
       function showLoggedIn() {
         loggedUserName.textContent = loggedUser.Name;
-        document.getElementById('tf_operator').value = loggedUser.Name; // ตั้งผู้ดำเนินการอัตโนมัติ
+        document.getElementById('tf_operator').value = loggedUser ? loggedUser.Name : ''; // ตั้งผู้ดำเนินการอัตโนมัติ
         loginModal.style.display = 'none';
       }
       // ฟังก์ชันล็อกอิน
@@ -1472,7 +1472,7 @@
           showLoggedIn();
           alert('เข้าสู่ระบบสำเร็จ');
         } else {
-          alert('ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง กรุณาลองไปเรื่อยๆ');
+          alert('ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง');
         }
       }
       // ฟังก์ชันล็อกเอาท์
@@ -1550,14 +1550,8 @@
       function normalizeAssetId(id) {
         return removeLeadingZeros(id || '');
       }
-      function escapeCSVValue(value) {
-        if (value == null) return '""';
-        const s = value.toString();
-        if (s.includes(',') || s.includes('"') || s.includes('\n')) return '"' + s.replace(/"/g, '""') + '"';
-        return s;
-      }
-      function exportToCSV() {
-        if (!allData || allData.length === 0) { alert('ไม่มีข้อมูลในระบบสำหรับการส่งออก CSV'); return; }
+      function generateReport() {
+        if (!allData || allData.length === 0) { alert('ไม่มีข้อมูลในระบบสำหรับการสร้างรายงาน'); return; }
         const selectedEmployee = employeeFilter.value;
         const selectedLocation = pendingFilter.value;
         const selectedStatus = stockFilter.value;
@@ -1584,25 +1578,83 @@
         });
         if (filteredData.length === 0) { alert('ไม่มีข้อมูลที่ตรงกับเงื่อนไขการกรอง'); return; }
         filteredData.sort((a, b) => removeLeadingZeros(a['รหัสทรัพย์สิน'] || '').localeCompare(removeLeadingZeros(b['รหัสทรัพย์สิน'] || '')));
-        const csvHeaders = ['รหัส', 'ชื่อ', 'UL', 'หน่วยงาน', 'Location', 'วันที่ซื้อ', 'ผู้รับผิดชอบ', 'Status', 'อายุ'];
-        const csvFields = ['รหัสทรัพย์สิน', 'ชื่อทรัพย์สิน', 'UL', 'หน่วยงาน', 'Physical Location', 'วันที่ซื้อทรัพย์สิน', 'ผู้รับผิดชอบ', 'สถานะทรัพย์สิน'];
-        const rows = [];
-        rows.push(csvHeaders.map(c => `"${c}"`).join(','));
-        filteredData.forEach(r => {
-          const rowData = csvFields.map((field, index) => {
-            let value = field === 'รหัสทรัพย์สิน' ? removeLeadingZeros(r[field]) : (field === 'อายุ' ? calculateAge(r['วันที่ซื้อทรัพย์สิน']) : (r[field] || '-'));
-            return escapeCSVValue(value);
+        // สร้างหน้าต่างรายงาน
+        let w = window.open('', '_blank');
+        if (!w || w.closed) {
+          alert('ไม่สามารถเปิดหน้ารายงานได้ (popup อาจถูกบล็อก) กรุณาเปิดใช้งาน popup แล้วลองใหม่');
+          return;
+        }
+        const dateStr = thaiDateStr(todayISO());
+        const filterInfo = `ผู้รับผิดชอบ: ${selectedEmployee || 'ทั้งหมด'}, Location: ${selectedLocation || 'ทั้งหมด'}, Status: ${selectedStatus || 'ทั้งหมด'}, ค้นหา: ${keyword || 'ไม่มี'}`;
+        const styles = `<style>
+          @page { size: A4 landscape; margin: 0; @bottom-center { content: counter(page) "/" counter(pages); font-size: 10pt; color: #000; } }
+          @page :first { margin-top: 0; @bottom-center { content: counter(page) "/" counter(pages); } }
+          body { font-family: 'Prompt', Tahoma, sans-serif; color: #000; counter-reset: page 1; margin: 0; padding: 12mm; }
+          h1 { font-size: 16pt; text-align: center; margin: 0 0 4mm; }
+          h2 { font-size: 12pt; text-align: center; margin: 0 0 6mm; }
+          .meta { display: flex; justify-content: space-between; margin-bottom: 6mm; font-size: 10pt; flex-wrap: wrap; }
+          .meta div { margin: 2px 0; }
+          .meta .label { font-weight: bold; }
+          table { width: 100%; border-collapse: collapse; margin: 0; }
+          th, td { border: 1px solid #000; padding: 5px 3px; font-size: 10pt; white-space: normal; word-wrap: break-word; }
+          th { text-align: center; background: #fff; font-weight: bold; }
+          .center { text-align: center; }
+          .print-controls { text-align: center; margin: 20px 0; }
+          .print-controls button { padding: 10px 20px; margin: 0 10px; background: #6366f1; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px; }
+          .print-controls button:hover { background: #4f46e5; }
+          @media print {
+            .print-controls { display: none !important; }
+            body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            thead { display: table-header-group; }
+            tfoot { display: table-footer-group; }
+            table { page-break-inside: auto !important; }
+          }
+        </style>`;
+        const header = `<h1>บริษัท ซีพี รีเทลลิงค์ จำกัด</h1><h2>รายงานทรัพย์สิน คลังสินค้าทั่วประเทศ ตามตัวกรอง</h2><div class="meta"><div><span class="label">วันที่รายงาน :</span> ${dateStr}</div><div><span class="label">ตัวกรอง :</span> ${filterInfo}</div><div><span class="label">จำนวนรายการ :</span> ${filteredData.length}</div></div>`;
+        const columns = ['รหัส', 'ชื่อ', 'UL', 'หน่วยงาน', 'Location', 'วันที่ซื้อ', 'ผู้รับผิดชอบ', 'Status', 'อายุ'];
+        const fieldMap = {
+          'รหัส': 'รหัสทรัพย์สิน',
+          'ชื่อ': 'ชื่อทรัพย์สิน',
+          'UL': 'UL',
+          'หน่วยงาน': 'หน่วยงาน',
+          'Location': 'Physical Location',
+          'วันที่ซื้อ': 'วันที่ซื้อทรัพย์สิน',
+          'ผู้รับผิดชอบ': 'ผู้รับผิดชอบ',
+          'Status': 'สถานะทรัพย์สิน',
+          'อายุ': 'อายุ'
+        };
+        let tableRows = '';
+        filteredData.forEach((row, index) => {
+          let rowHtml = '<tr>';
+          columns.forEach(col => {
+            let value = col === 'รหัส' ? removeLeadingZeros(row[fieldMap[col]]) : (col === 'อายุ' ? calculateAge(row['วันที่ซื้อทรัพย์สิน']) : (row[fieldMap[col]] || '-'));
+            if (col === 'Status') {
+              const n = value.toString().trim().toLowerCase();
+              if (n === 'stock' || n === 'ใช้งาน') value = 'ใช้งาน';
+              else if (n === 'โอนย้ายทรัพย์สิน') value = 'โอนย้ายทรัพย์สิน';
+              else value = 'ไม่ใช้งาน';
+            }
+            rowHtml += `<td${col === 'อายุ' || col === 'UL' || col === 'วันที่ซื้อ' ? ' class="center"' : ''}>${value}</td>`;
           });
-          rows.push(rowData.join(','));
+          rowHtml += '</tr>';
+          tableRows += rowHtml;
         });
-        const csv = rows.join('\n');
-        const bom = '\uFEFF';
-        const blob = new Blob([bom + csv], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = `asset_report_${new Date().toISOString().replace(/[:.]/g, '-')}.csv`;
-        link.click();
-        URL.revokeObjectURL(link.href);
+        const table = `<table><thead><tr>${columns.map(col => `<th>${col}</th>`).join('')}</tr></thead><tbody>${tableRows}</tbody></table>`;
+        const printControls = `<div class="print-controls">
+          <button onclick="window.print()">🖨️ พิมพ์รายงาน</button>
+          <button onclick="window.close()">❌ ปิดหน้าต่าง</button>
+        </div>`;
+        setTimeout(() => {
+          try {
+            w.document.write(`<html><head><title>พิมพ์รายงานทรัพย์สิน</title>${styles}</head><body>${header}${table}${printControls}</body></html>`);
+            w.document.close();
+            w.focus();
+          } catch (err) {
+            console.error('Generate report error:', err);
+            alert('เกิดข้อผิดพลาดในการสร้างรายงาน: ' + err.message + ' กรุณาลองใหม่');
+            w.close();
+          }
+        }, 100);
       }
       function populateEmployeeFilter(data, selectedLocation = '') {
         if (!data || data.length === 0) return;
@@ -1993,7 +2045,7 @@
         currentPage = 1;
         filterAndRenderTable();
       });
-      excelButton.addEventListener('click', exportToCSV);
+      reportButton.addEventListener('click', generateReport);
       historyButton.addEventListener('click', async () => {
         globalHistoryTableBody.innerHTML = '<tr><td colspan="10" class="loading"><i class="fas fa-spinner"></i> กำลังโหลดประวัติ...</td></tr>';
         globalHistoryModal.style.display = 'block';
@@ -2669,7 +2721,7 @@
           await sendTelegramNotification(payloads, isMultiMode);
           filterAndRenderTable();
           // ไม่ clearCart และไม่ reset mode/display เพื่อให้ข้อมูลยังอยู่สำหรับพิมพ์
-          alert(`บันทึกการโอนย้ายเรียบร้อย (${payloads.length} รายการ) เลขที่เอกสาร: ${docId}  และส่งแจ้งเตือน Telegram แล้ว\nสามารถกดพิมพ์เอกสารได้ทันที จากนั้นกด "ออก" หรือ "ล้างตะกร้า" เมื่อเสร็จ`);
+          alert(`บันทึกการโอนย้ายเรียบร้อย (${payloads.length} รายการ) เลขที่เอกสาร: ${docId} (บันทึกใน Supabase และ localStorage) และส่งแจ้งเตือน Telegram แล้ว\nสามารถกดพิมพ์ได้ทันที จากนั้นกด "ออก" หรือ "ล้างตะกร้า" เมื่อเสร็จ`);
         } catch (err) {
           console.error('Save error:', err);
           alert('เกิดข้อผิดพลาดในการบันทึก: ' + err.message);
