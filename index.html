@@ -2669,7 +2669,7 @@
           await sendTelegramNotification(payloads, isMultiMode);
           filterAndRenderTable();
           // ไม่ clearCart และไม่ reset mode/display เพื่อให้ข้อมูลยังอยู่สำหรับพิมพ์
-          alert(`บันทึกการโอนย้ายเรียบร้อย (${payloads.length} รายการ) เลขที่เอกสาร: ${docId} (บันทึกใน Supabase และ localStorage) และส่งแจ้งเตือน Telegram แล้ว\nสามารถกดพิมพ์ได้ทันที จากนั้นกด "ออก" หรือ "ล้างตะกร้า" เมื่อเสร็จ`);
+          alert(`บันทึกการโอนย้ายเรียบร้อย (${payloads.length} รายการ) เลขที่เอกสาร: ${docId}  และส่งแจ้งเตือน Telegram แล้ว\nสามารถกดพิมพ์เอกสารได้ทันที จากนั้นกด "ออก" หรือ "ล้างตะกร้า" เมื่อเสร็จ`);
         } catch (err) {
           console.error('Save error:', err);
           alert('เกิดข้อผิดพลาดในการบันทึก: ' + err.message);
