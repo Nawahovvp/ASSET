@@ -205,6 +205,13 @@
     .history-button:hover:not(:disabled) {
       background: linear-gradient(135deg, #0891b2, #0e7490) !important;
     }
+    .documents-button {
+      background: linear-gradient(135deg, var(--success-color), #059669) !important;
+      color: var(--white) !important;
+    }
+    .documents-button:hover:not(:disabled) {
+      background: linear-gradient(135deg, #059669, #047857) !important;
+    }
     .cart-button {
       background: linear-gradient(135deg, #10b981, #059669) !important;
       color: var(--white) !important;
@@ -407,6 +414,10 @@
       max-width: 95%;
       max-height: 90vh;
     }
+    #documentsModal .modal-content {
+      max-width: 800px;
+      padding: 24px;
+    }
     @keyframes zoomInRotate {
       from { opacity: 0; transform: scale(0.8) rotate(-5deg); }
       to { opacity: 1; transform: scale(1) rotate(0deg); }
@@ -423,6 +434,11 @@
       font-weight: 600;
     }
     #globalHistoryModal .modal-content h2 {
+      font-size: 20px;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+    }
+    #documentsModal .modal-content h2 {
       font-size: 20px;
       margin-bottom: 16px;
       padding-bottom: 8px;
@@ -628,6 +644,22 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+    }
+    #documentsTable th, #documentsTable td {
+      padding: 12px 8px;
+      font-size: 14px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    #documentsTable .doc-link {
+      color: var(--primary-color);
+      text-decoration: underline;
+      cursor: pointer;
+      font-weight: 500;
+    }
+    #documentsTable .doc-link:hover {
+      color: #4f46e5;
     }
     .timeline-table th {
       background: linear-gradient(135deg, var(--primary-color), #8b5cf6);
@@ -860,6 +892,11 @@
         margin: 1% auto;
         width: 99%;
       }
+      #documentsModal .modal-content {
+        padding: 16px;
+        margin: 1% auto;
+        width: 99%;
+      }
       .modal-buttons {
         justify-content: center;
         gap: 12px;
@@ -903,6 +940,10 @@
       .selected-items-table td {
         padding: 6px 8px;
       }
+      #documentsTable th, #documentsTable td {
+        padding: 8px 4px;
+        font-size: 12px;
+      }
     }
     @media (max-width: 480px) {
       body { padding: 5px; }
@@ -929,6 +970,8 @@
       .selected-items-table td {
         padding: 4px 6px;
       }
+      #documentsModal .modal-content h2 { font-size: 18px; }
+      #documentsTable th, #documentsTable td { padding: 6px 2px; font-size: 11px; }
     }
     .delete-button {
       background: linear-gradient(135deg, var(--danger-color), #dc2626);
@@ -939,6 +982,14 @@
       transform: translateY(-2px);
     }
     #globalHistoryBox {
+      max-height: 60vh;
+      overflow-y: auto;
+      margin-top: 8px;
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow-sm);
+      animation: fadeInUp 0.6s ease-out;
+    }
+    #documentsBox {
       max-height: 60vh;
       overflow-y: auto;
       margin-top: 8px;
@@ -970,6 +1021,7 @@
       <button id="searchButton" class="action-button"><i class="fas fa-search"></i> ค้นหา</button>
       <button id="excelButton" class="action-button print-button"><i class="fas fa-file-excel"></i> Excel</button>
       <button id="historyButton" class="action-button history-button"><i class="fas fa-history"></i> ประวัติ</button>
+      <button id="documentsButton" class="action-button documents-button"><i class="fas fa-file-alt"></i> เอกสารทั้งหมด</button>
       <button id="cartButton" class="action-button cart-button" disabled><i class="fas fa-shopping-cart"></i> โอนย้ายตะกร้า</button>
       <button id="clearCartButton" class="action-button" style="background:linear-gradient(135deg,var(--danger-color),#dc2626);" disabled><i class="fas fa-trash"></i> ล้างตะกร้า</button>
     </div>
@@ -1105,6 +1157,10 @@
           <h3><i class="fas fa-info-circle"></i> ข้อมูลเพิ่มเติม</h3>
           <div class="form-grid">
             <div class="form-group">
+              <label class="required-label"><i class="fas fa-file-alt"></i> เลขที่เอกสาร</label>
+              <input type="text" id="tf_docId" class="form-input" readonly placeholder="สร้างอัตโนมัติเมื่อบันทึก">
+            </div>
+            <div class="form-group">
               <label class="required-label"><i class="fas fa-calendar"></i> วันที่โอน</label>
               <input type="date" id="tf_date" required class="form-input required-input">
             </div>
@@ -1132,6 +1188,7 @@
         <table class="timeline-table" id="historyTable">
           <thead>
             <tr>
+              <th>เลขที่เอกสาร</th>
               <th>วันที่โอน</th>
               <th>จาก Location</th>
               <th>ไป Location</th>
@@ -1168,6 +1225,7 @@
         <table class="timeline-table" id="globalHistoryTable">
           <thead>
             <tr>
+              <th style="width:80px;">เลขที่เอกสาร</th>
               <th style="width:80px;">วันที่โอน</th>
               <th style="width:100px;">รหัสทรัพย์สิน</th>
               <th style="width:120px;">จาก Location</th>
@@ -1177,6 +1235,25 @@
               <th style="width:100px;">ผู้ดำเนินการ</th>
               <th style="width:120px;">หมายเหตุ</th>
               <th style="width:120px;">การจัดการ</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <!-- Documents Modal -->
+  <div id="documentsModal" class="modal">
+    <div class="modal-content">
+      <span class="close" id="closeDocumentsModal">&times;</span>
+      <h2><i class="fas fa-file-alt"></i> เอกสารการโอนย้ายทั้งหมด</h2>
+      <div id="documentsBox">
+        <table class="timeline-table" id="documentsTable">
+          <thead>
+            <tr>
+              <th style="width:150px;">เลขที่เอกสาร</th>
+              <th style="width:120px;">วันที่โอน</th>
+              <th style="width:200px;">ผู้ดำเนินการ</th>
             </tr>
           </thead>
           <tbody></tbody>
@@ -1223,11 +1300,15 @@
     const searchButton = document.getElementById('searchButton');
     const excelButton = document.getElementById('excelButton');
     const historyButton = document.getElementById('historyButton');
+    const documentsButton = document.getElementById('documentsButton');
     const cartButton = document.getElementById('cartButton');
     const clearCartButton = document.getElementById('clearCartButton');
     const globalHistoryModal = document.getElementById('globalHistoryModal');
     const closeGlobalHistoryModal = document.getElementById('closeGlobalHistoryModal');
     const globalHistoryTableBody = document.querySelector('#globalHistoryTable tbody');
+    const documentsModal = document.getElementById('documentsModal');
+    const closeDocumentsModal = document.getElementById('closeDocumentsModal');
+    const documentsTableBody = document.querySelector('#documentsTable tbody');
     const tableBody = document.getElementById('tableBody');
     const pageNumbersContainer = document.getElementById('pageNumbers');
     const firstPageButton = document.getElementById('firstPage');
@@ -1510,6 +1591,7 @@
       document.getElementById('tf_date').value = todayISO();
       document.getElementById('tf_operator').value = '';
       document.getElementById('tf_note').value = '';
+      document.getElementById('tf_docId').value = ''; // Reset Doc_id
       fillTransferDatalists();
       historyBox.style.display = 'none';
       transferModal.style.display = 'block';
@@ -1755,13 +1837,19 @@
     });
     excelButton.addEventListener('click', exportToCSV);
     historyButton.addEventListener('click', async () => {
-      globalHistoryTableBody.innerHTML = '<tr><td colspan="9" class="loading"><i class="fas fa-spinner"></i> กำลังโหลดประวัติ...</td></tr>';
+      globalHistoryTableBody.innerHTML = '<tr><td colspan="10" class="loading"><i class="fas fa-spinner"></i> กำลังโหลดประวัติ...</td></tr>';
       globalHistoryModal.style.display = 'block';
       await renderGlobalHistory();
+    });
+    documentsButton.addEventListener('click', async () => {
+      documentsTableBody.innerHTML = '<tr><td colspan="3" class="loading"><i class="fas fa-spinner"></i> กำลังโหลดเอกสาร...</td></tr>';
+      documentsModal.style.display = 'block';
+      await renderDocumentsList();
     });
     cartButton.addEventListener('click', openCartModal);
     clearCartButton.addEventListener('click', clearCart);
     closeGlobalHistoryModal.onclick = () => { globalHistoryModal.style.display = 'none'; };
+    closeDocumentsModal.onclick = () => { documentsModal.style.display = 'none'; };
     // FIX: Select All สำหรับ current page เท่านั้น
     selectAllCheckbox.addEventListener('change', () => {
       const checkboxes = document.querySelectorAll('#tableBody input[type="checkbox"]:not(:disabled)');
@@ -1844,6 +1932,7 @@
       document.getElementById('tf_date').value = todayISO();
       document.getElementById('tf_operator').value = '';
       document.getElementById('tf_note').value = '';
+      document.getElementById('tf_docId').value = ''; // Reset Doc_id
       fillTransferDatalists();
       renderHistory(normalizedAssetId); // ใช้ normalized สำหรับ history
       historyBox.style.display = 'none';
@@ -1865,6 +1954,7 @@
       }
       if (e.target === pickerModal) { pickerModal.style.display = 'none'; }
       if (e.target === globalHistoryModal) { globalHistoryModal.style.display = 'none'; }
+      if (e.target === documentsModal) { documentsModal.style.display = 'none'; }
     });
     document.getElementById('tf_toOwner').addEventListener('input', () => {
       const toOwnerFull = document.getElementById('tf_toOwner').value;
@@ -1907,6 +1997,7 @@
       // จากข้อมูลประวัติ
       document.getElementById('tf_fromLocation').value = t.from_location || '-';
       document.getElementById('tf_toLocation').value = t.to_location || '-';
+      document.getElementById('tf_docId').value = t.Doc_id || ''; // Load Doc_id
       document.getElementById('tf_date').value = t.date || todayISO();
       document.getElementById('tf_operator').value = t.operator || '';
       document.getElementById('tf_note').value = t.note || '';
@@ -1995,7 +2086,7 @@
       // คอลัมน์ที่ Supabase มี (จาก error, สมมติไม่มี from_dept/to_dept - ปรับตาม schema จริง)
       const allowedFields = [
         'asset_id', 'name', 'ul', 'from_location', 'from_owner_full', 'from_owner_name', 'from_emp_id', 'from_ul',
-        'to_location', 'to_owner_full', 'to_owner_name', 'to_emp_id', 'to_ul', 'date', 'operator', 'note', 'status'
+        'to_location', 'to_owner_full', 'to_owner_name', 'to_emp_id', 'to_ul', 'date', 'operator', 'note', 'status', 'Doc_id'
       ];
       const supabasePayload = {};
       allowedFields.forEach(field => {
@@ -2090,19 +2181,60 @@
         }
       }
     }
+    // FIXED: Generate เลขที่เอกสาร unique ต่อ Doc_id (ไม่สนจำนวน assets ใน doc)
+    async function generateDocId() {
+      try {
+        const currentYear = new Date().getFullYear();
+        // Query max Doc_id ในปีนั้น
+        const { data: maxDoc, error } = await supabaseClient
+          .from('transfers')
+          .select('Doc_id')
+          .gte('date', `${currentYear}-01-01`)
+          .lte('date', `${currentYear}-12-31`)
+          .order('Doc_id', { ascending: false, nullsFirst: false })
+          .limit(1);
+        if (error) throw error;
+        if (maxDoc && maxDoc.length > 0 && maxDoc[0].Doc_id) {
+          const match = maxDoc[0].Doc_id.match(/^(\d{3})\/\d{4}$/);
+          if (match) {
+            const seq = parseInt(match[1]) + 1;
+            return `${seq.toString().padStart(3, '0')}/${currentYear}`;
+          }
+        }
+        return `001/${currentYear}`;
+      } catch (err) {
+        console.error('Generate Doc_id error:', err);
+        // Fallback: ใช้ localStorage สำหรับ max seq
+        const localTransfers = JSON.parse(localStorage.getItem('assetTransfers') || '[]');
+        const currentYear = new Date().getFullYear();
+        const yearDocs = localTransfers
+          .filter(t => {
+            const tDate = new Date(t.date);
+            return tDate.getFullYear() === currentYear && t.Doc_id;
+          })
+          .map(t => t.Doc_id.match(/^(\d{3})\/\d{4}$/))
+          .filter(match => match)
+          .map(match => parseInt(match[1]))
+          .sort((a, b) => b - a);
+        const maxSeq = yearDocs.length > 0 ? yearDocs[0] : 0;
+        const seq = maxSeq + 1;
+        return `${seq.toString().padStart(3, '0')}/${currentYear}`;
+      }
+    }
     // renderHistory เปลี่ยนเป็น async และใช้ normalize
     async function renderHistory(assetId) {
       const normalizedId = normalizeAssetId(assetId);
       const transfers = (await getTransfers()).filter(t => normalizeAssetId(t.asset_id) === normalizedId);
       historyTableBody.innerHTML = '';
       if (transfers.length === 0) {
-        historyTableBody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:20px; color:var(--secondary-color);">ยังไม่มีประวัติการโอนย้าย</td></tr>';
+        historyTableBody.innerHTML = '<tr><td colspan="9" style="text-align:center; padding:20px; color:var(--secondary-color);">ยังไม่มีประวัติการโอนย้าย</td></tr>';
         return;
       }
       transfers.sort((a, b) => new Date(b.date) - new Date(a.date));
       transfers.forEach(t => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
+          <td>${t.Doc_id || '-'}</td>
           <td>${t.date}</td>
           <td>${t.from_location || '-'}</td>
           <td>${t.to_location || '-'}</td>
@@ -2138,13 +2270,14 @@
       const transfers = await getTransfers();
       globalHistoryTableBody.innerHTML = '';
       if (transfers.length === 0) {
-        globalHistoryTableBody.innerHTML = '<tr><td colspan="9" style="text-align:center; padding:20px; color:var(--secondary-color);">ยังไม่มีประวัติการโอนย้าย</td></tr>';
+        globalHistoryTableBody.innerHTML = '<tr><td colspan="10" style="text-align:center; padding:20px; color:var(--secondary-color);">ยังไม่มีประวัติการโอนย้าย</td></tr>';
         return;
       }
       transfers.sort((a, b) => new Date(b.date) - new Date(a.date));
       transfers.forEach(t => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
+          <td>${t.Doc_id || '-'}</td>
           <td>${t.date}</td>
           <td>${t.asset_id || '-'}</td>
           <td>${t.from_location || '-'}</td>
@@ -2188,6 +2321,93 @@
         globalHistoryTableBody.appendChild(tr);
       });
     }
+    // NEW: Render Documents List (Unique by Doc_id)
+    async function renderDocumentsList() {
+      const transfers = await getTransfers();
+      if (transfers.length === 0) {
+        documentsTableBody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:20px; color:var(--secondary-color);">ยังไม่มีเอกสารการโอนย้าย</td></tr>';
+        return;
+      }
+      // Group by Doc_id to get unique docs
+      const docGroups = {};
+      transfers.forEach(t => {
+        const docId = t.Doc_id || 'ไม่มีเลขที่';
+        if (!docGroups[docId]) {
+          docGroups[docId] = {
+            date: t.date,
+            operator: t.operator || '-',
+            transfers: []
+          };
+        }
+        docGroups[docId].transfers.push(t);
+      });
+      const uniqueDocs = Object.keys(docGroups).map(docId => ({
+        Doc_id: docId,
+        date: docGroups[docId].date,
+        operator: docGroups[docId].operator,
+        transfers: docGroups[docId].transfers
+      })).sort((a, b) => new Date(b.date) - new Date(a.date));
+      documentsTableBody.innerHTML = '';
+      uniqueDocs.forEach(doc => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><span class="doc-link" data-doc-id="${doc.Doc_id}">${doc.Doc_id}</span></td>
+          <td>${doc.date}</td>
+          <td>${doc.operator}</td>
+        `;
+        // Add click handler for doc-link
+        const link = tr.querySelector('.doc-link');
+        link.addEventListener('click', async (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          await loadDocumentToModal(doc);
+        });
+        documentsTableBody.appendChild(tr);
+      });
+    }
+    // NEW: Load document to transfer modal (multi mode if multiple assets)
+    async function loadDocumentToModal(doc) {
+      documentsModal.style.display = 'none';
+      // Collect unique assets from transfers in this doc
+      const assetsInDoc = [...new Set(doc.transfers.map(t => normalizeAssetId(t.asset_id)))];
+      if (assetsInDoc.length === 0) {
+        alert('ไม่พบรายการทรัพย์สินในเอกสารนี้');
+        return;
+      }
+      // Find asset rows from allData
+      const assetRows = assetsInDoc.map(assetId => allData.find(r => normalizeAssetId(r['รหัสทรัพย์สิน']) === assetId)).filter(Boolean);
+      if (assetRows.length === 0) {
+        alert('ไม่พบข้อมูลทรัพย์สินในระบบสำหรับเอกสารนี้');
+        return;
+      }
+      // Set selectedAssets to these rows
+      selectedAssets = assetRows;
+      currentCartOwner = assetRows[0]['ผู้รับผิดชอบ'] || null;
+      // Open multi mode
+      isMultiMode = true;
+      selectedItemsSection.style.display = 'block';
+      singleAssetSection.style.display = 'none';
+      singleFromSection.style.display = 'none';
+      renderSelectedItemsList();
+      // Load form data from first transfer in doc
+      const firstTransfer = doc.transfers[0];
+      document.getElementById('tf_toOwner').value = firstTransfer.to_owner_full || '';
+      document.getElementById('tf_toLocation').value = firstTransfer.to_location || '';
+      document.getElementById('tf_date').value = firstTransfer.date || todayISO();
+      document.getElementById('tf_operator').value = firstTransfer.operator || '';
+      document.getElementById('tf_note').value = firstTransfer.note || '';
+      document.getElementById('tf_docId').value = doc.Doc_id;
+      // Auto-fill to fields
+      const toOwnerFull = document.getElementById('tf_toOwner').value;
+      document.getElementById('tf_toEmpId').value = extractEmpId(toOwnerFull);
+      document.getElementById('tf_toUL').value = findULByOwner(toOwnerFull);
+      document.getElementById('tf_toDept').value = findDeptByOwner(toOwnerFull);
+      fillTransferDatalists();
+      historyBox.style.display = 'none';
+      transferModal.style.display = 'block';
+      validateForm();
+      updateCartUI();
+    }
     // FIXED: saveTransfer - แยกฟังก์ชันบันทึก (รองรับ multi, ส่ง Telegram notification หลัง loop, ไม่มี print)
     async function saveTransfer(e) {
       e.preventDefault();
@@ -2199,6 +2419,9 @@
       saveButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> กำลังบันทึก...';
       saveButton.disabled = true;
       try {
+        // Generate Doc_id ก่อนบันทึก (หนึ่งครั้งต่อ batch)
+        const docId = await generateDocId();
+        document.getElementById('tf_docId').value = docId; // แสดงใน form
         const toOwnerFull = document.getElementById('tf_toOwner').value.trim();
         const toLocation = document.getElementById('tf_toLocation').value.trim();
         const date = document.getElementById('tf_date').value;
@@ -2232,7 +2455,8 @@
               date: date,
               operator: operator,
               note: note,
-              status: 'โอนย้ายทรัพย์สิน'
+              status: 'โอนย้ายทรัพย์สิน',
+              Doc_id: docId // เพิ่ม Doc_id
             };
           });
         } else {
@@ -2258,7 +2482,8 @@
             date: date,
             operator: operator,
             note: note,
-            status: 'โอนย้ายทรัพย์สิน'
+            status: 'โอนย้ายทรัพย์สิน',
+            Doc_id: docId // เพิ่ม Doc_id
           };
           payloads = [payload];
         }
@@ -2277,7 +2502,7 @@
         await sendTelegramNotification(payloads, isMultiMode);
         filterAndRenderTable();
         // ไม่ clearCart และไม่ reset mode/display เพื่อให้ข้อมูลยังอยู่สำหรับพิมพ์
-        alert(`บันทึกการโอนย้ายเรียบร้อย (${payloads.length} รายการ) (บันทึกใน Supabase และ localStorage) และส่งแจ้งเตือน Telegram แล้ว\nสามารถกดพิมพ์ได้ทันที จากนั้นกด "ออก" หรือ "ล้างตะกร้า" เมื่อเสร็จ`);
+        alert(`บันทึกการโอนย้ายเรียบร้อย (${payloads.length} รายการ) เลขที่เอกสาร: ${docId} (บันทึกใน Supabase และ localStorage) และส่งแจ้งเตือน Telegram แล้ว\nสามารถกดพิมพ์ได้ทันที จากนั้นกด "ออก" หรือ "ล้างตะกร้า" เมื่อเสร็จ`);
       } catch (err) {
         console.error('Save error:', err);
         alert('เกิดข้อผิดพลาดในการบันทึก: ' + err.message);
@@ -2373,6 +2598,7 @@
   const isMulti = payloads.length > 1;
   const dateStr = thaiDateStr(payloads[0].date) || '';
   const totalItems = payloads.length;
+  const docId = document.getElementById('tf_docId').value || payloads[0].Doc_id || ''; // ใช้ Doc_id จาก form หรือ payload
   const styles = `<style>
     @page { size: A4 landscape; margin: 0; @bottom-center { content: counter(page) "/" counter(pages); font-size: 10pt; color: #000; } }
     @page :first { margin-top: 0; @bottom-center { content: counter(page) "/" counter(pages); } }
@@ -2413,7 +2639,7 @@
       table { page-break-inside: auto !important; }
     }
   </style>`;
-      const header = `<h1>บริษัท ซีพี รีเทลลิงค์ จำกัด</h1><h2>ใบโอนย้ายทรัพย์สิน${isMulti ? ` (${totalItems} รายการ)` : ''}</h2><div class="meta"><div><span class="label">รายละเอียดครั้งนี้ :</span> ${payloads[0].note || ''}</div><div><span class="label">วันที่ :</span> ${dateStr}</div></div>`;
+      const header = `<h1>บริษัท ซีพี รีเทลลิงค์ จำกัด</h1><h2>ใบโอนย้ายทรัพย์สิน${isMulti ? ` (${totalItems} รายการ)` : ''}</h2><div class="meta"><div><span class="label">เลขที่เอกสาร :</span> ${docId}</div><div><span class="label">รายละเอียดครั้งนี้ :</span> ${payloads[0].note || ''}</div><div><span class="label">วันที่ :</span> ${dateStr}</div></div>`;
       let tableRows = '';
       payloads.forEach((payload, index) => {
         tableRows += `<tr><td class="center">${index + 1}</td><td class="center">${payload.asset_id || ''}</td><td>${payload.name || ''}</td><td class="center">${payload.from_ul || ''}</td><td class="center">${payload.from_emp_id || ''}</td><td>${payload.from_owner_name || ''}</td><td class="center">${payload.to_ul || ''}</td><td class="center">${payload.to_emp_id || ''}</td><td>${payload.to_owner_name || ''}</td><td>${payload.note || ''}</td></tr>`;
@@ -2473,7 +2699,8 @@
         date: document.getElementById('tf_date').value,
         operator: document.getElementById('tf_operator').value.trim(),
         note: document.getElementById('tf_note').value.trim(),
-        status: 'โอนย้ายทรัพย์สิน'
+        status: 'โอนย้ายทรัพย์สิน',
+        Doc_id: document.getElementById('tf_docId').value // เพิ่ม Doc_id สำหรับ print
       };
       showPrintForm([payload]);
     }
