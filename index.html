@@ -1890,13 +1890,15 @@
     // Transfer Modal Functions
     function validateForm() {
       const requiredIds = ['tf_toLocation', 'tf_toOwner', 'tf_date', 'tf_operator'];
-      const isValid = requiredIds.every(id => {
+      const isSaveValid = requiredIds.every(id => {
         const el = document.getElementById(id);
         return el && el.value.trim();
       });
-      saveButton.disabled = !isValid;
-      printButton.disabled = !isValid;
-      return isValid;
+      const hasDocId = document.getElementById('tf_docId').value.trim();
+      const isPrintValid = isSaveValid && hasDocId;
+      saveButton.disabled = !isSaveValid;
+      printButton.disabled = !isPrintValid;
+      return isSaveValid;
     }
     function openTransferModal(row, multi = false) {
       isMultiMode = multi;
@@ -2418,10 +2420,16 @@
       const originalSaveText = saveButton.innerHTML;
       saveButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> กำลังบันทึก...';
       saveButton.disabled = true;
+      // Disable print button during save
+      const originalPrintText = printButton.innerHTML;
+      printButton.disabled = true;
+      printButton.innerHTML = '<i class="fas fa-print" style="opacity:0.5;"></i> กำลังบันทึก...';
       try {
         // Generate Doc_id ก่อนบันทึก (หนึ่งครั้งต่อ batch)
         const docId = await generateDocId();
         document.getElementById('tf_docId').value = docId; // แสดงใน form
+        // Re-validate to enable print after docId is set
+        validateForm();
         const toOwnerFull = document.getElementById('tf_toOwner').value.trim();
         const toLocation = document.getElementById('tf_toLocation').value.trim();
         const date = document.getElementById('tf_date').value;
@@ -2509,6 +2517,9 @@
       } finally {
         saveButton.innerHTML = originalSaveText;
         saveButton.disabled = false;
+        // Restore print button state after save
+        printButton.innerHTML = originalPrintText;
+        validateForm(); // Ensure print is enabled if docId exists
       }
     }
     // FIXED: printTransferForm - แยกฟังก์ชันพิมพ์ (รองรับ multi/single, ใช้ข้อมูลจาก form ปัจจุบัน)
