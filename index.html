@@ -205,6 +205,16 @@
     .history-button:hover:not(:disabled) {
       background: linear-gradient(135deg, #0891b2, #0e7490) !important;
     }
+    .cart-button {
+      background: linear-gradient(135deg, #10b981, #059669) !important;
+      color: var(--white) !important;
+    }
+    .cart-button:hover:not(:disabled) {
+      background: linear-gradient(135deg, #059669, #047857) !important;
+    }
+    .cart-button:disabled {
+      background: var(--secondary-color) !important;
+    }
     .call-count-box {
       margin-left: auto;
       padding: 14px 18px;
@@ -279,7 +289,7 @@
     table {
       width: 100%;
       border-collapse: collapse;
-      min-width: 700px; /* ลดจาก 800px เพื่อกระชับ */
+      min-width: 750px; /* เพิ่มเพราะเพิ่มคอลัมน์ checkbox */
     }
     th, td {
       padding: 10px 8px; /* ลดจาก 12px */
@@ -350,6 +360,15 @@
       background: linear-gradient(135deg, #7c3aed, #9333ea);
       transform: translateY(-2px) rotate(1deg);
       box-shadow: var(--shadow-lg);
+    }
+    .select-checkbox {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+    }
+    .select-checkbox:disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
     }
     .green-text { color: var(--success-color); font-weight: 500; }
     .red-text { color: var(--danger-color); font-weight: 500; }
@@ -454,6 +473,63 @@
       gap: 10px;
       font-weight: 600;
     }
+    .selected-items-section {
+      margin-bottom: 28px;
+      padding: 20px;
+      background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+      border-radius: var(--border-radius);
+      border-left: 4px solid var(--success-color);
+      box-shadow: var(--shadow-sm);
+    }
+    .selected-items-list {
+      max-height: 200px;
+      overflow-y: auto;
+      border: 1px solid #d1fae5;
+      border-radius: 8px;
+      padding: 10px;
+    }
+    .selected-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px;
+      margin-bottom: 5px;
+      background: #f0fdf4;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+    .selected-item:last-child { margin-bottom: 0; }
+    /* ใหม่: CSS สำหรับตารางรายการที่เลือก */
+    .selected-items-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      font-size: 14px;
+      background: var(--white);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .selected-items-table th,
+    .selected-items-table td {
+      padding: 8px 12px;
+      border: 1px solid #d1fae5;
+      text-align: left;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .selected-items-table th {
+      background: linear-gradient(135deg, var(--success-color), #059669);
+      color: var(--white);
+      font-weight: 600;
+    }
+    .selected-items-table tr:nth-child(even) {
+      background: #f0fdf4;
+    }
+    .selected-items-table tr:hover {
+      background: #dcfce7;
+    }
     .form-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -507,8 +583,9 @@
       display: flex;
       gap: 16px;
       margin-top: 24px;
-      flex-wrap: wrap;
+      flex-wrap: nowrap; /* ปรับให้ปุ่มอยู่ในบรรทัดเดียว */
       justify-content: flex-end;
+      align-items: center;
     }
     #historyBox {
       display: none;
@@ -699,17 +776,18 @@
       from { opacity: 0; transform: scale(0.95) rotate(-2deg); }
       to { opacity: 1; transform: scale(1) rotate(0deg); }
     }
-    /* ปรับความกว้างคอลัมน์ให้กระชับ */
-    th:nth-child(1), td:nth-child(1) { width: 60px; min-width: 60px; } /* รหัส */
-    th:nth-child(2), td:nth-child(2) { width: auto; min-width: 120px; max-width: 150px; white-space: normal; overflow: hidden; text-overflow: ellipsis; } /* ชื่อ */
-    th:nth-child(3), td:nth-child(3) { width: 50px; min-width: 50px; } /* UL */
-    th:nth-child(4), td:nth-child(4) { width: 80px; min-width: 80px; overflow: hidden; text-overflow: ellipsis; } /* หน่วยงาน */
-    th:nth-child(5), td:nth-child(5) { width: 70px; min-width: 70px; overflow: hidden; text-overflow: ellipsis; } /* Location */
-    th:nth-child(6), td:nth-child(6) { width: 70px; min-width: 70px; overflow: hidden; text-overflow: ellipsis; } /* วันที่ซื้อ */
-    th:nth-child(7), td:nth-child(7) { width: auto; min-width: 100px; max-width: 120px; overflow: hidden; text-overflow: ellipsis; } /* ผู้รับผิดชอบ */
-    th:nth-child(8), td:nth-child(8) { width: 50px; min-width: 50px; text-align: center; } /* Status */
-    th:nth-child(9), td:nth-child(9) { width: 50px; min-width: 50px; text-align: center; } /* อายุ */
-    th:nth-child(10), td:nth-child(10) { width: 70px; min-width: 70px; text-align: center; } /* โอนย้าย */
+    /* ปรับความกว้างคอลัมน์ให้กระชับ (เพิ่ม checkbox col) */
+    th:nth-child(1), td:nth-child(1) { width: 40px; min-width: 40px; text-align: center; } /* Checkbox */
+    th:nth-child(2), td:nth-child(2) { width: 60px; min-width: 60px; } /* รหัส */
+    th:nth-child(3), td:nth-child(3) { width: auto; min-width: 120px; max-width: 150px; white-space: normal; overflow: hidden; text-overflow: ellipsis; } /* ชื่อ */
+    th:nth-child(4), td:nth-child(4) { width: 50px; min-width: 50px; } /* UL */
+    th:nth-child(5), td:nth-child(5) { width: 80px; min-width: 80px; overflow: hidden; text-overflow: ellipsis; } /* หน่วยงาน */
+    th:nth-child(6), td:nth-child(6) { width: 70px; min-width: 70px; overflow: hidden; text-overflow: ellipsis; } /* Location */
+    th:nth-child(7), td:nth-child(7) { width: 70px; min-width: 70px; overflow: hidden; text-overflow: ellipsis; } /* วันที่ซื้อ */
+    th:nth-child(8), td:nth-child(8) { width: auto; min-width: 100px; max-width: 120px; overflow: hidden; text-overflow: ellipsis; } /* ผู้รับผิดชอบ */
+    th:nth-child(9), td:nth-child(9) { width: 50px; min-width: 50px; text-align: center; } /* Status */
+    th:nth-child(10), td:nth-child(10) { width: 50px; min-width: 50px; text-align: center; } /* อายุ */
+    th:nth-child(11), td:nth-child(11) { width: 70px; min-width: 70px; text-align: center; } /* โอนย้าย */
     /* Highlight required fields */
     .required-label::after {
       content: " *";
@@ -752,17 +830,17 @@
         font-size: 11px; /* ลด font-size */
         white-space: nowrap; /* บังคับ nowrap ยกเว้นชื่อ */
       }
-      th:nth-child(2), td:nth-child(2) {
+      th:nth-child(3), td:nth-child(3) {
         min-width: 100px;
         max-width: 120px;
         white-space: normal;
         overflow: hidden;
         text-overflow: ellipsis;
       }
-      th:nth-child(4), td:nth-child(4) { min-width: 60px; max-width: 80px; }
       th:nth-child(5), td:nth-child(5) { min-width: 60px; max-width: 80px; }
       th:nth-child(6), td:nth-child(6) { min-width: 60px; max-width: 80px; }
-      th:nth-child(7), td:nth-child(7) { min-width: 80px; max-width: 100px; }
+      th:nth-child(7), td:nth-child(7) { min-width: 60px; max-width: 80px; }
+      th:nth-child(8), td:nth-child(8) { min-width: 80px; max-width: 100px; }
       .transfer-button {
         padding: 6px 8px;
         font-size: 10px;
@@ -785,6 +863,7 @@
       .modal-buttons {
         justify-content: center;
         gap: 12px;
+        flex-wrap: wrap; /* อนุญาต wrap บน mobile */
       }
       .pagination {
         flex-direction: column;
@@ -814,16 +893,26 @@
       }
       .manage-col { flex-direction: column; gap: 4px; }
       body { padding: 10px; }
+      th:nth-child(1), td:nth-child(1) { width: 30px; min-width: 30px; } /* Checkbox mobile */
+      th:nth-child(2), td:nth-child(2) { min-width: 50px; } /* รหัส mobile */
+      /* ปรับตารางรายการที่เลือกสำหรับ mobile */
+      .selected-items-table {
+        font-size: 12px;
+      }
+      .selected-items-table th,
+      .selected-items-table td {
+        padding: 6px 8px;
+      }
     }
     @media (max-width: 480px) {
       body { padding: 5px; }
       .report-title { font-size: 20px; padding: 16px; }
-      table { font-size: 10px; min-width: 600px; } /* ลด min-width */
+      table { font-size: 10px; min-width: 650px; } /* ลด min-width */
       th, td { padding: 4px 2px; } /* ลด padding สุด */
       .transfer-button { font-size: 9px; padding: 4px 6px; }
       .filter-row { grid-template-columns: 1fr; }
-      th:nth-child(2), td:nth-child(2) { min-width: 80px; max-width: 100px; }
-      th:nth-child(7), td:nth-child(7) { min-width: 70px; max-width: 90px; }
+      th:nth-child(3), td:nth-child(3) { min-width: 80px; max-width: 100px; }
+      th:nth-child(8), td:nth-child(8) { min-width: 70px; max-width: 90px; }
       #globalHistoryModal .modal-content h2 { font-size: 18px; }
       #globalHistoryTable th, #globalHistoryTable td { padding: 4px 2px; font-size: 9px; }
       #globalHistoryTable .print-transfer-btn,
@@ -832,6 +921,13 @@
         font-size: 8px;
         min-width: 24px;
         height: 24px;
+      }
+      .selected-items-table {
+        font-size: 11px;
+      }
+      .selected-items-table th,
+      .selected-items-table td {
+        padding: 4px 6px;
       }
     }
     .delete-button {
@@ -863,7 +959,7 @@
     <div class="filter-row">
       <label id="pendingFilterLabel" for="pendingFilter" class="modern-label"><i class="fas fa-map-marker-alt"></i> Location</label>
       <select id="pendingFilter"><option value="">ทั้งหมด</option></select>
-      <div id="callCountInfo" class="call-count-box"><i class="fas fa-list"></i> จำนวนรายการ: <span id="callCountValue">0</span> รายการ</div>
+      <div id="callCountInfo" class="call-count-box"><i class="fas fa-list"></i> จำนวนรายการ: <span id="callCountValue">0</span> รายการ | <i class="fas fa-shopping-cart"></i> ในตะกร้า: <span id="cartCountValue">0</span> รายการ</div>
     </div>
     <div class="filter-row">
       <label id="stockFilterLabel" for="stockFilter" class="modern-label"><i class="fas fa-info-circle"></i> Status</label>
@@ -874,12 +970,15 @@
       <button id="searchButton" class="action-button"><i class="fas fa-search"></i> ค้นหา</button>
       <button id="excelButton" class="action-button print-button"><i class="fas fa-file-excel"></i> Excel</button>
       <button id="historyButton" class="action-button history-button"><i class="fas fa-history"></i> ประวัติ</button>
+      <button id="cartButton" class="action-button cart-button" disabled><i class="fas fa-shopping-cart"></i> โอนย้ายตะกร้า</button>
+      <button id="clearCartButton" class="action-button" style="background:linear-gradient(135deg,var(--danger-color),#dc2626);" disabled><i class="fas fa-trash"></i> ล้างตะกร้า</button>
     </div>
   </div>
   <div class="table-container">
     <table id="data-table">
       <thead>
         <tr>
+          <th><input type="checkbox" id="selectAll"></th>
           <th class="sortable" data-column="รหัสทรัพย์สิน"><i class="fas fa-tag"></i> รหัส <span class="arrow"></span></th>
           <th class="sortable" data-column="ชื่อทรัพย์สิน"><i class="fas fa-cube"></i> ชื่อ <span class="arrow"></span></th>
           <th class="sortable" data-column="UL"><i class="fas fa-building"></i> UL <span class="arrow"></span></th>
@@ -893,7 +992,7 @@
         </tr>
       </thead>
       <tbody id="tableBody">
-        <tr><td colspan="10" class="loading"><i class="fas fa-spinner"></i> กำลังโหลดข้อมูล...</td></tr>
+        <tr><td colspan="11" class="loading"><i class="fas fa-spinner"></i> กำลังโหลดข้อมูล...</td></tr>
       </tbody>
     </table>
   </div>
@@ -918,8 +1017,15 @@
       <span class="close" id="closeTransferModal">&times;</span>
       <h2><i class="fas fa-exchange-alt"></i> โอนย้ายทรัพย์สิน</h2>
       <form id="transferForm">
-        <!-- กลุ่มข้อมูลทรัพย์สิน -->
-        <div class="form-section">
+        <!-- กลุ่มรายการที่เลือก (สำหรับ multi) -->
+        <div class="selected-items-section" id="selectedItemsSection" style="display:none;">
+          <h3><i class="fas fa-list"></i> รายการที่เลือก (ย้ายไปผู้รับและ Location เดียวกัน)</h3>
+          <div class="selected-items-list" id="selectedItemsList">
+            <!-- ตารางจะถูกสร้างที่นี่โดย JS -->
+          </div>
+        </div>
+        <!-- กลุ่มข้อมูลทรัพย์สิน (ซ่อนสำหรับ multi) -->
+        <div class="form-section" id="singleAssetSection">
           <h3><i class="fas fa-cube"></i> ข้อมูลทรัพย์สิน</h3>
           <div class="form-grid">
             <div class="form-group">
@@ -940,8 +1046,8 @@
             </div>
           </div>
         </div>
-        <!-- กลุ่มผู้โอน -->
-        <div class="form-section">
+        <!-- กลุ่มผู้โอน (ซ่อนสำหรับ multi) -->
+        <div class="form-section" id="singleFromSection">
           <h3><i class="fas fa-user-times"></i> ผู้โอน (ข้อมูลปัจจุบัน)</h3>
           <div class="form-grid">
             <div class="form-group">
@@ -1013,8 +1119,10 @@
           <textarea id="tf_note" placeholder="รายละเอียดเพิ่มเติม (ถ้ามี)" class="form-input"></textarea>
         </div>
         <div class="modal-buttons">
-          <button type="submit" class="action-button" disabled><i class="fas fa-save"></i> บันทึกและพิมพ์ฟอร์ม</button>
+          <button type="button" id="saveButton" class="action-button" disabled><i class="fas fa-save"></i> บันทึก</button>
+          <button type="button" id="printButton" class="action-button" style="background:linear-gradient(135deg, var(--info-color), #0891b2);" disabled><i class="fas fa-print"></i> พิมพ์</button>
           <button type="button" id="viewHistoryBtn" class="action-button" style="background:linear-gradient(135deg,var(--secondary-color),#475569);"><i class="fas fa-history"></i> ดูประวัติ</button>
+          <button type="button" id="closeModalBtn" class="action-button" style="background:linear-gradient(135deg,var(--danger-color),#dc2626);"><i class="fas fa-times"></i> ออก</button>
         </div>
         <datalist id="ownersList"></datalist>
         <datalist id="locationsList"></datalist>
@@ -1115,6 +1223,8 @@
     const searchButton = document.getElementById('searchButton');
     const excelButton = document.getElementById('excelButton');
     const historyButton = document.getElementById('historyButton');
+    const cartButton = document.getElementById('cartButton');
+    const clearCartButton = document.getElementById('clearCartButton');
     const globalHistoryModal = document.getElementById('globalHistoryModal');
     const closeGlobalHistoryModal = document.getElementById('closeGlobalHistoryModal');
     const globalHistoryTableBody = document.querySelector('#globalHistoryTable tbody');
@@ -1125,11 +1235,24 @@
     const nextPageButton = document.getElementById('nextPage');
     const lastPageButton = document.getElementById('lastPage');
     const itemsPerPageSelect = document.getElementById('itemsPerPage');
+    const selectAllCheckbox = document.getElementById('selectAll');
+    const cartCountValue = document.getElementById('cartCountValue');
+    const selectedItemsSection = document.getElementById('selectedItemsSection');
+    const selectedItemsList = document.getElementById('selectedItemsList');
+    const singleAssetSection = document.getElementById('singleAssetSection');
+    const singleFromSection = document.getElementById('singleFromSection');
+    const saveButton = document.getElementById('saveButton');
+    const printButton = document.getElementById('printButton');
+    const closeModalBtn = document.getElementById('closeModalBtn');
     let allData = [];
+    let selectedAssets = []; // ตะกร้า
+    let currentCartOwner = null; // เพิ่ม: เก็บผู้รับผิดชอบสำหรับตะกร้า
+    let currentPageData = []; // เพิ่ม: ข้อมูลหน้าปัจจุบันสำหรับ selectAll
     let currentPage = 1;
     let itemsPerPage = 20;
     let sortConfig = { column: 'รหัสทรัพย์สิน', direction: 'asc' };
     let currentAssetRow = null;
+    let isMultiMode = false; // ตรวจสอบโหมด multi หรือ single
     function todayISO() {
       const d = new Date();
       const m = (d.getMonth() + 1).toString().padStart(2, '0');
@@ -1319,6 +1442,111 @@
         arrow.textContent = (col === sortConfig.column) ? (sortConfig.direction === 'asc' ? '↑' : '↓') : '';
       });
     }
+    // ฟังก์ชันจัดการตะกร้า - แก้ไขให้เก็บ data object ไม่ใช่ DOM tr
+    function toggleSelect(rowData, assetId) {
+      const checkbox = document.querySelector(`input[type="checkbox"][data-asset-id="${assetId}"]`); // หา checkbox ด้วย data attribute
+      const normalizedId = normalizeAssetId(assetId);
+      const owner = rowData['ผู้รับผิดชอบ'] || '';
+      if (checkbox.disabled) {
+        checkbox.checked = false;
+        return;
+      }
+      if (checkbox.checked) {
+        // กำลังเลือก
+        if (currentCartOwner && currentCartOwner !== owner) {
+          alert('รายการที่เลือกต้องมีผู้รับผิดชอบคนเดียวกันเท่านั้น');
+          checkbox.checked = false;
+          return;
+        }
+        if (!selectedAssets.find(a => normalizeAssetId(a['รหัสทรัพย์สิน']) === normalizedId)) {
+          selectedAssets.push(rowData);
+          if (!currentCartOwner) {
+            currentCartOwner = owner;
+          }
+        }
+      } else {
+        // กำลังยกเลิก
+        selectedAssets = selectedAssets.filter(a => normalizeAssetId(a['รหัสทรัพย์สิน']) !== normalizedId);
+        if (selectedAssets.length === 0) {
+          currentCartOwner = null;
+        }
+      }
+      updateCartUI();
+    }
+    function updateCartUI() {
+      cartCountValue.textContent = selectedAssets.length;
+      cartButton.disabled = selectedAssets.length === 0;
+      clearCartButton.disabled = selectedAssets.length === 0;
+      // FIX: อัปเดต selectAll state สำหรับ current page เท่านั้น
+      if (currentPageData.length > 0) {
+        const currentSelectedCount = selectedAssets.filter(a => currentPageData.some(r => normalizeAssetId(a['รหัสทรัพย์สิน']) === normalizeAssetId(r['รหัสทรัพย์สิน']))).length;
+        selectAllCheckbox.checked = currentSelectedCount === currentPageData.length;
+        selectAllCheckbox.indeterminate = currentSelectedCount > 0 && currentSelectedCount < currentPageData.length;
+      } else {
+        selectAllCheckbox.checked = false;
+        selectAllCheckbox.indeterminate = false;
+      }
+    }
+    function clearCart() {
+      selectedAssets = [];
+      currentCartOwner = null; // เพิ่ม: ล้าง currentCartOwner
+      document.querySelectorAll('#tableBody input[type="checkbox"]').forEach(cb => cb.checked = false);
+      updateCartUI();
+      // เพิ่ม: ถ้า modal เปิดและเป็น multi mode, re-render selected list
+      if (transferModal.style.display === 'block' && isMultiMode) {
+        renderSelectedItemsList();
+      }
+    }
+    function openCartModal() {
+      if (selectedAssets.length === 0) return;
+      isMultiMode = true;
+      selectedItemsSection.style.display = 'block';
+      singleAssetSection.style.display = 'none';
+      singleFromSection.style.display = 'none';
+      renderSelectedItemsList();
+      // Reset form fields for multi
+      document.getElementById('tf_toOwner').value = '';
+      document.getElementById('tf_toLocation').value = '';
+      document.getElementById('tf_date').value = todayISO();
+      document.getElementById('tf_operator').value = '';
+      document.getElementById('tf_note').value = '';
+      fillTransferDatalists();
+      historyBox.style.display = 'none';
+      transferModal.style.display = 'block';
+      validateForm();
+    }
+    // ปรับ: renderSelectedItemsList เป็นตาราง
+    function renderSelectedItemsList() {
+      if (selectedAssets.length === 0) {
+        selectedItemsList.innerHTML = '<p style="text-align:center; color:var(--secondary-color); padding:20px;">ไม่มีรายการที่เลือก</p>';
+        return;
+      }
+      const tableHTML = `
+        <table class="selected-items-table">
+          <thead>
+            <tr>
+              <th>ลำดับ</th>
+              <th>รหัสทรัพย์สิน</th>
+              <th>ชื่อทรัพย์สิน</th>
+              <th>Location ปัจจุบัน</th>
+              <th>ผู้รับผิดชอบปัจจุบัน</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${selectedAssets.map((row, index) => `
+              <tr>
+                <td>${index + 1}</td>
+                <td>${removeLeadingZeros(row['รหัสทรัพย์สิน'] || '-')}</td>
+                <td>${row['ชื่อทรัพย์สิน'] || '-'}</td>
+                <td>${row['Physical Location'] || '-'}</td>
+                <td>${row['ผู้รับผิดชอบ'] || '-'}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `;
+      selectedItemsList.innerHTML = tableHTML;
+    }
     function filterAndRenderTable() {
       const selectedEmployee = employeeFilter.value;
       const selectedLocation = pendingFilter.value;
@@ -1372,12 +1600,15 @@
     function renderTable(data) {
       tableBody.innerHTML = '';
       if (!data || data.length === 0) {
-        tableBody.innerHTML = '<tr><td colspan="10" style="text-align:center; padding:40px; color:var(--secondary-color);">ไม่มีข้อมูลที่ตรงกับเงื่อนไข</td></tr>';
+        tableBody.innerHTML = '<tr><td colspan="11" style="text-align:center; padding:40px; color:var(--secondary-color);">ไม่มีข้อมูลที่ตรงกับเงื่อนไข</td></tr>';
+        currentPageData = []; // FIX: Reset currentPageData
+        updateCartUI();
         return;
       }
       const start = (currentPage - 1) * itemsPerPage;
       const end = start + itemsPerPage;
       const page = data.slice(start, end);
+      currentPageData = [...page]; // FIX: Set currentPageData to current page's data
       const assetGroups = {};
       data.forEach(r => {
         const a = r['รหัสทรัพย์สิน'];
@@ -1392,6 +1623,22 @@
         tr.style.animationDelay = `${i * 0.05}s`;
         const asset = row['รหัสทรัพย์สิน'];
         tr.className = colorMap[asset] || 'yellow-light';
+        // Checkbox column
+        const selectTd = document.createElement('td');
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.className = 'select-checkbox';
+        checkbox.setAttribute('data-asset-id', asset); // เพิ่ม data attribute เพื่อหา checkbox
+        const normalizedId = normalizeAssetId(asset);
+        const isSelected = selectedAssets.some(a => normalizeAssetId(a['รหัสทรัพย์สิน']) === normalizedId);
+        checkbox.checked = isSelected;
+        // เพิ่ม: ตรวจสอบ disabled สำหรับผู้รับผิดชอบที่ไม่ตรงกัน
+        const owner = row['ผู้รับผิดชอบ'] || '';
+        const isDisabled = currentCartOwner && currentCartOwner !== owner;
+        checkbox.disabled = isDisabled;
+        checkbox.addEventListener('change', () => toggleSelect(row, asset)); // FIX: Pass row (data) and asset
+        selectTd.appendChild(checkbox);
+        tr.appendChild(selectTd);
         const columns = ['รหัสทรัพย์สิน', 'ชื่อทรัพย์สิน', 'UL', 'หน่วยงาน', 'Physical Location', 'วันที่ซื้อทรัพย์สิน', 'ผู้รับผิดชอบ', 'สถานะทรัพย์สิน', 'อายุ'];
         columns.forEach(col => {
           const td = document.createElement('td');
@@ -1419,12 +1666,16 @@
         const btn = document.createElement('button');
         btn.innerHTML = '<i class="fas fa-exchange-alt"></i> โอนย้าย';
         btn.className = 'transfer-button';
-        btn.onclick = () => openTransferModal(row);
+        btn.onclick = (e) => {
+          e.stopPropagation();
+          openTransferModal(row, false); // Single mode
+        };
         transferTd.appendChild(btn);
         tr.appendChild(transferTd);
         tableBody.appendChild(tr);
       });
       updatePagination(data.length);
+      updateCartUI();
     }
     function updatePagination(totalItems) {
       const totalPages = Math.ceil(totalItems / itemsPerPage);
@@ -1508,7 +1759,36 @@
       globalHistoryModal.style.display = 'block';
       await renderGlobalHistory();
     });
+    cartButton.addEventListener('click', openCartModal);
+    clearCartButton.addEventListener('click', clearCart);
     closeGlobalHistoryModal.onclick = () => { globalHistoryModal.style.display = 'none'; };
+    // FIX: Select All สำหรับ current page เท่านั้น
+    selectAllCheckbox.addEventListener('change', () => {
+      const checkboxes = document.querySelectorAll('#tableBody input[type="checkbox"]:not(:disabled)');
+      checkboxes.forEach(cb => cb.checked = selectAllCheckbox.checked);
+      if (selectAllCheckbox.checked) {
+        currentPageData.forEach(row => {
+          const normalizedId = normalizeAssetId(row['รหัสทรัพย์สิน']);
+          const owner = row['ผู้รับผิดชอบ'] || '';
+          if (currentCartOwner && currentCartOwner !== owner) return; // ข้ามถ้าไม่ตรง owner
+          if (!selectedAssets.some(a => normalizeAssetId(a['รหัสทรัพย์สิน']) === normalizedId)) {
+            selectedAssets.push(row);
+          }
+        });
+        if (!currentCartOwner && currentPageData.length > 0) {
+          currentCartOwner = currentPageData[0]['ผู้รับผิดชอบ'] || '';
+        }
+      } else {
+        currentPageData.forEach(row => {
+          const normalizedId = normalizeAssetId(row['รหัสทรัพย์สิน']);
+          selectedAssets = selectedAssets.filter(a => normalizeAssetId(a['รหัสทรัพย์สิน']) !== normalizedId);
+        });
+        if (selectedAssets.length === 0) {
+          currentCartOwner = null;
+        }
+      }
+      updateCartUI();
+    });
     firstPageButton.onclick = () => { currentPage = 1; filterAndRenderTable(); };
     prevPageButton.onclick = () => { if (currentPage > 1) { currentPage--; filterAndRenderTable(); } };
     nextPageButton.onclick = () => {
@@ -1522,16 +1802,25 @@
     // Transfer Modal Functions
     function validateForm() {
       const requiredIds = ['tf_toLocation', 'tf_toOwner', 'tf_date', 'tf_operator'];
-      const submitBtn = transferForm.querySelector('button[type="submit"]');
       const isValid = requiredIds.every(id => {
         const el = document.getElementById(id);
         return el && el.value.trim();
       });
-      submitBtn.disabled = !isValid;
+      saveButton.disabled = !isValid;
+      printButton.disabled = !isValid;
       return isValid;
     }
-    function openTransferModal(row) {
+    function openTransferModal(row, multi = false) {
+      isMultiMode = multi;
       currentAssetRow = row;
+      if (multi) {
+        openCartModal();
+        return;
+      }
+      // Single mode
+      selectedItemsSection.style.display = 'none';
+      singleAssetSection.style.display = 'block';
+      singleFromSection.style.display = 'block';
       // Normalize asset ID สำหรับ display
       const normalizedAssetId = normalizeAssetId(row['รหัสทรัพย์สิน'] || '-');
       document.getElementById('tf_assetId').value = normalizedAssetId;
@@ -1561,9 +1850,19 @@
       transferModal.style.display = 'block';
       validateForm(); // Disable submit button initially
     }
-    closeTransferModal.onclick = () => { transferModal.style.display = 'none'; currentAssetRow = null; };
+    closeTransferModal.onclick = () => {
+      transferModal.style.display = 'none';
+      currentAssetRow = null;
+      isMultiMode = false;
+      selectedItemsSection.style.display = 'none';
+      singleAssetSection.style.display = 'block';
+      singleFromSection.style.display = 'block';
+    };
+    closeModalBtn.onclick = closeTransferModal.onclick;
     window.addEventListener('click', (e) => {
-      if (e.target === transferModal) { transferModal.style.display = 'none'; currentAssetRow = null; }
+      if (e.target === transferModal) {
+        closeTransferModal.onclick();
+      }
       if (e.target === pickerModal) { pickerModal.style.display = 'none'; }
       if (e.target === globalHistoryModal) { globalHistoryModal.style.display = 'none'; }
     });
@@ -1581,14 +1880,25 @@
       document.getElementById(id).addEventListener('input', validateForm);
     });
     viewHistoryBtn.addEventListener('click', () => {
-      if (!currentAssetRow) return;
-      const normalizedId = normalizeAssetId(currentAssetRow['รหัสทรัพย์สิน']);
-      renderHistory(normalizedId);
+      if (!currentAssetRow && !isMultiMode) return;
+      if (isMultiMode) {
+        // สำหรับ multi, แสดงประวัติของรายการแรก
+        if (selectedAssets.length === 0) {
+          alert('ไม่มีรายการในตะกร้า');
+          return;
+        }
+        const firstAsset = selectedAssets[0];
+        const normalizedId = normalizeAssetId(firstAsset['รหัสทรัพย์สิน']);
+        renderHistory(normalizedId);
+      } else {
+        const normalizedId = normalizeAssetId(currentAssetRow['รหัสทรัพย์สิน']);
+        renderHistory(normalizedId);
+      }
       historyBox.style.display = (historyBox.style.display === 'none' || !historyBox.style.display) ? 'block' : 'none';
     });
-    // ฟังก์ชันโหลดข้อมูลประวัติลงฟอร์ม
+    // ฟังก์ชันโหลดข้อมูลประวัติลงฟอร์ม (สำหรับ single)
     function loadTransferToForm(t) {
-      if (!currentAssetRow) return;
+      if (!currentAssetRow || isMultiMode) return;
       const normalizedAssetId = normalizeAssetId(currentAssetRow['รหัสทรัพย์สิน'] || '-');
       // ข้อมูลทรัพย์สิน (คงเดิม)
       document.getElementById('tf_assetId').value = normalizedAssetId;
@@ -1725,14 +2035,15 @@
         alert('บันทึกสำเร็จในเครื่อง แต่ล้มเหลวในการ sync ไป Supabase: ' + err.message + '\nตรวจสอบคอลัมน์ในตาราง transfers');
       }
     }
-    // Telegram Notification Function - ปรับรูปแบบให้สวยงามเป็นหัวข้อๆ ตามตัวอย่าง โดยใช้ plain text เพื่อหลีกเลี่ยง escaping
-    async function sendTelegramNotification(payload) {
+    // FIXED: Telegram Notification Function - ปรับให้รับ payloads array เสมอ (สำหรับ multi/single) และส่ง notification เดียว
+    async function sendTelegramNotification(payloads, isMulti = payloads.length > 1) {
       if (!telegramBotToken || !telegramChatId) {
         console.warn('Telegram Bot Token or Chat ID not configured. Skipping notification.');
         return;
       }
-      // สร้างข้อความแบบหัวข้อๆ ชัดเจน โดยไม่ escape (plain text)
-      const title = '🚛 การโอนย้ายทรัพย์สินใหม่';
+      const payload = payloads[0]; // ใช้ payload แรกสำหรับรายละเอียดหลัก
+      let title = isMulti ? '🚛 การโอนย้ายทรัพย์สินหลายรายการ' : '🚛 การโอนย้ายทรัพย์สินใหม่';
+      let itemsText = isMulti ? `\nรายการทั้งหมด: ${payloads.length} ชิ้น\nรายละเอียด: ย้ายไป ${payload.to_owner_name || '-'} (${payload.to_location || '-'})` : '';
       const assetIdLine = `📋 รหัสทรัพย์สิน: ${payload.asset_id || '-'} `;
       const nameLine = `📦 ชื่อทรัพย์สิน: ${payload.name || '-'} `;
       const fromLine = `👤 จาก: ${(payload.from_owner_name || '-') + ' (' + (payload.from_location || '-') + ') UL: ' + (payload.from_ul || '-')} `;
@@ -1740,7 +2051,7 @@
       const dateLine = `📅 วันที่โอน: ${payload.date || '-'} `;
       const operatorLine = `🛠️ ผู้ดำเนินการ: ${payload.operator || '-'} `;
       const noteLine = `📝 หมายเหตุ: ${payload.note || 'ไม่มี'} `;
-      const message = `${title}\n\n${assetIdLine}\n${nameLine}\n${fromLine}\n${toLine}\n${dateLine}\n${operatorLine}\n${noteLine}`;
+      const message = `${title}${itemsText}\n\n${assetIdLine}\n${nameLine}\n${fromLine}\n${toLine}\n${dateLine}\n${operatorLine}\n${noteLine}`;
       const telegramUrl = `https://api.telegram.org/bot${telegramBotToken}/sendMessage`;
       try {
         const response = await fetch(telegramUrl, {
@@ -1857,7 +2168,7 @@
             return;
           }
           currentAssetRow = assetRow;
-          openTransferModal(assetRow);
+          openTransferModal(assetRow, false);
           loadTransferToForm(t);
           setTimeout(() => {
             printCurrentForm();
@@ -1877,74 +2188,181 @@
         globalHistoryTableBody.appendChild(tr);
       });
     }
-    // FIXED: submitTransfer - ใช้ preparePayloadForSupabase ใน setTransfers แล้ว
-    async function submitTransfer(e) {
+    // FIXED: saveTransfer - แยกฟังก์ชันบันทึก (รองรับ multi, ส่ง Telegram notification หลัง loop, ไม่มี print)
+    async function saveTransfer(e) {
       e.preventDefault();
       if (!validateForm()) {
         alert('กรุณากรอกข้อมูลให้ครบถ้วนก่อนบันทึก');
         return;
       }
-      if (!currentAssetRow) { alert('ไม่พบข้อมูลทรัพย์สิน'); return; }
-      const submitBtn = transferForm.querySelector('button[type="submit"]');
-      const originalText = submitBtn.innerHTML;
-      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> กำลังบันทึกและเตรียมพิมพ์...';
-      submitBtn.disabled = true;
+      const originalSaveText = saveButton.innerHTML;
+      saveButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> กำลังบันทึก...';
+      saveButton.disabled = true;
       try {
-        const fromOwnerFull = currentAssetRow['ผู้รับผิดชอบ'] || '-';
         const toOwnerFull = document.getElementById('tf_toOwner').value.trim();
+        const toLocation = document.getElementById('tf_toLocation').value.trim();
+        const date = document.getElementById('tf_date').value;
+        const operator = document.getElementById('tf_operator').value.trim();
+        const note = document.getElementById('tf_note').value.trim();
+        const toEmpId = document.getElementById('tf_toEmpId').value.trim();
+        const toUL = document.getElementById('tf_toUL').value;
+        const toDept = document.getElementById('tf_toDept').value;
+        let payloads = [];
+        if (isMultiMode) {
+          // Multi mode
+          payloads = selectedAssets.map(row => {
+            const fromOwnerFull = row['ผู้รับผิดชอบ'] || '-';
+            const normalizedAssetId = normalizeAssetId(row['รหัสทรัพย์สิน']);
+            return {
+              asset_id: normalizedAssetId,
+              name: row['ชื่อทรัพย์สิน'],
+              ul: row['UL'],
+              from_location: row['Physical Location'],
+              from_owner_full: fromOwnerFull,
+              from_owner_name: extractOwnerName(fromOwnerFull),
+              from_emp_id: extractEmpId(fromOwnerFull),
+              from_ul: findULByOwner(fromOwnerFull),
+              from_dept: row['หน่วยงาน'], // เก็บสำหรับ local/print
+              to_location: toLocation,
+              to_owner_full: toOwnerFull,
+              to_owner_name: extractOwnerName(toOwnerFull),
+              to_emp_id: toEmpId,
+              to_ul: toUL,
+              to_dept: toDept, // เก็บสำหรับ local/print
+              date: date,
+              operator: operator,
+              note: note,
+              status: 'โอนย้ายทรัพย์สิน'
+            };
+          });
+        } else {
+          // Single mode
+          const fromOwnerFull = currentAssetRow['ผู้รับผิดชอบ'] || '-';
+          const normalizedAssetId = normalizeAssetId(document.getElementById('tf_assetId').value);
+          const payload = {
+            asset_id: normalizedAssetId,
+            name: document.getElementById('tf_name').value,
+            ul: document.getElementById('tf_ul').value,
+            from_location: document.getElementById('tf_fromLocation').value,
+            from_owner_full: fromOwnerFull,
+            from_owner_name: extractOwnerName(fromOwnerFull),
+            from_emp_id: document.getElementById('tf_fromEmpId').value,
+            from_ul: document.getElementById('tf_fromUL').value,
+            from_dept: document.getElementById('tf_fromDept').value, // เก็บสำหรับ local/print
+            to_location: toLocation,
+            to_owner_full: toOwnerFull,
+            to_owner_name: extractOwnerName(toOwnerFull),
+            to_emp_id: toEmpId,
+            to_ul: toUL,
+            to_dept: toDept, // เก็บสำหรับ local/print
+            date: date,
+            operator: operator,
+            note: note,
+            status: 'โอนย้ายทรัพย์สิน'
+          };
+          payloads = [payload];
+        }
+        // Save each payload
+        for (const payload of payloads) {
+          await setTransfers(payload);
+          // Update allData
+          allData = allData.map(r => {
+            if (normalizeAssetId(r['รหัสทรัพย์สิน']) === payload.asset_id) {
+              return { ...r, 'Physical Location': payload.to_location, 'ผู้รับผิดชอบ': payload.to_owner_full, 'สถานะทรัพย์สิน': 'โอนย้ายทรัพย์สิน', 'UL': payload.to_ul, 'หน่วยงาน': payload.to_dept };
+            }
+            return r;
+          });
+        }
+        // FIXED: Send Telegram notification once after loop (for multi/single)
+        await sendTelegramNotification(payloads, isMultiMode);
+        filterAndRenderTable();
+        // ไม่ clearCart และไม่ reset mode/display เพื่อให้ข้อมูลยังอยู่สำหรับพิมพ์
+        alert(`บันทึกการโอนย้ายเรียบร้อย (${payloads.length} รายการ) (บันทึกใน Supabase และ localStorage) และส่งแจ้งเตือน Telegram แล้ว\nสามารถกดพิมพ์ได้ทันที จากนั้นกด "ออก" หรือ "ล้างตะกร้า" เมื่อเสร็จ`);
+      } catch (err) {
+        console.error('Save error:', err);
+        alert('เกิดข้อผิดพลาดในการบันทึก: ' + err.message);
+      } finally {
+        saveButton.innerHTML = originalSaveText;
+        saveButton.disabled = false;
+      }
+    }
+    // FIXED: printTransferForm - แยกฟังก์ชันพิมพ์ (รองรับ multi/single, ใช้ข้อมูลจาก form ปัจจุบัน)
+    function printTransferForm() {
+      if (!validateForm()) {
+        alert('กรุณากรอกข้อมูลให้ครบถ้วนก่อนพิมพ์');
+        return;
+      }
+      const toOwnerFull = document.getElementById('tf_toOwner').value.trim();
+      const toLocation = document.getElementById('tf_toLocation').value.trim();
+      const date = document.getElementById('tf_date').value;
+      const operator = document.getElementById('tf_operator').value.trim();
+      const note = document.getElementById('tf_note').value.trim();
+      const toEmpId = document.getElementById('tf_toEmpId').value.trim();
+      const toUL = document.getElementById('tf_toUL').value;
+      const toDept = document.getElementById('tf_toDept').value;
+      let payloads = [];
+      if (isMultiMode) {
+        // Multi mode
+        payloads = selectedAssets.map(row => {
+          const fromOwnerFull = row['ผู้รับผิดชอบ'] || '-';
+          const normalizedAssetId = normalizeAssetId(row['รหัสทรัพย์สิน']);
+          return {
+            asset_id: normalizedAssetId,
+            name: row['ชื่อทรัพย์สิน'],
+            ul: row['UL'],
+            from_location: row['Physical Location'],
+            from_owner_full: fromOwnerFull,
+            from_owner_name: extractOwnerName(fromOwnerFull),
+            from_emp_id: extractEmpId(fromOwnerFull),
+            from_ul: findULByOwner(fromOwnerFull),
+            from_dept: row['หน่วยงาน'], // เก็บสำหรับ local/print
+            to_location: toLocation,
+            to_owner_full: toOwnerFull,
+            to_owner_name: extractOwnerName(toOwnerFull),
+            to_emp_id: toEmpId,
+            to_ul: toUL,
+            to_dept: toDept, // เก็บสำหรับ local/print
+            date: date,
+            operator: operator,
+            note: note,
+            status: 'โอนย้ายทรัพย์สิน'
+          };
+        });
+      } else {
+        // Single mode
+        const fromOwnerFull = currentAssetRow['ผู้รับผิดชอบ'] || '-';
+        // Reconstruct fromOwnerFull จาก form ถ้ามี
+        const fromEmpId = document.getElementById('tf_fromEmpId').value.trim();
+        const fromOwnerName = document.getElementById('tf_fromOwnerName').value.trim();
+        const reconstructedFromFull = (fromEmpId && fromOwnerName) ? `${fromEmpId} ${fromOwnerName}`.trim() : fromOwnerFull;
         const normalizedAssetId = normalizeAssetId(document.getElementById('tf_assetId').value);
         const payload = {
           asset_id: normalizedAssetId,
           name: document.getElementById('tf_name').value,
           ul: document.getElementById('tf_ul').value,
           from_location: document.getElementById('tf_fromLocation').value,
-          from_owner_full: fromOwnerFull,
-          from_owner_name: extractOwnerName(fromOwnerFull),
-          from_emp_id: document.getElementById('tf_fromEmpId').value,
+          from_owner_full: reconstructedFromFull,
+          from_owner_name: extractOwnerName(reconstructedFromFull),
+          from_emp_id: fromEmpId,
           from_ul: document.getElementById('tf_fromUL').value,
-          from_dept: document.getElementById('tf_fromDept').value, // เก็บไว้สำหรับ local/print แต่ไม่ส่ง Supabase
-          to_location: document.getElementById('tf_toLocation').value.trim(),
+          from_dept: document.getElementById('tf_fromDept').value, // เก็บสำหรับ print
+          to_location: toLocation,
           to_owner_full: toOwnerFull,
           to_owner_name: extractOwnerName(toOwnerFull),
-          to_emp_id: document.getElementById('tf_toEmpId').value.trim(),
-          to_ul: document.getElementById('tf_toUL').value,
-          to_dept: document.getElementById('tf_toDept').value, // เก็บไว้สำหรับ local/print แต่ไม่ส่ง Supabase
-          date: document.getElementById('tf_date').value,
-          operator: document.getElementById('tf_operator').value.trim(),
-          note: document.getElementById('tf_note').value.trim(),
+          to_emp_id: toEmpId,
+          to_ul: toUL,
+          to_dept: toDept, // เก็บสำหรับ print
+          date: date,
+          operator: operator,
+          note: note,
           status: 'โอนย้ายทรัพย์สิน'
         };
-        // Save to Supabase + localStorage (setTransfers จัดการ prepare แล้ว)
-        await setTransfers(payload);
-        // ส่งแจ้งเตือน Telegram
-        await sendTelegramNotification(payload);
-        // Update allData ด้วย normalized assetId
-        allData = allData.map(r => {
-          if (normalizeAssetId(r['รหัสทรัพย์สิน']) === normalizedAssetId) {
-            return { ...r, 'Physical Location': payload.to_location, 'ผู้รับผิดชอบ': payload.to_owner_full, 'สถานะทรัพย์สิน': 'โอนย้ายทรัพย์สิน', 'UL': payload.to_ul, 'หน่วยงาน': payload.to_dept };
-          }
-          return r;
-        });
-        filterAndRenderTable();
-        await renderHistory(normalizedAssetId);
-        historyBox.style.display = 'block';
-        addValueToDatalists(payload.to_owner_full, payload.to_location);
-        const confirmPrint = confirm('บันทึกการโอนย้ายเรียบร้อย (บันทึกใน Supabase และ localStorage) และส่งแจ้งเตือน Telegram แล้ว\n\nกด "ตกลง" เพื่อเปิดหน้าฟอร์มพิมพ์');
-        if (confirmPrint) {
-          // เปิดหน้าแสดงฟอร์มเพื่อพิมพ์ (ไม่ print อัตโนมัติ)
-          showPrintForm(payload);
-        }
-        transferModal.style.display = 'none';
-      } catch (err) {
-        console.error('Submit error:', err);
-        alert('เกิดข้อผิดพลาดในการบันทึก: ' + err.message);
-      } finally {
-        submitBtn.innerHTML = originalText;
-        submitBtn.disabled = false;
+        payloads = [payload];
       }
+      showPrintForm(payloads);
     }
-    // ฟังก์ชันแสดงฟอร์มพิมพ์ (เปิด window ใหม่ แสดงฟอร์ม และมีปุ่มพิมพ์/ปิด)
-    function showPrintForm(payload) {
+    // ฟังก์ชันแสดงฟอร์มพิมพ์ (รองรับ multi payloads)
+    function showPrintForm(payloads) {
       let w = window.open('', '_blank');
       if (!w || w.closed) {
         alert('ไม่สามารถเปิดหน้าฟอร์มพิมพ์ได้ (popup อาจถูกบล็อก) กรุณาเปิดใช้งาน popup แล้วลองใหม่');
@@ -1952,19 +2370,22 @@
         setTimeout(() => window.print(), 100);
         return;
       }
-      const dateStr = thaiDateStr(payload.date) || '';
+      const isMulti = payloads.length > 1;
+      const dateStr = thaiDateStr(payloads[0].date) || '';
+      const totalItems = payloads.length;
       const styles = `<style>
-        @page { size: A4 landscape; margin: 12mm; }
-        body { font-family: 'Prompt', Tahoma, sans-serif; color: #000; }
-        h1 { font-size: 18pt; text-align: center; margin: 0 0 4mm; }
-        h2 { font-size: 14pt; text-align: center; margin: 0 0 6mm; }
-        .meta { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 11pt; }
+        @page { size: A4 landscape; margin: 12mm 12mm 20mm 12mm; @bottom-center { content: counter(page) "/" counter(pages); font-size: 10pt; color: #000; } }
+        @page :first { margin-top: 15mm; @bottom-center { content: counter(page) "/" counter(pages); } }
+        body { font-family: 'Prompt', Tahoma, sans-serif; color: #000; counter-reset: page 1; }
+        h1 { font-size: 16pt; text-align: center; margin: 0 0 4mm; }
+        h2 { font-size: 12pt; text-align: center; margin: 0 0 6mm; }
+        .meta { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 10pt; }
         .meta .label { font-weight: bold; }
         table { width: 100%; border-collapse: collapse; }
-        th, td { border: 1px solid #000; padding: 6px 4px; font-size: 11pt; }
+        th, td { border: 1px solid #000; padding: 5px 3px; font-size: 10pt; }
         th { text-align: center; background: #fff; }
         .center { text-align: center; }
-        .sign { margin-top: 12mm; display: grid; grid-template-columns: 1fr 1fr; gap: 12mm; font-size: 11pt; }
+        .sign { margin-top: 12mm; display: grid; grid-template-columns: 1fr 1fr; gap: 12mm; font-size: 10pt; }
         .sign .box { border: 1px solid #000; padding: 6mm; min-height: 38mm; }
         .line { display: flex; gap: 6px; align-items: center; margin-top: 6px; }
         .line .lbl { min-width: 120px; }
@@ -1977,15 +2398,20 @@
           .print-controls { display: none !important; }
           body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
           .sign .box { page-break-inside: avoid; }
-          table { page-break-inside: avoid; }
+          thead { display: table-header-group; }
+          tfoot { display: table-footer-group; }
+          table { page-break-inside: auto !important; }
         }
       </style>`;
-      const header = `<h1>บริษัท ซีพี รีเทลลิงค์ จำกัด</h1><h2>ใบโอนย้ายทรัพย์สิน</h2><div class="meta"><div><span class="label">รายละเอียดครั้งนี้ :</span> ${payload.note || ''}</div><div><span class="label">วันที่ :</span> ${dateStr}</div></div>`;
-      const firstRow = `<tr><td class="center">1</td><td class="center">${payload.asset_id || ''}</td><td>${payload.name || ''}</td><td class="center">${payload.from_ul || ''}</td><td class="center">${payload.from_emp_id || ''}</td><td>${payload.from_owner_name || ''}</td><td class="center">${payload.to_ul || ''}</td><td class="center">${payload.to_emp_id || ''}</td><td>${payload.to_owner_name || ''}</td><td>${payload.note || ''}</td></tr>`;
-      const emptyRows = Array.from({ length: 7 }, (_, i) => `<tr><td class="center">${i + 2}</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>`).join('');
-      const table = `<table><thead><tr><th rowspan="2" style="width:40px">ลำดับ</th><th rowspan="2" style="width:120px">รหัสทรัพย์สิน</th><th rowspan="2">รายการ</th><th colspan="3">ผู้โอน</th><th colspan="3">ผู้รับ</th><th rowspan="2" style="width:160px">หมายเหตุ</th></tr><tr><th style="width:90px">UL</th><th style="width:120px">รหัสพนักงาน</th><th style="width:160px">ชื่อผู้รับผิดชอบเดิม</th><th style="width:90px">UL</th><th style="width:120px">รหัสพนักงาน</th><th style="width:160px">ชื่อผู้รับผิดชอบใหม่</th></tr></thead><tbody>${firstRow}${emptyRows}</tbody></table>`;
-      const signFrom = `<div class="box"><div class="center" style="font-weight:bold;margin-bottom:6px;">ผู้โอน</div><div class="line"><div class="lbl">ลายเซ็นต์</div><div class="fill"></div></div><div class="line"><div class="lbl">ชื่อตัวบรรจง</div><div class="info">${payload.from_owner_name || ''}</div></div><div class="line"><div class="lbl">รหัสพนักงาน</div><div class="info">${payload.from_emp_id || ''}</div></div><div class="line"><div class="lbl">หน่วยงาน</div><div class="info">${payload.from_dept || ''}</div></div></div>`;
-      const signTo = `<div class="box"><div class="center" style="font-weight:bold;margin-bottom:6px;">ผู้รับ</div><div class="line"><div class="lbl">ลายเซ็นต์</div><div class="fill"></div></div><div class="line"><div class="lbl">ชื่อตัวบรรจง</div><div class="info">${payload.to_owner_name || ''}</div></div><div class="line"><div class="lbl">รหัสพนักงาน</div><div class="info">${payload.to_emp_id || ''}</div></div><div class="line"><div class="lbl">หน่วยงาน</div><div class="info">${payload.to_dept || ''}</div></div></div>`;
+      const header = `<h1>บริษัท ซีพี รีเทลลิงค์ จำกัด</h1><h2>ใบโอนย้ายทรัพย์สิน${isMulti ? ` (${totalItems} รายการ)` : ''}</h2><div class="meta"><div><span class="label">รายละเอียดครั้งนี้ :</span> ${payloads[0].note || ''}</div><div><span class="label">วันที่ :</span> ${dateStr}</div></div>`;
+      let tableRows = '';
+      payloads.forEach((payload, index) => {
+        tableRows += `<tr><td class="center">${index + 1}</td><td class="center">${payload.asset_id || ''}</td><td>${payload.name || ''}</td><td class="center">${payload.from_ul || ''}</td><td class="center">${payload.from_emp_id || ''}</td><td>${payload.from_owner_name || ''}</td><td class="center">${payload.to_ul || ''}</td><td class="center">${payload.to_emp_id || ''}</td><td>${payload.to_owner_name || ''}</td><td>${payload.note || ''}</td></tr>`;
+      });
+      const tfoot = `<tfoot><tr><td colspan="10" class="center" style="border-top: 2px solid #000; padding: 8px; font-weight: bold;">วันที่โอน: ${dateStr}</td></tr></tfoot>`;
+      const table = `<table><thead><tr><th rowspan="2" style="width:40px">ลำดับ</th><th rowspan="2" style="width:120px">รหัสทรัพย์สิน</th><th rowspan="2">รายการ</th><th colspan="3">ผู้โอน</th><th colspan="3">ผู้รับ</th><th rowspan="2" style="width:160px">หมายเหตุ</th></tr><tr><th style="width:90px">UL</th><th style="width:120px">รหัสพนักงาน</th><th style="width:160px">ชื่อผู้รับผิดชอบเดิม</th><th style="width:90px">UL</th><th style="width:120px">รหัสพนักงาน</th><th style="width:160px">ชื่อผู้รับผิดชอบใหม่</th></tr></thead><tbody>${tableRows}</tbody>${tfoot}</table>`;
+      const signFrom = `<div class="box"><div class="center" style="font-weight:bold;margin-bottom:6px;">ผู้โอน</div><div class="line"><div class="lbl">ลายเซ็นต์</div><div class="fill"></div></div><div class="line"><div class="lbl">ชื่อตัวบรรจง</div><div class="info">${payloads[0].from_owner_name || ''}</div></div><div class="line"><div class="lbl">รหัสพนักงาน</div><div class="info">${payloads[0].from_emp_id || ''}</div></div><div class="line"><div class="lbl">หน่วยงาน</div><div class="info">${payloads[0].from_dept || ''}</div></div></div>`;
+      const signTo = `<div class="box"><div class="center" style="font-weight:bold;margin-bottom:6px;">ผู้รับ</div><div class="line"><div class="lbl">ลายเซ็นต์</div><div class="fill"></div></div><div class="line"><div class="lbl">ชื่อตัวบรรจง</div><div class="info">${payloads[0].to_owner_name || ''}</div></div><div class="line"><div class="lbl">รหัสพนักงาน</div><div class="info">${payloads[0].to_emp_id || ''}</div></div><div class="line"><div class="lbl">หน่วยงาน</div><div class="info">${payloads[0].to_dept || ''}</div></div></div>`;
       const sign = `<div class="sign">${signFrom}${signTo}</div>`;
       const printControls = `<div class="print-controls">
         <button onclick="window.print()">🖨️ พิมพ์ฟอร์ม</button>
@@ -2004,10 +2430,10 @@
         }
       }, 100);
     }
-    // ฟังก์ชันพิมพ์ฟอร์มจากข้อมูลปัจจุบัน (ไม่บันทึก)
+    // ฟังก์ชันพิมพ์ฟอร์มจากข้อมูลปัจจุบัน (ไม่บันทึก) - สำหรับ single
     function printCurrentForm() {
-      if (!validateForm()) {
-        alert('กรุณากรอกข้อมูลให้ครบถ้วนก่อนพิมพ์');
+      if (!validateForm() || isMultiMode) {
+        alert('กรุณากรอกข้อมูลให้ครบถ้วนก่อนพิมพ์ (หรือใช้โหมด single)');
         return;
       }
       if (!currentAssetRow) { alert('ไม่พบข้อมูลทรัพย์สิน'); return; }
@@ -2039,9 +2465,10 @@
         note: document.getElementById('tf_note').value.trim(),
         status: 'โอนย้ายทรัพย์สิน'
       };
-      showPrintForm(payload);
+      showPrintForm([payload]);
     }
-    transferForm.addEventListener('submit', submitTransfer);
+    saveButton.addEventListener('click', saveTransfer);
+    printButton.addEventListener('click', printTransferForm);
     // Datalist & Picker
     function uniqueSorted(arr) {
       return [...new Set(arr.filter(Boolean))].sort((a, b) => a.localeCompare(b, 'th'));
@@ -2121,7 +2548,7 @@
       .then(data => {
         if (!data || data.length === 0) {
           console.error('No data received from Google Sheets');
-          tableBody.innerHTML = '<tr><td colspan="10" style="text-align:center; padding:40px; color:var(--secondary-color);">ไม่มีข้อมูลจาก Google Sheets</td></tr>';
+          tableBody.innerHTML = '<tr><td colspan="11" style="text-align:center; padding:40px; color:var(--secondary-color);">ไม่มีข้อมูลจาก Google Sheets</td></tr>';
           return;
         }
         // Process data to remove leading zeros in asset_id for display
@@ -2141,7 +2568,7 @@
       })
       .catch(err => {
         console.error('ไม่สามารถโหลดข้อมูลได้:', err);
-        tableBody.innerHTML = `<tr><td colspan="10" style="text-align:center; padding:40px; color:var(--danger-color);">เกิดข้อผิดพลาดในการโหลดข้อมูล: ${err.message}</td></tr>`;
+        tableBody.innerHTML = `<tr><td colspan="11" style="text-align:center; padding:40px; color:var(--danger-color);">เกิดข้อผิดพลาดในการโหลดข้อมูล: ${err.message}</td></tr>`;
       });
     // FIXED: เพิ่ม auto-sync เมื่อโหลดหน้าเสร็จ
     getTransfers().then(transfers => {
