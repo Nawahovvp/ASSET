@@ -2363,53 +2363,63 @@
     }
     // ฟังก์ชันแสดงฟอร์มพิมพ์ (รองรับ multi payloads)
     function showPrintForm(payloads) {
-      let w = window.open('', '_blank');
-      if (!w || w.closed) {
-        alert('ไม่สามารถเปิดหน้าฟอร์มพิมพ์ได้ (popup อาจถูกบล็อก) กรุณาเปิดใช้งาน popup แล้วลองใหม่');
-        // Fallback: พิมพ์หน้าปัจจุบัน
-        setTimeout(() => window.print(), 100);
-        return;
-      }
-      const isMulti = payloads.length > 1;
-      const dateStr = thaiDateStr(payloads[0].date) || '';
-      const totalItems = payloads.length;
-      const styles = `<style>
-        @page { size: A4 landscape; margin: 12mm 12mm 20mm 12mm; @bottom-center { content: counter(page) "/" counter(pages); font-size: 10pt; color: #000; } }
-        @page :first { margin-top: 15mm; @bottom-center { content: counter(page) "/" counter(pages); } }
-        body { font-family: 'Prompt', Tahoma, sans-serif; color: #000; counter-reset: page 1; }
-        h1 { font-size: 16pt; text-align: center; margin: 0 0 4mm; }
-        h2 { font-size: 12pt; text-align: center; margin: 0 0 6mm; }
-        .meta { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 10pt; }
-        .meta .label { font-weight: bold; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { border: 1px solid #000; padding: 5px 3px; font-size: 10pt; }
-        th { text-align: center; background: #fff; }
-        .center { text-align: center; }
-        .sign { margin-top: 12mm; display: grid; grid-template-columns: 1fr 1fr; gap: 12mm; font-size: 10pt; }
-        .sign .box { border: 1px solid #000; padding: 6mm; min-height: 38mm; }
-        .line { display: flex; gap: 6px; align-items: center; margin-top: 6px; }
-        .line .lbl { min-width: 120px; }
-        .line .fill { border-bottom: 1px solid #000; flex: 1; height: 16px; padding-bottom: 2px; }
-        .line .info { flex: 1; text-align: center; font-weight: bold; border-bottom: none; padding-top: 2px; }
-        .print-controls { text-align: center; margin: 20px 0; }
-        .print-controls button { padding: 10px 20px; margin: 0 10px; background: #6366f1; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px; }
-        .print-controls button:hover { background: #4f46e5; }
-        @media print {
-          .print-controls { display: none !important; }
-          body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-          .sign .box { page-break-inside: avoid; }
-          thead { display: table-header-group; }
-          tfoot { display: table-footer-group; }
-          table { page-break-inside: auto !important; }
-        }
-      </style>`;
+  let w = window.open('', '_blank');
+  if (!w || w.closed) {
+    alert('ไม่สามารถเปิดหน้าฟอร์มพิมพ์ได้ (popup อาจถูกบล็อก) กรุณาเปิดใช้งาน popup แล้วลองใหม่');
+    // Fallback: พิมพ์หน้าปัจจุบัน
+    setTimeout(() => window.print(), 100);
+    return;
+  }
+  const isMulti = payloads.length > 1;
+  const dateStr = thaiDateStr(payloads[0].date) || '';
+  const totalItems = payloads.length;
+  const styles = `<style>
+    @page { size: A4 landscape; margin: 0; @bottom-center { content: counter(page) "/" counter(pages); font-size: 10pt; color: #000; } }
+    @page :first { margin-top: 0; @bottom-center { content: counter(page) "/" counter(pages); } }
+    body { font-family: 'Prompt', Tahoma, sans-serif; color: #000; counter-reset: page 1; margin: 0; padding: 12mm; }
+    h1 { font-size: 16pt; text-align: center; margin: 0 0 4mm; }
+    h2 { font-size: 12pt; text-align: center; margin: 0 0 6mm; }
+    .meta { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 10pt; }
+    .meta .label { font-weight: bold; }
+    table { width: 100%; border-collapse: collapse; margin: 0; }
+    th, td { border: 1px solid #000; padding: 5px 3px; font-size: 10pt; white-space: normal; word-wrap: break-word; }
+    th { text-align: center; background: #fff; font-weight: bold; }
+    .center { text-align: center; }
+    th:first-child, td:first-child { width: 30px; }
+    th:nth-child(2), td:nth-child(2) { width: 100px; }
+    th:nth-child(3), td:nth-child(3) { width: 250px; }
+    th:nth-child(4), td:nth-child(4) { width: 80px; }
+    th:nth-child(5), td:nth-child(5) { width: 100px; }
+    th:nth-child(6), td:nth-child(6) { width: 180px; }
+    th:nth-child(7), td:nth-child(7) { width: 80px; }
+    th:nth-child(8), td:nth-child(8) { width: 100px; }
+    th:nth-child(9), td:nth-child(9) { width: 180px; }
+    th:last-child, td:last-child { width: 200px; }
+    .sign { margin-top: 12mm; display: grid; grid-template-columns: 1fr 1fr; gap: 12mm; font-size: 10pt; }
+    .sign .box { border: 1px solid #000; padding: 6mm; min-height: 38mm; }
+    .line { display: flex; gap: 6px; align-items: center; margin-top: 6px; }
+    .line .lbl { min-width: 120px; }
+    .line .fill { border-bottom: 1px solid #000; flex: 1; height: 16px; padding-bottom: 2px; }
+    .line .info { flex: 1; text-align: center; font-weight: bold; border-bottom: none; padding-top: 2px; }
+    .print-controls { text-align: center; margin: 20px 0; }
+    .print-controls button { padding: 10px 20px; margin: 0 10px; background: #6366f1; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px; }
+    .print-controls button:hover { background: #4f46e5; }
+    @media print {
+      .print-controls { display: none !important; }
+      body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .sign .box { page-break-inside: avoid; }
+      thead { display: table-header-group; }
+      tfoot { display: table-footer-group; }
+      table { page-break-inside: auto !important; }
+    }
+  </style>`;
       const header = `<h1>บริษัท ซีพี รีเทลลิงค์ จำกัด</h1><h2>ใบโอนย้ายทรัพย์สิน${isMulti ? ` (${totalItems} รายการ)` : ''}</h2><div class="meta"><div><span class="label">รายละเอียดครั้งนี้ :</span> ${payloads[0].note || ''}</div><div><span class="label">วันที่ :</span> ${dateStr}</div></div>`;
       let tableRows = '';
       payloads.forEach((payload, index) => {
         tableRows += `<tr><td class="center">${index + 1}</td><td class="center">${payload.asset_id || ''}</td><td>${payload.name || ''}</td><td class="center">${payload.from_ul || ''}</td><td class="center">${payload.from_emp_id || ''}</td><td>${payload.from_owner_name || ''}</td><td class="center">${payload.to_ul || ''}</td><td class="center">${payload.to_emp_id || ''}</td><td>${payload.to_owner_name || ''}</td><td>${payload.note || ''}</td></tr>`;
       });
       const tfoot = `<tfoot><tr><td colspan="10" class="center" style="border-top: 2px solid #000; padding: 8px; font-weight: bold;">วันที่โอน: ${dateStr}</td></tr></tfoot>`;
-      const table = `<table><thead><tr><th rowspan="2" style="width:40px">ลำดับ</th><th rowspan="2" style="width:120px">รหัสทรัพย์สิน</th><th rowspan="2">รายการ</th><th colspan="3">ผู้โอน</th><th colspan="3">ผู้รับ</th><th rowspan="2" style="width:160px">หมายเหตุ</th></tr><tr><th style="width:90px">UL</th><th style="width:120px">รหัสพนักงาน</th><th style="width:160px">ชื่อผู้รับผิดชอบเดิม</th><th style="width:90px">UL</th><th style="width:120px">รหัสพนักงาน</th><th style="width:160px">ชื่อผู้รับผิดชอบใหม่</th></tr></thead><tbody>${tableRows}</tbody>${tfoot}</table>`;
+      const table = `<table><thead><tr><th rowspan="2" style="width:30px">ลำดับ</th><th rowspan="2" style="width:100px">รหัสทรัพย์สิน</th><th rowspan="2" style="width:250px">รายการ</th><th colspan="3">ผู้โอน</th><th colspan="3">ผู้รับ</th><th rowspan="2" style="width:200px">หมายเหตุ</th></tr><tr><th style="width:80px">UL</th><th style="width:100px">รหัสพนักงาน</th><th style="width:180px">ชื่อผู้รับผิดชอบเดิม</th><th style="width:80px">UL</th><th style="width:100px">รหัสพนักงาน</th><th style="width:180px">ชื่อผู้รับผิดชอบใหม่</th></tr></thead><tbody>${tableRows}</tbody>${tfoot}</table>`;
       const signFrom = `<div class="box"><div class="center" style="font-weight:bold;margin-bottom:6px;">ผู้โอน</div><div class="line"><div class="lbl">ลายเซ็นต์</div><div class="fill"></div></div><div class="line"><div class="lbl">ชื่อตัวบรรจง</div><div class="info">${payloads[0].from_owner_name || ''}</div></div><div class="line"><div class="lbl">รหัสพนักงาน</div><div class="info">${payloads[0].from_emp_id || ''}</div></div><div class="line"><div class="lbl">หน่วยงาน</div><div class="info">${payloads[0].from_dept || ''}</div></div></div>`;
       const signTo = `<div class="box"><div class="center" style="font-weight:bold;margin-bottom:6px;">ผู้รับ</div><div class="line"><div class="lbl">ลายเซ็นต์</div><div class="fill"></div></div><div class="line"><div class="lbl">ชื่อตัวบรรจง</div><div class="info">${payloads[0].to_owner_name || ''}</div></div><div class="line"><div class="lbl">รหัสพนักงาน</div><div class="info">${payloads[0].to_emp_id || ''}</div></div><div class="line"><div class="lbl">หน่วยงาน</div><div class="info">${payloads[0].to_dept || ''}</div></div></div>`;
       const sign = `<div class="sign">${signFrom}${signTo}</div>`;
