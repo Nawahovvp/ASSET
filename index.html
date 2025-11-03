@@ -489,15 +489,6 @@
       from { opacity: 0; transform: translateY(30px); }
       to { opacity: 1; transform: translateY(0); }
     }
-    .form-section h3 {
-      margin: 0 0 18px 0;
-      color: var(--primary-color);
-      font-size: 18px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-weight: 600;
-    }
     .selected-items-section {
       margin-bottom: 28px;
       padding: 20px;
@@ -1067,7 +1058,7 @@
     <div class="filter-row">
       <label id="pendingFilterLabel" for="pendingFilter" class="modern-label"><i class="fas fa-map-marker-alt"></i> Location</label>
       <select id="pendingFilter"><option value="">ทั้งหมด</option></select>
-      <div id="callCountInfo" class="call-count-box"><i class="fas fa-list"></i> จำนวนรายการ: <span id="callCountValue">0</span> รายการ | <i class="fas fa-shopping-cart"></i> ในตะกร้า: <span id="cartCountValue">0</span> รายการ</div>
+      <div id="callCountInfo" class="call-count-box"><i class="fas fa-list"></i> จำนวนรายการ: <span id="callCountValue">0</span> รายการ</div>
     </div>
     <div class="filter-row">
       <label id="stockFilterLabel" for="stockFilter" class="modern-label"><i class="fas fa-info-circle"></i> Status</label>
@@ -1079,7 +1070,7 @@
       <button id="reportButton" class="action-button print-button"><i class="fas fa-print"></i> รายงาน</button>
       <button id="historyButton" class="action-button history-button"><i class="fas fa-history"></i> ประวัติ</button>
       <button id="documentsButton" class="action-button documents-button"><i class="fas fa-file-alt"></i> เอกสารทั้งหมด</button>
-      <button id="cartButton" class="action-button cart-button" disabled><i class="fas fa-shopping-cart"></i> โอนย้ายตะกร้า</button>
+      <button id="cartButton" class="action-button cart-button" disabled><i class="fas fa-shopping-cart"></i> (0)</button>
       <button id="clearCartButton" class="action-button" style="background:linear-gradient(135deg,var(--danger-color),#dc2626);" disabled><i class="fas fa-trash"></i> ล้างตะกร้า</button>
       <div id="userInfo"><i class="fas fa-user"></i> ยินดีต้อนรับ: <span id="loggedUserName"></span> <button id="logoutButton"><i class="fas fa-sign-out-alt"></i> Logout</button></div>
     </div>
@@ -1401,7 +1392,6 @@
       const lastPageButton = document.getElementById('lastPage');
       const itemsPerPageSelect = document.getElementById('itemsPerPage');
       const selectAllCheckbox = document.getElementById('selectAll');
-      const cartCountValue = document.getElementById('cartCountValue');
       const selectedItemsSection = document.getElementById('selectedItemsSection');
       const selectedItemsList = document.getElementById('selectedItemsList');
       const singleAssetSection = document.getElementById('singleAssetSection');
@@ -1742,6 +1732,7 @@
           checkbox.checked = false;
           return;
         }
+        const prevLength = selectedAssets.length;
         if (checkbox.checked) {
           // กำลังเลือก
           if (currentCartOwner && currentCartOwner !== owner) {
@@ -1763,9 +1754,16 @@
           }
         }
         updateCartUI();
+        if (prevLength === 0 && selectedAssets.length === 1) {
+          employeeFilter.value = owner;
+          filterAndRenderTable();
+        } else if (prevLength > 0 && selectedAssets.length === 0) {
+          employeeFilter.value = '';
+          filterAndRenderTable();
+        }
       }
       function updateCartUI() {
-        cartCountValue.textContent = selectedAssets.length;
+        cartButton.innerHTML = `<i class="fas fa-shopping-cart"></i> (${selectedAssets.length})`;
         cartButton.disabled = selectedAssets.length === 0;
         clearCartButton.disabled = selectedAssets.length === 0;
         // FIX: อัปเดต selectAll state สำหรับ current page เท่านั้น
@@ -1783,6 +1781,8 @@
         currentCartOwner = null; // เพิ่ม: ล้าง currentCartOwner
         document.querySelectorAll('#tableBody input[type="checkbox"]').forEach(cb => cb.checked = false);
         updateCartUI();
+        employeeFilter.value = '';
+        filterAndRenderTable();
         // เพิ่ม: ถ้า modal เปิดและเป็น multi mode, re-render selected list
         if (transferModal.style.display === 'block' && isMultiMode) {
           renderSelectedItemsList();
