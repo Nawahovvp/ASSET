@@ -1575,7 +1575,6 @@
           return;
         }
         const dateStr = thaiDateStr(todayISO());
-        const filterInfo = `ผู้รับผิดชอบ: ${selectedEmployee || 'ทั้งหมด'}, Location: ${selectedLocation || 'ทั้งหมด'}, Status: ${selectedStatus || 'ทั้งหมด'}, ค้นหา: ${keyword || 'ไม่มี'}`;
         const styles = `<style>
           @page { size: A4 landscape; margin: 0; @bottom-center { content: counter(page) "/" counter(pages); font-size: 10pt; color: #000; } }
           @page :first { margin-top: 0; @bottom-center { content: counter(page) "/" counter(pages); } }
@@ -1600,7 +1599,7 @@
             table { page-break-inside: auto !important; }
           }
         </style>`;
-        const header = `<h1>บริษัท ซีพี รีเทลลิงค์ จำกัด</h1><h2>รายงานทรัพย์สิน คลังสินค้าทั่วประเทศ ตามตัวกรอง</h2><div class="meta"><div><span class="label">วันที่รายงาน :</span> ${dateStr}</div><div><span class="label">ตัวกรอง :</span> ${filterInfo}</div><div><span class="label">จำนวนรายการ :</span> ${filteredData.length}</div></div>`;
+        const header = `<h1>บริษัท ซีพี รีเทลลิงค์ จำกัด</h1><h2>รายงานทรัพย์สิน คลังสินค้าทั่วประเทศ</h2><div class="meta"><div><span class="label">วันที่รายงาน :</span> ${dateStr}</div><div><span class="label">จำนวนรายการ :</span> ${filteredData.length}</div></div>`;  // ลบ <div> ตัวกรองออก และปรับหัวข้อ h2 ให้ไม่มี "ตามตัวกรอง"
         const columns = ['รหัส', 'ชื่อ', 'UL', 'หน่วยงาน', 'Location', 'วันที่ซื้อ', 'ผู้รับผิดชอบ', 'Status', 'อายุ'];
         const fieldMap = {
           'รหัส': 'รหัสทรัพย์สิน',
