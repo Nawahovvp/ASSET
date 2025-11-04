@@ -2861,7 +2861,7 @@
         table { page-break-inside: auto !important; }
       }
     </style>`;
-        const header = `<h1>บริษัท ซีพี รีเทลลิงค์ จำกัด</h1><h2>ใบโอนย้ายทรัพย์สิน${isMulti ? ` (${totalItems} รายการ)` : ''}</h2><div class="meta"><div><span class="label">เลขที่เอกสาร :</span> ${docId}</div><div><span class="label">รายละเอียดครั้งนี้ :</span> ${payloads[0].note || ''}</div><div><span class="label">วันที่ :</span> ${dateStr}</div></div>`;
+        const header = `<h1>บริษัท ซีพี รีเทลลิงค์ จำกัด</h1><h2>ใบโอนย้ายทรัพย์สิน${isMulti ? ` (${totalItems} รายการ)` : ''}</h2><div class="meta"><div><span class="label">รายละเอียดครั้งนี้ :</span> ${docId}</div><div><span class="label">รายละเอียดครั้งนี้ :</span> ${payloads[0].note || ''}</div><div><span class="label">วันที่ :</span> ${dateStr}</div></div>`;
         let tableRows = '';
         payloads.forEach((payload, index) => {
           tableRows += `<tr><td class="center">${index + 1}</td><td class="center">${payload.asset_id || ''}</td><td>${payload.name || ''}</td><td class="center">${payload.from_ul || ''}</td><td class="center">${payload.from_emp_id || ''}</td><td>${payload.from_owner_name || ''}</td><td class="center">${payload.to_ul || ''}</td><td class="center">${payload.to_emp_id || ''}</td><td>${payload.to_owner_name || ''}</td><td>${payload.note || ''}</td></tr>`;
