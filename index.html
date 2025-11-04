@@ -1045,10 +1045,45 @@
     #loginButton:hover {
       background: linear-gradient(135deg, #4f46e5, #7c3aed);
     }
+
+    /* NEW: CSS for DATA UPDATE section - ทำให้สวยงามด้วย gradient, shadow, animation */
+    #dataUpdateInfo {
+      text-align: center;
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--info-color);
+      background: linear-gradient(135deg, #ecfeff, #cffafe);
+      padding: 12px 20px;
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow-md);
+      margin-bottom: 20px;
+      border: 1px solid rgba(6, 182, 212, 0.2);
+      animation: fadeInUp 0.8s ease-out;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    #dataUpdateInfo i {
+      font-size: 18px;
+      color: var(--info-color);
+    }
+    #dataUpdateInfo span {
+      color: var(--primary-color);
+      font-weight: 700;
+    }
+    #dataUpdateInfo:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
   </style>
 </head>
 <body>
   <h1 class="report-title">รายงาน ทรัพย์สิน คลังสินค้าทั่วประเทศ</h1>
+
+  <!-- NEW: Add DATA UPDATE info section -->
+  <div id="dataUpdateInfo"><i class="fas fa-sync-alt"></i> DATA UPDATE: กำลังโหลด...</div>
+
   <div id="searchContainer">
     <div class="filter-row">
       <label id="employeeFilterLabel" for="employeeFilter" class="modern-label"><i class="fas fa-user"></i> ผู้รับผิดชอบ</label>
@@ -1351,6 +1386,11 @@
       const userSheetID = '1eqVoLsZxGguEbRCC5rdI4iMVtQ7CK4T3uXRdx8zE3uw';
       const userSheetName = 'UserPlant';
       const userUrl = `https://opensheet.elk.sh/${userSheetID}/${userSheetName}`;
+
+      // NEW: Update sheet URL
+      const updateSheetName = 'Update';
+      const updateUrl = `https://opensheet.elk.sh/${sheetID}/${updateSheetName}`;
+
       // DOM refs
       const transferModal = document.getElementById('transferModal');
       const closeTransferModal = document.getElementById('closeTransferModal');
@@ -1599,7 +1639,7 @@
             table { page-break-inside: auto !important; }
           }
         </style>`;
-        const header = `<h1>บริษัท ซีพี รีเทลลิงค์ จำกัด</h1><h2>รายงานทรัพย์สิน คลังสินค้าทั่วประเทศ</h2><div class="meta"><div><span class="label">วันที่รายงาน :</span> ${dateStr}</div><div><span class="label">จำนวนรายการ :</span> ${filteredData.length}</div></div>`;  // ลบ <div> ตัวกรองออก และปรับหัวข้อ h2 ให้ไม่มี "ตามตัวกรอง"
+        const header = `<h1>บริษัท ซีพี รีเทลลิงค์ จำกัด</h1><h2>รายงานทรัพย์สิน คลังสินค้าทั่วประเทศ</h2><div class="meta"><div><span class="label">วันที่รายงาน :</span> ${dateStr}</div><div><span class="label">จำนวนรายการ :</span> ${filteredData.length}</div></div>`; // ลบ <div> ตัวกรองออก และปรับหัวข้อ h2 ให้ไม่มี "ตามตัวกรอง"
         const columns = ['รหัส', 'ชื่อ', 'UL', 'หน่วยงาน', 'Location', 'วันที่ซื้อ', 'ผู้รับผิดชอบ', 'Status', 'อายุ'];
         const fieldMap = {
           'รหัส': 'รหัสทรัพย์สิน',
@@ -2293,7 +2333,7 @@
           return JSON.parse(localStorage.getItem('assetTransfers') || '[]');
         }
       }
-      // FIXED: ฟังก์ชันใหม่เพื่อเตรียม payload สำหรับ Supabase (ลบฟิลด์ที่ไม่มี)
+      // FIXED: ฟังก์ชันใหม่เพื่อเตรียม payload สำหรับ Supabase (สมมติไม่มี from_dept/to_dept - ปรับตาม schema จริง)
       function preparePayloadForSupabase(payload) {
         // คอลัมน์ที่ Supabase มี (จาก error, สมมติไม่มี from_dept/to_dept - ปรับตาม schema จริง)
         const allowedFields = [
@@ -2335,7 +2375,7 @@
           console.log('Saved to Supabase successfully with ID:', data[0]?.id);
         } catch (err) {
           console.error('Supabase setTransfers error (data saved to local only):', err);
-          alert('บันทึกสำเร็จในเครื่อง แต่ล้มเหลวในการ sync ไป Supabase: ' + err.message + '\nตรวจสอบคอลัมน์ในตาราง transfers');
+          alert('บันทึกสำเร็จในเครื่อง แต่ล้มเหลวในการ sync ไป Supabase: ' + err.message + '\nตรวจสอบคคอลัมน์ในตาราง transfers');
         }
       }
       // FIXED: Telegram Notification Function - ปรับให้รับ payloads array เสมอ (สำหรับ multi/single) และส่ง notification เดียว
@@ -2719,7 +2759,7 @@
           // FIXED: Send Telegram notification once after loop (for multi/single)
           await sendTelegramNotification(payloads, isMultiMode);
           filterAndRenderTable();
-          // ไม่ clearCart และไม่ reset mode/display เพื่อให้ข้อมูลยังอยู่สำหรับพิมพ์
+          // FIXED: ไม่ clearCart และไม่ reset mode/display เพื่อให้ข้อมูลยังอยู่สำหรับพิมพ์
           alert(`บันทึกการโอนย้ายเรียบร้อย (${payloads.length} รายการ) เลขที่เอกสาร: ${docId} (บันทึกใน Supabase และ localStorage) และส่งแจ้งเตือน Telegram แล้ว\nสามารถกดพิมพ์ได้ทันที จากนั้นกด "ออก" หรือ "ล้างตะกร้า" เมื่อเสร็จ`);
         } catch (err) {
           console.error('Save error:', err);
@@ -2791,13 +2831,13 @@
             from_owner_name: extractOwnerName(reconstructedFromFull),
             from_emp_id: fromEmpId,
             from_ul: document.getElementById('tf_fromUL').value,
-            from_dept: document.getElementById('tf_fromDept').value, // เก็บสำหรับ print
+            from_dept: document.getElementById('tf_fromDept').value, // เก็บสำหรับ local/print
             to_location: toLocation,
             to_owner_full: toOwnerFull,
             to_owner_name: extractOwnerName(toOwnerFull),
             to_emp_id: toEmpId,
             to_ul: toUL,
-            to_dept: toDept, // เก็บสำหรับ print
+            to_dept: toDept, // เก็บสำหรับ local/print
             date: date,
             operator: operator,
             note: note,
@@ -2939,7 +2979,7 @@
       }
       function openPicker(type) {
         pickerTarget = type;
-        const items = type === 'owner' ? [...ownersListEl.options].map(o => o.value) : [...locationsListEl.options].map(o => o.value);
+        const items = type === 'owner' ? [...new Set(allData.map(r => r['ผู้รับผิดชอบ']).filter(Boolean))].sort() : [...new Set(allData.map(r => r['Physical Location']).filter(Boolean))].sort();
         pickerTitle.textContent = type === 'owner' ? 'เลือกผู้รับผิดชอบใหม่' : 'เลือก Location ใหม่';
         renderPickerList(items);
         pickerSearch.value = '';
@@ -2969,7 +3009,7 @@
         });
       }
       pickerSearch.addEventListener('input', () => {
-        const base = pickerTarget === 'owner' ? [...ownersListEl.options].map(o => o.value) : [...locationsListEl.options].map(o => o.value);
+        const base = pickerTarget === 'owner' ? [...new Set(allData.map(r => r['ผู้รับผิดชอบ']).filter(Boolean))].sort() : [...new Set(allData.map(r => r['Physical Location']).filter(Boolean))].sort();
         const q = pickerSearch.value.toLowerCase();
         renderPickerList(base.filter(v => v.toLowerCase().includes(q)));
       });
@@ -3028,6 +3068,40 @@
           console.error('ไม่สามารถโหลดข้อมูลได้:', err);
           tableBody.innerHTML = `<tr><td colspan="11" style="text-align:center; padding:40px; color:var(--danger-color);">เกิดข้อผิดพลาดในการโหลดข้อมูล: ${err.message}</td></tr>`;
         });
+
+      // NEW: Load and display max Date from Update sheet
+      async function loadUpdateDate() {
+        try {
+          const response = await fetch(updateUrl);
+          if (!response.ok) throw new Error('Failed to load update data');
+          const updateData = await response.json();
+          if (!updateData || updateData.length === 0) {
+            throw new Error('No data in Update sheet');
+          }
+          // Find max Date (assume Date is string, compare as Date)
+          const dates = updateData
+            .map(row => row.Date)
+            .filter(dateStr => dateStr && !isNaN(new Date(dateStr).getTime()));
+          if (dates.length === 0) {
+            throw new Error('No valid dates found');
+          }
+          const maxDateStr = dates.reduce((max, cur) => {
+            return new Date(cur) > new Date(max) ? cur : max;
+          }, dates[0]);
+          // Display
+          const updateInfoEl = document.getElementById('dataUpdateInfo');
+          updateInfoEl.innerHTML = `<i class="fas fa-sync-alt"></i> DATA UPDATE: <span>${maxDateStr}</span>`;
+        } catch (err) {
+          console.error('Load update date error:', err);
+          const updateInfoEl = document.getElementById('dataUpdateInfo');
+          updateInfoEl.innerHTML = '<i class="fas fa-exclamation-triangle"></i> ไม่สามารถโหลดข้อมูลอัปเดตได้: ' + err.message;
+          updateInfoEl.style.color = 'var(--danger-color)';
+        }
+      }
+
+      // Call loadUpdateDate after DOM loaded
+      loadUpdateDate();
+
       // FIXED: เพิ่ม auto-sync เมื่อโหลดหน้าเสร็จ
       getTransfers().then(transfers => {
         console.log('Auto-sync completed. Total transfers:', transfers.length);
